@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('password');
             $table->integer('id_chuc_vu');
             $table->string('so_dien_thoai')->nullable();
+            $table->integer('is_block')->default(0)->comment('0: không bị khóa, 1: bị khóa');
+            $table->integer('is_master')->default(0);
             $table->timestamps();
         });
     }
