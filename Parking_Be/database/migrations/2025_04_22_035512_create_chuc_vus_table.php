@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('chuc_vus', function (Blueprint $table) {
             $table->id();
             $table->string('ten_chuc_vu')->unique();
-            $table->integer('tinh_trang')->default(1);
+            $table->integer('tinh_trang')->default(1)->comment('1: Hoạt động, 0: Ngừng hoạt động');
             $table->timestamps();
         });
     }

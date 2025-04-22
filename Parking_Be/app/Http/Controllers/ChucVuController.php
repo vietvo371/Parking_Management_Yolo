@@ -2,64 +2,96 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaoChucVuRequest;
 use App\Models\ChucVu;
 use Illuminate\Http\Request;
 
 class ChucVuController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData()
     {
-        //
+        $chucvu = ChucVu::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $chucvu
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function themChucVu(TaoChucVuRequest $request)
     {
-        //
+        ChucVu::create([
+            'ten_chuc_vu'   => $request->ten_chuc_vu,
+            'slug_chuc_vu'  => $request->slug_chuc_vu,
+            'tinh_trang'    => $request->tinh_trang,
+        ]);
+        return response()->json([
+            'status'   => true,
+            'message'  => 'Bạn thêm Chức Vụ thành công!',
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function timChucVu(Request $request)
     {
-        //
+        $key    = '%' . $request->key . '%';
+        $dataAdmin   = ChucVu::select('chuc_vus.*')
+            ->where('ten_chuc_vu', 'like', $key)
+            ->get(); // get là ra 1  sách
+
+
+        return response()->json([
+            'chuc_vu_admin'  =>  $dataAdmin,
+        ]);
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(ChucVu $chucVu)
+    public function capnhatChucVu(Request $request)
     {
-        //
+        $chucvu = ChucVu::find($request->id);
+        if ($chucvu) {
+            $chucvu->update([
+                'ten_chuc_vu'   => $request->ten_chuc_vu,
+                'tinh_trang'    => $request->tinh_trang,
+            ]);
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn cập nhật Chức Vụ thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Chức Vụ không tồn tại!',
+            ]);
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ChucVu $chucVu)
+    public function doiTrangThaiChucVu(Request $request)
     {
-        //
+        $chucvu = ChucVu::find($request->id);
+        if ($chucvu) {
+            $chucvu->update([
+                'tinh_trang' => !$request->tinh_trang,
+            ]);
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn cập nhật trạng thái thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Chức Vụ không tồn tại!',
+            ]);
+        }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ChucVu $chucVu)
+    public function xoaChucVu(Request $request)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ChucVu $chucVu)
-    {
-        //
+        $chucvu = ChucVu::find($request->id);
+        if ($chucvu) {
+            $chucvu->delete();
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn đã xóa Chức Vụ thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Chức Vụ không tồn tại!',
+            ]);
+        }
     }
 }
