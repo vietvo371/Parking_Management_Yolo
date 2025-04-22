@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('chi_tiet_bai_xes', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_bai_xe');
+            $table->integer('thu_tu');
+            $table->integer('trang_thai')->default(1);
             $table->timestamps();
         });
     }

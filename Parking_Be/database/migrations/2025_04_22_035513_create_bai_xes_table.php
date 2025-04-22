@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('bai_xes', function (Blueprint $table) {
             $table->id();
+            $table->string('ten_bai');
+            $table->integer('suc_chua_o_to');
+            $table->integer('suc_chua_khac')->nullable();
+            $table->integer('trang_thai')->default(1);
             $table->timestamps();
         });
     }

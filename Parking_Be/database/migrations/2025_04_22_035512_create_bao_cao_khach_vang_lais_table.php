@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('bao_cao_khach_vang_lais', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_admin');
+            $table->string('ho_va_ten');
+            $table->string('so_dien_thoai')->nullable();
+            $table->dateTime('thoi_gian_vao');
+            $table->dateTime('thoi_gian_ra');
+            $table->integer('tien_thanh_toan');
+            $table->integer('is_thanh_toan')->default(0);
+            $table->integer('id_vi_tri_trong_bai');
             $table->timestamps();
         });
     }

@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('can_hos', function (Blueprint $table) {
             $table->id();
+            $table->integer('tang');
+            $table->integer('so_can_ho');
+            $table->string('chu_ho');
             $table->timestamps();
         });
     }

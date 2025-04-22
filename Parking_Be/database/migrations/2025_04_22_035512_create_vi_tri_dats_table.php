@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('vi_tri_dats', function (Blueprint $table) {
             $table->id();
+            $table->string('vi_tri_dat');
+            $table->integer('trang_thai')->default(1);
             $table->timestamps();
         });
     }

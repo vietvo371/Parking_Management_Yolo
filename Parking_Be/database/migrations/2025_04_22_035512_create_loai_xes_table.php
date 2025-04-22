@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('loai_xes', function (Blueprint $table) {
             $table->id();
+            $table->string('ten_loai_xe');
+            $table->integer('trang_thai')->default(1);
+            $table->integer('tien_thu_giu_xe');
             $table->timestamps();
         });
     }

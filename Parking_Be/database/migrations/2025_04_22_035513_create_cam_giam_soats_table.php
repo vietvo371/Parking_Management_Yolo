@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('cam_giam_soats', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_vi_tri');
+            $table->integer('id_bai_xe');
+            $table->integer('trang_thai')->default(1);
             $table->timestamps();
         });
     }

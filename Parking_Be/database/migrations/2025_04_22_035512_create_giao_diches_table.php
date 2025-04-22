@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('giao_diches', function (Blueprint $table) {
             $table->id();
+            $table->integer('so_tien_giao_dich');
+            $table->integer('id_xe');
+            $table->integer('phuong_thuc_thanh_toan');
+            $table->integer('trang_thai_giao_dich');
+            $table->dateTime('ngay_het_han');
+            $table->string('ma_giao_dich');
             $table->timestamps();
         });
     }
