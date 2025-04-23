@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CanHoController;
 use App\Http\Controllers\ChiTietChucVuController;
 use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\ChucVuController;
 use App\Http\Controllers\CuDanController;
+use App\Http\Controllers\XeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,19 +58,18 @@ Route::group(['prefix'  =>  '/admin'], function () {
     });
 
     Route::group(['prefix'  =>  '/can-ho'], function () {
-        Route::get('/lay-du-lieu', [CuDanController::class, 'getData']);
-        Route::post('/them-du-lieu', [CuDanController::class, 'themCanHo']);
-        Route::post('/thong-tin-cap-nhat', [CuDanController::class, 'capnhatCanHo']);
-        Route::post('/doi-trang-thai', [CuDanController::class, 'doiTrangThaiCanHo']);
-        Route::delete('/thong-tin-xoa/{id}', [CuDanController::class, 'xoaCanHo']);
+        Route::get('/lay-du-lieu', [CanHoController::class, 'getData']);
+        Route::post('/them-du-lieu', [CanHoController::class, 'themCanHo']);
+        Route::post('/thong-tin-cap-nhat', [CanHoController::class, 'capnhatCanHo']);
+        Route::delete('/thong-tin-xoa/{id}', [CanHoController::class, 'xoaCanHo']);
     });
 
     Route::group(['prefix'  =>  '/Xe'], function () {
-        Route::get('/lay-du-lieu', [CuDanController::class, 'getData']);
-        Route::post('/them-du-lieu', [CuDanController::class, 'themXe']);
-        Route::post('/thong-tin-cap-nhat', [CuDanController::class, 'capnhatXe']);
-        Route::post('/doi-trang-thai', [CuDanController::class, 'doiTrangThaiXe']);
-        Route::delete('/thong-tin-xoa/{id}', [CuDanController::class, 'xoaXe']);
+        Route::get('/lay-du-lieu', [XeController::class, 'getData']);
+        Route::post('/them-du-lieu', [XeController::class, 'themXe']);
+        Route::post('/thong-tin-cap-nhat', [XeController::class, 'capnhatXe']);
+        Route::post('/doi-trang-thai', [XeController::class, 'doiTrangThaiXe']);
+        Route::delete('/thong-tin-xoa/{id}', [XeController::class, 'xoaXe']);
     });
 
 

@@ -7,59 +7,61 @@ use Illuminate\Http\Request;
 
 class CanHoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData()
     {
-        //
+        $canho = CanHo::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $canho
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function themCuDan(Request $request)
     {
-        //
+        CanHo::create([
+           'tang'       => $request->tang,
+           'so_can_ho'  => $request->so_can_ho,
+           'chu_ho'     => $request->chu_ho,
+        ]);
+        return response()->json([
+            'status'   => true,
+            'message'  => 'Bạn thêm Căn Hộ thành công!',
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function capnhatCuDan(Request $request)
     {
-        //
+        $canho = CanHo::find($request->id);
+        if ($canho) {
+            $canho->update([
+                'tang'       => $request->tang,
+                'so_can_ho'  => $request->so_can_ho,
+                'chu_ho'     => $request->chu_ho,
+            ]);
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn cập nhật Căn Hộ thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Căn Hộ không tồn tại!',
+            ]);
+        }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(CanHo $canHo)
+    public function xoaCuDan(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CanHo $canHo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CanHo $canHo)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CanHo $canHo)
-    {
-        //
+        $canho = CanHo::find($request->id);
+        if ($canho) {
+            $canho->delete();
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn đã xóa Căn Hộ thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Căn Hộ không tồn tại!',
+            ]);
+        }
     }
 }

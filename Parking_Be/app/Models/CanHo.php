@@ -11,5 +11,5 @@ class CanHo extends Model
         'tang',
         'so_can_ho',
         'chu_ho',
-    ];ư
+    ];
 }
