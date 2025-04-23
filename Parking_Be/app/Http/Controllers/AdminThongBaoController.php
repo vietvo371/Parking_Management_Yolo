@@ -7,59 +7,17 @@ use Illuminate\Http\Request;
 
 class AdminThongBaoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData()
     {
-        //
+        $thongbaos = AdminThongBao::join('admins', 'admin_thong_baos.admin_id', '=', 'admins.id')
+            ->join('admin_thong_baos.*', 'admin_thong_baos.id_cu_dan', '=', 'cu_dans.id')
+            ->select('admin_thong_baos.*', 'admins.ho_va_ten','cu_dans.ho_va_ten as ten_cu_dan' , 'cu_dans.so_du')
+            ->where('admin_thong_baos.trang_thai', 1)
+            ->orderBy('admin_thong_baos.created_at', 'desc')
+            ->get();
+        return response()->json([
+            'data' => $thongbaos,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(AdminThongBao $adminThongBao)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AdminThongBao $adminThongBao)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, AdminThongBao $adminThongBao)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(AdminThongBao $adminThongBao)
-    {
-        //
-    }
 }

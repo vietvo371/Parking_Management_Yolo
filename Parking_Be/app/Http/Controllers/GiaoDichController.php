@@ -7,59 +7,16 @@ use Illuminate\Http\Request;
 
 class GiaoDichController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(GiaoDich $giaoDich)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(GiaoDich $giaoDich)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, GiaoDich $giaoDich)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(GiaoDich $giaoDich)
-    {
-        //
+        $giaodichs = GiaoDich::join('xes', 'giao_dichs.id_xe', '=', 'xes.id')
+            ->join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
+            ->select('giao_dichs.*', 'xes.bien_so', 'cu_dans.ho_va_ten as ten_cu_dan', 'cu_dans.so_du')
+            ->where('giao_dichs.trang_thai', 1)
+            ->orderBy('giao_dichs.created_at', 'desc')
+            ->get();
+        return response()->json([
+            'data' => $giaodichs,
+        ]);
     }
 }

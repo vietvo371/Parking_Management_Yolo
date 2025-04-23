@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminThongBaoController;
+use App\Http\Controllers\BaiXeController;
 use App\Http\Controllers\CanHoController;
 use App\Http\Controllers\ChiTietChucVuController;
 use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\ChucVuController;
 use App\Http\Controllers\CuDanController;
+use App\Http\Controllers\GiaoDichController;
+use App\Http\Controllers\LichSuRaVaoBaiXeController;
+use App\Http\Controllers\ViTriDatController;
 use App\Http\Controllers\XeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +76,41 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/doi-trang-thai', [XeController::class, 'doiTrangThaiXe']);
         Route::delete('/thong-tin-xoa/{id}', [XeController::class, 'xoaXe']);
     });
+
+
+    Route::group(['prefix'  =>  '/lich-su-ra-vao'], function () {
+        Route::get('/lay-du-lieu', [LichSuRaVaoBaiXeController::class, 'getLichSuRaVao']);
+    });
+
+    Route::group(['prefix'  =>  '/thong-bao'], function () {
+        Route::get('/lay-du-lieu', [AdminThongBaoController::class, 'getData']);
+    });
+
+    Route::group(['prefix'  =>  '/giao-dich'], function () {
+        Route::get('/lay-du-lieu', [GiaoDichController::class, 'getData']);
+    });
+
+    Route::group(['prefix'  =>  '/bai-xe'], function () {
+        Route::get('/lay-du-lieu', [BaiXeController::class, 'getData']);
+        Route::post('/them-du-lieu', [BaiXeController::class, 'themBaiXe']);
+        Route::post('/thong-tin-cap-nhat', [BaiXeController::class, 'capnhatBaiXe']);
+        Route::delete('/thong-tin-xoa/{id}', [BaiXeController::class, 'xoaBaiXe']);
+    });
+
+    Route::group(['prefix'  =>  '/vi-tri-dat'], function () {
+        Route::get('/lay-du-lieu', [ViTriDatController::class, 'getData']);
+        Route::post('/them-du-lieu', [ViTriDatController::class, 'themViTriDat']);
+        Route::post('/thong-tin-cap-nhat', [ViTriDatController::class, 'capnhatViTriDat']);
+        Route::delete('/thong-tin-xoa/{id}', [ViTriDatController::class, 'xoaViTriDat']);
+    });
+
+
+
+
+
+
+
+
 
 
 

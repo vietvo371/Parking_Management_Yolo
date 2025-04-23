@@ -16,7 +16,7 @@ class CanHoController extends Controller
             'data' => $canho
         ]);
     }
-    public function themCuDan(Request $request)
+    public function themCanHo(Request $request)
     {
         CanHo::create([
            'tang'       => $request->tang,
@@ -28,7 +28,7 @@ class CanHoController extends Controller
             'message'  => 'Bạn thêm Căn Hộ thành công!',
         ]);
     }
-    public function capnhatCuDan(Request $request)
+    public function capnhatCanHo(Request $request)
     {
         $canho = CanHo::find($request->id);
         if ($canho) {
@@ -48,7 +48,7 @@ class CanHoController extends Controller
             ]);
         }
     }
-    public function xoaCuDan(Request $request)
+    public function xoaCanHo(Request $request)
     {
         $canho = CanHo::find($request->id);
         if ($canho) {

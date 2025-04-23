@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\capNhatCuDanRequest;
 use App\Http\Requests\DoiPassAdminReuqest;
+use App\Http\Requests\ThemCuDanRequest;
 use App\Models\CuDan;
 use Illuminate\Http\Request;
 
@@ -17,7 +19,7 @@ class CuDanController extends Controller
             'data' => $cudan
         ]);
     }
-    public function themCuDan(Request $request)
+    public function themCuDan(ThemCuDanRequest $request)
     {
         CuDan::create([
            'ho_va_ten' => $request->ho_va_ten,
@@ -33,7 +35,7 @@ class CuDanController extends Controller
             'message'  => 'Bạn thêm Cư Dân thành công!',
         ]);
     }
-    public function capnhatCuDan(Request $request)
+    public function capnhatCuDan(capNhatCuDanRequest $request)
     {
         $cudan = CuDan::find($request->id);
         if ($cudan) {

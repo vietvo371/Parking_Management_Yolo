@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CapNhapXeRequest;
+use App\Http\Requests\ThemXeRequest;
 use App\Models\Xe;
 use Illuminate\Http\Request;
 
@@ -16,7 +18,7 @@ class XeController extends Controller
             'data' => $xe
         ]);
     }
-    public function themXe(Request $request)
+    public function themXe(ThemXeRequest $request)
     {
         Xe::create([
            'id_cu_dan'          => $request->id_cu_dan,
@@ -30,7 +32,7 @@ class XeController extends Controller
             'message'  => 'Bạn thêm Xe thành công!',
         ]);
     }
-    public function capnhatXe(Request $request)
+    public function capnhatXe(CapNhapXeRequest $request)
     {
         $xe = Xe::find($request->id);
         if ($xe) {
