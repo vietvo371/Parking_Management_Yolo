@@ -7,59 +7,39 @@ use Illuminate\Http\Request;
 
 class ChiTietChucVuController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData($id_chuc_vu)
     {
-        //
+        $data = ChiTietChucVu::where('id_chuc_vu', $id_chuc_vu)
+            ->join('chuc_nangs', 'phan_quyens.id_chuc_nang', 'chuc_nangs.id')
+            ->join('chuc_vus', 'phan_quyens.id_chuc_vu', 'chuc_vus.id')
+            ->select('phan_quyens.*', 'chuc_nangs.ten_chuc_nang', 'chuc_vus.ten_chuc_vu')
+            ->get();
+        return response()->json([
+            'data' => $data,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = ChiTietChucVu::firstOrCreate([
+            'id_chuc_vu'  => $request->id_chuc_vu,
+            'id_chuc_nang'  => $request->id_chuc_nang,
+        ]);
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Đã thêm phân quyền thành công!',
+            'data'     => $data
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ChiTietChucVu $chiTietChucVu)
+    public function destroy(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ChiTietChucVu $chiTietChucVu)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ChiTietChucVu $chiTietChucVu)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ChiTietChucVu $chiTietChucVu)
-    {
-        //
+        $data = ChiTietChucVu::where('id_chuc_vu', $request->id_chuc_vu)
+            ->where('id_chuc_nang', $request->id_chuc_nang)
+            ->delete();
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Đã xóa phân quyền thành công!',
+        ]);
     }
 }

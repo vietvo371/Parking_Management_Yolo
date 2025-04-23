@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChiTietChucVuController;
+use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\ChucVuController;
+use App\Http\Controllers\CuDanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +26,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
     Route::post('/doi-trang-thai', [AdminController::class, 'doiTrangThaiAdmin']);
     Route::delete('/thong-tin-xoa/{id}', [AdminController::class, 'xoaAdmin']);
     Route::post('/thong-tin-tim', [AdminController::class, 'timAdmin']);
-    Route::put('/doi-mat-khau', [AdminController::class, 'doiPass']);
+    Route::post('/doi-mat-khau', [AdminController::class, 'doiPass']);
     Route::get('/lay-du-lieu-profile', [AdminController::class, 'getDataProfile']);
 
     Route::group(['prefix'  =>  '/chuc-vu'], function () {
@@ -34,4 +37,40 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::delete('/thong-tin-xoa/{id}', [ChucVuController::class, 'xoaChucVu']);
         Route::post('/thong-tin-tim', [ChucVuController::class, 'timChucVu']);
     });
+
+    Route::group(['prefix'  =>  '/phan-quyen'], function () {
+        Route::get('/data/{id_chuc_vu}', [ChiTietChucVuController::class, 'getData']);
+        Route::post('/phan-quyen-chuc-vu/create', [ChiTietChucVuController::class, 'store']);
+        Route::post('/phan-quyen-chuc-vu/delete', [ChiTietChucVuController::class, 'destroy']);
+        Route::get('/chuc-nang/data', [ChucNangController::class, 'getData']);
+    });
+
+    Route::group(['prefix'  =>  '/cu-dan'], function () {
+        Route::get('/lay-du-lieu', [CuDanController::class, 'getData']);
+        Route::post('/them-du-lieu', [CuDanController::class, 'themCuDan']);
+        Route::post('/thong-tin-cap-nhat', [CuDanController::class, 'capnhatCuDan']);
+        Route::post('/doi-trang-thai', [CuDanController::class, 'doiTrangThaiCuDan']);
+        Route::delete('/thong-tin-xoa/{id}', [CuDanController::class, 'xoaCuDan']);
+        Route::post('/doi-mat-khau', [CuDanController::class, 'doiPass']);
+
+    });
+
+    Route::group(['prefix'  =>  '/can-ho'], function () {
+        Route::get('/lay-du-lieu', [CuDanController::class, 'getData']);
+        Route::post('/them-du-lieu', [CuDanController::class, 'themCanHo']);
+        Route::post('/thong-tin-cap-nhat', [CuDanController::class, 'capnhatCanHo']);
+        Route::post('/doi-trang-thai', [CuDanController::class, 'doiTrangThaiCanHo']);
+        Route::delete('/thong-tin-xoa/{id}', [CuDanController::class, 'xoaCanHo']);
+    });
+
+    Route::group(['prefix'  =>  '/Xe'], function () {
+        Route::get('/lay-du-lieu', [CuDanController::class, 'getData']);
+        Route::post('/them-du-lieu', [CuDanController::class, 'themXe']);
+        Route::post('/thong-tin-cap-nhat', [CuDanController::class, 'capnhatXe']);
+        Route::post('/doi-trang-thai', [CuDanController::class, 'doiTrangThaiXe']);
+        Route::delete('/thong-tin-xoa/{id}', [CuDanController::class, 'xoaXe']);
+    });
+
+
+
 });

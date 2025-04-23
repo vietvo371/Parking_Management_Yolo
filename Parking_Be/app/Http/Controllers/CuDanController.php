@@ -2,64 +2,107 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DoiPassAdminReuqest;
 use App\Models\CuDan;
 use Illuminate\Http\Request;
 
 class CuDanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData()
     {
-        //
+        $cudan = CuDan::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $cudan
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function themCuDan(Request $request)
     {
-        //
+        CuDan::create([
+           'ho_va_ten' => $request->ho_va_ten,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'so_dien_thoai' => $request->so_dien_thoai,
+            'so_cccd' => $request->so_cccd,
+            'id_can_ho' => $request->id_can_ho,
+            'so_du' => $request->so_du,
+        ]);
+        return response()->json([
+            'status'   => true,
+            'message'  => 'Bạn thêm Cư Dân thành công!',
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function capnhatCuDan(Request $request)
     {
-        //
+        $cudan = CuDan::find($request->id);
+        if ($cudan) {
+            $cudan->update([
+                'ho_va_ten' => $request->ho_va_ten,
+                'email' => $request->email,
+                'so_dien_thoai' => $request->so_dien_thoai,
+                'so_cccd' => $request->so_cccd,
+                'id_can_ho' => $request->id_can_ho,
+                'so_du' => $request->so_du,
+            ]);
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn cập nhật Cư Dân thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Cư Dân không tồn tại!',
+            ]);
+        }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(CuDan $cuDan)
+    public function doiTrangThaiCuDan(Request $request)
     {
-        //
+        $cudan = CuDan::find($request->id);
+        if ($cudan) {
+            $cudan->update([
+                'trang_thai' => !$request->trang_thai,
+            ]);
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn cập nhật trạng thái thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Cư Dân không tồn tại!',
+            ]);
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CuDan $cuDan)
+    public function xoaCuDan(Request $request)
     {
-        //
+        $cudan = CuDan::find($request->id);
+        if ($cudan) {
+            $cudan->delete();
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn đã xóa Cư Dân thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Cư Dân không tồn tại!',
+            ]);
+        }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CuDan $cuDan)
+    public function doiPass(DoiPassAdminReuqest $request)
     {
-        //
-    }
+        $dangLogin = $this->isAdmin();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CuDan $cuDan)
-    {
-        //
+        $cudan = CuDan::find($request->id);
+
+        CuDan::where('id', $request->id)
+            ->update([
+                'password'   => bcrypt($request->password),
+            ]);
+        return response()->json([
+            'status'  =>  true,
+            'message' =>  'Đổi mật khẩu thành công'
+        ]);
     }
 }
