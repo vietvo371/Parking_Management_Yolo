@@ -1,38 +1,40 @@
-import { defineStore } from "pinia"
-import { ref } from "vue"
-import axios from "axios"
-export const useAuthStore = defineStore("auth", () => {
-  const user = ref(null)
-  const isAuthenticated = ref(false)
+// src/stores/auth.js
+import { defineStore } from 'pinia'
 
-  // Đăng nhập
-  const login = (username, password) => {
-    
-  }
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    user: null,
+    token: null,
+  }),
 
-  // Đăng xuất
-  const logout = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        user.value = null
-        isAuthenticated.value = false
-        resolve({ success: true })
-      }, 500)
-    })
-  }
+  getters: {
+    isLoggedIn: (state) => !!state.token,
+  },
 
-  // Kiểm tra trạng thái xác thực
-  const checkAuth = () => {
-    // Trong thực tế sẽ kiểm tra token hoặc session
-    // Ở đây chỉ mô phỏng đơn giản
-    return isAuthenticated.value
-  }
+  actions: {
+    setUser(user) {
+      this.user = user;
+      localStorage.setItem('user', JSON.stringify(user)); 
+    },
+    setToken(token) {
+      this.token = token;
+      localStorage.setItem('token', token);
+    },
+    getUser() {
+      return JSON.parse(localStorage.getItem('user'));
+    },
+    getToken() {
+      return localStorage.getItem('token');
+    },
+    logout() {
+      this.user = null;
+      this.token = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
 
-  return {
-    user,
-    isAuthenticated,
-    login,
-    logout,
-    checkAuth,
-  }
+    },
+  },
+
+  // 👇 Dòng này giúp lưu state vào localStorage
+  persist: true
 })

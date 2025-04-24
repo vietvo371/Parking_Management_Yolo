@@ -92,6 +92,7 @@ import { useRouter } from "vue-router";
 import { User, Lock, Eye, EyeOff } from "lucide-vue-next";
 import baseRequest from "../core/baseRequest";
 import { useNotificationStore } from "@/stores/notication";
+import { useAuthStore } from "@/stores/auth";
 export default {
   name: "Login",
   components: {
@@ -115,13 +116,14 @@ export default {
       this.showPassword = !this.showPassword;
     },
     handleLogin() {
+      const authStore = useAuthStore();
       const notificationStore = useNotificationStore();
       this.isLoading = true;
       baseRequest.post("admin/login", this.user).then((response) => {
         if (response.data.status) {
-          localStorage.setItem('token', response.data.token);
+          authStore.setToken(response.data.token);
+          authStore.setUser(response.data.user);
           notificationStore.showSuccess(response.data.message);
-          // this.$router.push("/admin");
           this.checkToken();
           this.isLoading = false;
         } else {

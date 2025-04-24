@@ -5,65 +5,66 @@ import checkLoginAdmin from "./checkLoginAdmin.js";
 const routes = [
 
   {
-    path: "/admin",
+    path: "/",
     component: () => import("../layouts/wrapper/index.vue"),
+    redirect: "/admin",
     children: [
         {
-            path : '',
+            path : 'admin',
             component: ()=>import('../views/Dashboard.vue'),
             beforeEnter: checkLoginAdmin,
 
         },
         {
-          path: "quan-ly-xe",
+          path: "admin/quan-ly-xe",
           name: "Vehicles",
           component: () => import("../views/Vehicles.vue"), 
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-xe/them-xe",
+          path: "admin/quan-ly-xe/them-xe",
           name: "AddVehicle",
           component: () => import("../views/AddVehicle.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-khach-hang",
+          path: "admin/quan-ly-khach-hang",
           name: "Residents",
           component: () => import("../views/Residents.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-khach-hang/them-khach-hang",
+          path: "admin/quan-ly-khach-hang/them-khach-hang",
           name: "AddResident",
           component: () => import("../views/AddResident.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-giao-dich",
+          path: "admin/quan-ly-giao-dich",
           name: "Transactions",
           component: () => import("../views/Transactions.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-camera",
+          path: "admin/quan-ly-camera",
           name: "Cameras",
           component: () => import("../views/Cameras.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-bao-cao",
+          path: "admin/quan-ly-bao-cao",
           name: "Reports",
           component: () => import("../views/Reports.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-lich-su",
+          path: "admin/quan-ly-lich-su",
           name: "History",
           component: () => import("../views/History.vue"),
           beforeEnter: checkLoginAdmin,
         },
         {
-          path: "quan-ly-cai-dat",
+          path: "admin/quan-ly-cai-dat",
           name: "Settings",
           component: () => import("../views/Settings.vue"),
           beforeEnter: checkLoginAdmin,

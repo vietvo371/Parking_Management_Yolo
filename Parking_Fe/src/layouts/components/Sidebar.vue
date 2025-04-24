@@ -47,8 +47,8 @@
             <Shield class="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
           <div class="ml-3">
-            <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Quản trị viên</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ user.ho_va_ten }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.ten_chuc_vu }}</p>
           </div>
         </div>
         <button 
@@ -73,6 +73,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { useNotificationStore } from "@/stores/notication";
 import {
   Home,
   Car,
@@ -107,9 +108,10 @@ export default {
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();
+    const notificationStore = useNotificationStore();
     const isOpen = ref(false);
     const isMobile = ref(false);
-
+    const user = ref(authStore.getUser());
     const navItems = [
       { name: "Trang chủ", href: "/admin", icon: Home },
       { name: "Quản lý xe", href: "/admin/quan-ly-xe", icon: Car },
@@ -129,9 +131,10 @@ export default {
       isMobile.value = window.innerWidth < 768;
     };
 
-    const logout = async () => {
-      await authStore.logout();
-      router.push("/login");
+    const logout = () => {
+      authStore.logout();
+      router.push("/dang-nhap");
+      notificationStore.showSuccess("Đăng xuất thành công");
     };
 
     onMounted(() => {
@@ -149,6 +152,7 @@ export default {
       navItems,
       toggleSidebar,
       logout,
+      user,
     };
   },
 };
