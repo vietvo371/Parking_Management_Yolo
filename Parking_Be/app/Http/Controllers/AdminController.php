@@ -25,10 +25,14 @@ class AdminController extends Controller
                     'message' => "Tài khoản của bạn đã bị khóa!"
                 ]);
             } else {
+                $chuc_vu = ChucVu::join('admins', 'chuc_vus.id', '=', 'admins.id_chuc_vu')
+                ->where('admins.id', $user->id)
+                ->select('admins.ho_va_ten', 'chuc_vus.ten_chuc_vu')
+                ->first();
                 return response()->json([
                     'status' => true,
                     'message' => "Đăng nhập thành công!",
-                    'user' => $user,
+                    'user' => $chuc_vu,
                     'token' => $user->createToken('admin_token')->plainTextToken
                 ]);
             }
@@ -76,10 +80,15 @@ class AdminController extends Controller
         $user = $this->isAdmin();
 
         if ($user) {
+
+            $chuc_vu = ChucVu::join('admins', 'chuc_vus.id', '=', 'admins.id_chuc_vu')
+                ->where('admins.id', $user->id)
+                ->select('admins.ho_va_ten', 'chuc_vus.ten_chuc_vu')
+                ->first();
             return response()->json([
                 'message'   => 'Token còn hiệu lực',
                 'status'    => true,
-                'user'      => $user
+                'user'      => $chuc_vu,
             ]);
         }
         return response()->json([
@@ -233,5 +242,5 @@ class AdminController extends Controller
             'message' => 'Lấy dữ liệu không thành công'
         ]);
     }
-    
+
 }

@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
          DB::table('admins')->insert([
             'ho_va_ten' => 'Admin Master',
             'email' => 'admin@example.com',
-            'password' => Hash::make('admin123'),
+            'password' => Hash::make('123456'),
             'id_chuc_vu' => 1, // Admin role
             'so_dien_thoai' => '0987654321',
             'is_block' => 0,
