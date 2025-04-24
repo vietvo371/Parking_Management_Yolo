@@ -112,13 +112,13 @@ export default {
 
     const navItems = [
       { name: "Trang chủ", href: "/admin", icon: Home },
-      { name: "Quản lý xe", href: "/admin/vehicles", icon: Car },
-      { name: "Cư dân", href: "/admin/residents", icon: Users },
-      { name: "Giao dịch", href: "/admin/transactions", icon: CreditCard },
-      { name: "Camera & AI", href: "/admin/cameras", icon: Camera },
-      { name: "Báo cáo", href: "/admin/reports", icon: BarChart2 },
-      { name: "Lịch sử ra vào", href: "/admin/history", icon: FileText },
-      { name: "Cài đặt", href: "/admin/settings", icon: Settings },
+      { name: "Quản lý xe", href: "/admin/quan-ly-xe", icon: Car },
+      { name: "Cư dân", href: "/admin/quan-ly-khach-hang", icon: Users },
+      { name: "Giao dịch", href: "/admin/quan-ly-giao-dich", icon: CreditCard },
+      { name: "Camera & AI", href: "/admin/quan-ly-camera", icon: Camera },
+      { name: "Báo cáo", href: "/admin/quan-ly-bao-cao", icon: BarChart2 },
+      { name: "Lịch sử ra vào", href: "/admin/quan-ly-lich-su", icon: FileText },
+      { name: "Cài đặt", href: "/admin/quan-ly-cai-dat", icon: Settings },
     ];
 
     const toggleSidebar = () => {

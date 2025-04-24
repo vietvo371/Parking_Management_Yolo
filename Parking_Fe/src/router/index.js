@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
+import checkLoginAdmin from "./checkLoginAdmin.js";
+
 
 const routes = [
 
@@ -9,60 +11,69 @@ const routes = [
         {
             path : '',
             component: ()=>import('../views/Dashboard.vue'),
+            beforeEnter: checkLoginAdmin,
+
         },
         {
-          path: "vehicles",
+          path: "quan-ly-xe",
           name: "Vehicles",
-          component: () => import("../views/Vehicles.vue"),
+          component: () => import("../views/Vehicles.vue"), 
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "vehicles/add",
+          path: "quan-ly-xe/them-xe",
           name: "AddVehicle",
           component: () => import("../views/AddVehicle.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "residents",
+          path: "quan-ly-khach-hang",
           name: "Residents",
           component: () => import("../views/Residents.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "residents/add",
+          path: "quan-ly-khach-hang/them-khach-hang",
           name: "AddResident",
           component: () => import("../views/AddResident.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "transactions",
+          path: "quan-ly-giao-dich",
           name: "Transactions",
           component: () => import("../views/Transactions.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "cameras",
+          path: "quan-ly-camera",
           name: "Cameras",
           component: () => import("../views/Cameras.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "reports",
+          path: "quan-ly-bao-cao",
           name: "Reports",
           component: () => import("../views/Reports.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "history",
+          path: "quan-ly-lich-su",
           name: "History",
           component: () => import("../views/History.vue"),
+          beforeEnter: checkLoginAdmin,
         },
         {
-          path: "settings",
+          path: "quan-ly-cai-dat",
           name: "Settings",
           component: () => import("../views/Settings.vue"),
-        },
-        {
-          path: "login",
-          name: "Login",
-          component: () => import("../views/Login.vue"),
+          beforeEnter: checkLoginAdmin,
         },
     ],
   },
-  
+  {
+    path: "/dang-nhap",
+    component: () => import("../views/Login.vue"),
+  },
 ]
 
 const router = createRouter({
