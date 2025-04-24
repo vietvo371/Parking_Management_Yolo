@@ -80,8 +80,8 @@
 <script>
 import { ref } from "vue";
 import { Car, Users, CreditCard, AlertTriangle, Clock } from "lucide-vue-next";
-import DashboardChart from "@/components/DashboardChart.vue";
-import RecentActivityTable from "@/components/RecentActivityTable.vue";
+import DashboardChart from "../layouts/components/DashboardChart.vue";
+import RecentActivityTable from "../layouts/components/RecentActivityTable.vue";
 
 export default {
   name: "Dashboard",

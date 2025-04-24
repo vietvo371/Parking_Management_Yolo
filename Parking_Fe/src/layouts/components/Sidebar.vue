@@ -111,14 +111,14 @@ export default {
     const isMobile = ref(false);
 
     const navItems = [
-      { name: "Trang chủ", href: "/", icon: Home },
-      { name: "Quản lý xe", href: "/vehicles", icon: Car },
-      { name: "Cư dân", href: "/residents", icon: Users },
-      { name: "Giao dịch", href: "/transactions", icon: CreditCard },
-      { name: "Camera & AI", href: "/cameras", icon: Camera },
-      { name: "Báo cáo", href: "/reports", icon: BarChart2 },
-      { name: "Lịch sử ra vào", href: "/history", icon: FileText },
-      { name: "Cài đặt", href: "/settings", icon: Settings },
+      { name: "Trang chủ", href: "/admin", icon: Home },
+      { name: "Quản lý xe", href: "/admin/vehicles", icon: Car },
+      { name: "Cư dân", href: "/admin/residents", icon: Users },
+      { name: "Giao dịch", href: "/admin/transactions", icon: CreditCard },
+      { name: "Camera & AI", href: "/admin/cameras", icon: Camera },
+      { name: "Báo cáo", href: "/admin/reports", icon: BarChart2 },
+      { name: "Lịch sử ra vào", href: "/admin/history", icon: FileText },
+      { name: "Cài đặt", href: "/admin/settings", icon: Settings },
     ];
 
     const toggleSidebar = () => {
