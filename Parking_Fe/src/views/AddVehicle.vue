@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center">
-        <router-link to="/vehicles" class="mr-4">
+        <router-link to="/admin/quan-ly-xe" class="mr-4">
           <button class="p-2 rounded-md border border-gray-300 dark:border-gray-600">
             <ArrowLeft class="h-4 w-4" />
           </button>

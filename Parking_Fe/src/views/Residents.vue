@@ -2,7 +2,7 @@
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight">Quản lý cư dân</h1>
-        <router-link to="/residents/add">
+        <router-link to="/admin/quan-ly-khach-hang/them-khach-hang">
           <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
             <Plus class="mr-2 h-4 w-4" />
             Thêm cư dân mới
