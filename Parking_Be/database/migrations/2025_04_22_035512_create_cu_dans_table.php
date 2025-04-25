@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('so_dien_thoai')->nullable();
             $table->string('so_cccd')->unique();
             $table->integer('id_can_ho');
-            $table->integer('so_du');
+            $table->integer('so_du')->default(0);
             $table->integer('phe_duyet')->default(0);
             $table->integer('trang_thai')->default(1);
             $table->timestamps();

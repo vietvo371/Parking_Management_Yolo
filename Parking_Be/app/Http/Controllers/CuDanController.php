@@ -12,7 +12,9 @@ class CuDanController extends Controller
 {
     public function getData()
     {
-        $cudan = CuDan::all();
+        $cudan = CuDan::join('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
+        ->select('cu_dans.*', 'can_hos.ten_toa_nha', 'can_hos.tang', 'can_hos.so_can_ho')
+        ->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
@@ -22,13 +24,12 @@ class CuDanController extends Controller
     public function themCuDan(ThemCuDanRequest $request)
     {
         CuDan::create([
-           'ho_va_ten' => $request->ho_va_ten,
+            'ho_va_ten' => $request->ho_va_ten,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => bcrypt(123456),
             'so_dien_thoai' => $request->so_dien_thoai,
             'so_cccd' => $request->so_cccd,
             'id_can_ho' => $request->id_can_ho,
-            'so_du' => $request->so_du,
         ]);
         return response()->json([
             'status'   => true,
@@ -45,7 +46,6 @@ class CuDanController extends Controller
                 'so_dien_thoai' => $request->so_dien_thoai,
                 'so_cccd' => $request->so_cccd,
                 'id_can_ho' => $request->id_can_ho,
-                'so_du' => $request->so_du,
             ]);
             return response()->json([
                 'status'   => true,

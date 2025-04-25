@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('tang');
             $table->integer('so_can_ho');
             $table->string('chu_ho');
+            $table->string('ten_toa_nha');
             $table->timestamps();
         });
     }

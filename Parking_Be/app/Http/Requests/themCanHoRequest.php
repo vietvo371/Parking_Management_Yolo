@@ -22,7 +22,8 @@ class themCanHoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_tang'    => 'required|integer',
+            'ten_toa_nha' => 'required|string|max:255',
+            'tang'    => 'required|integer',
             'so_can_ho'  => 'required|string|max:255',
             'chu_ho'     => 'required|string|max:255',
         ];
@@ -30,6 +31,9 @@ class themCanHoRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'ten_toa_nha.required' => 'Tên tòa nhà không được để trống',
+            'ten_toa_nha.string'  => 'Tên tòa nhà phải là chuỗi',
+            'ten_toa_nha.max'     => 'Tên tòa nhà không được vượt quá 255 ký tự',
             'id_tang.required' => 'ID tầng không được để trống',
             'id_tang.integer'  => 'ID tầng phải là số nguyên',
             'so_can_ho.required' => 'Số căn hộ không được để trống',
