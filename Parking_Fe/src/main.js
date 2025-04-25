@@ -4,7 +4,7 @@ import App from "./App.vue"
 import router from "./router"
 import "./assets/tailwind.css"
 import "ant-design-vue/dist/reset.css";
-import { notification} from "ant-design-vue";
+import { notification , Popconfirm} from "ant-design-vue";
 
 notification.config({
     placement: "topRight", // Default placement
@@ -18,6 +18,6 @@ const pinia = createPinia()
 app.use(pinia)
 // Sử dụng Vue Router
 app.use(router)
-
+app.use(Popconfirm)
 // Mount ứng dụng
 app.mount("#app")
