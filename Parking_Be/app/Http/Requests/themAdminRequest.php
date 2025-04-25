@@ -23,6 +23,7 @@ class themAdminRequest extends FormRequest
     {
         return [
             'email'          => 'required|email|unique:admin_animes,email',
+            // 'email'          => 'required|email|unique:admins,email',
             'ho_va_ten'      => 'required|string|max:255',
             'so_dien_thoai'  => 'required|numeric|digits_between:10,15',
             'id_chuc_vu'     => 'required|integer|exists:chuc_vus,id',
