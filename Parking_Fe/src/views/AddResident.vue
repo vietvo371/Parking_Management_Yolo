@@ -71,7 +71,7 @@
                 </div>
               </div>
               <div class="flex justify-end space-x-2 mt-4">
-                <router-link to="/residents">
+                <router-link to="/admin/quan-ly-khach-hang">
                   <button type="button" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md">
                     Hủy
                   </button>
@@ -425,6 +425,7 @@ export default {
         .then((response) => {
           if (response.data.status) {
             this.getCanHo()
+            this.create_can_ho = {}
             notificationStore.showSuccess(response.data.message)
           } else {
             notificationStore.showError('Thêm căn hộ thất bại')
@@ -489,6 +490,8 @@ export default {
         .then((response) => {
           if (response.data.status) {
             this.getCuDan()
+            this.create_cu_da = {
+            }
             notificationStore.showSuccess(response.data.message)
           } else {
             notificationStore.showError('Thêm cư dân thất bại')

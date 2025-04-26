@@ -123,7 +123,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-medium">Cập nhập cư dân</h3>
+            <h3 class="text-lg font-medium">Chỉnh sửa cư dân</h3>
             <button @click="closeResidentModal" class="text-gray-500 hover:text-gray-700">
               <span class="text-xl">&times;</span>
             </button>
