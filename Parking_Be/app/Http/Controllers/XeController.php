@@ -11,7 +11,11 @@ class XeController extends Controller
 {
     public function getData()
     {
-        $xe = Xe::all();
+        $xe = Xe::join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
+        ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
+        ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
+        ->select('xes.*', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha')
+        ->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
@@ -24,8 +28,6 @@ class XeController extends Controller
            'id_cu_dan'          => $request->id_cu_dan,
            'bien_so_xe'         => $request->bien_so_xe,
            'id_loai_xe'         => $request->id_loai_xe,
-           'trang_thai_duyet'   => $request->trang_thai_duyet,
-           'is_con_han'         => $request->is_con_han,
         ]);
         return response()->json([
             'status'   => true,
@@ -40,8 +42,6 @@ class XeController extends Controller
                 'id_cu_dan'          => $request->id_cu_dan,
                 'bien_so_xe'         => $request->bien_so_xe,
                 'id_loai_xe'         => $request->id_loai_xe,
-                'trang_thai_duyet'   => $request->trang_thai_duyet,
-                'is_con_han'         => $request->is_con_han,
             ]);
             return response()->json([
                 'status'   => true,
