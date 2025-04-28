@@ -23,8 +23,9 @@ class capnhatBaiXeRequest extends FormRequest
     {
         return [
             'id' => 'required|exists:bai_xes,id',
-            'ten_bai_xe' => 'required|string|max:255',
-            'dia_chi' => 'required|string|max:255',
+            'ten_bai' => 'required|string|max:255',
+            'suc_chua_o_to' => 'required|integer',
+            'suc_chua_khac' => 'required|integer',
         ];
     }
     public function messages(): array
@@ -32,12 +33,13 @@ class capnhatBaiXeRequest extends FormRequest
         return [
             'id.required' => 'ID bãi xe là bắt buộc',
             'id.exists' => 'Bãi xe không tồn tại',
-            'ten_bai_xe.required' => 'Tên bãi xe là bắt buộc',
-            'ten_bai_xe.string' => 'Tên bãi xe phải là chuỗi',
-            'ten_bai_xe.max' => 'Tên bãi xe không được vượt quá 255 ký tự',
-            'dia_chi.required' => 'Địa chỉ là bắt buộc',
-            'dia_chi.string' => 'Địa chỉ phải là chuỗi',
-            'dia_chi.max' => 'Địa chỉ không được vượt quá 255 ký tự',
+            'ten_bai.required' => 'Tên bãi xe là bắt buộc',
+            'ten_bai.string' => 'Tên bãi xe phải là chuỗi',
+            'ten_bai.max' => 'Tên bãi xe không được vượt quá 255 ký tự',
+            'suc_chua_o_to.required' => 'Sức chứa ô tô là bắt buộc',
+            'suc_chua_o_to.integer' => 'Sức chứa ô tô phải là số nguyên',
+            'suc_chua_khac.required' => 'Sức chứa khác là bắt buộc',
+            'suc_chua_khac.integer' => 'Sức chứa khác phải là số nguyên',
         ];
     }
 }

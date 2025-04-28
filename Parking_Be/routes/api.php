@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminThongBaoController;
 use App\Http\Controllers\BaiXeController;
+use App\Http\Controllers\CamGiamSoatController;
 use App\Http\Controllers\CanHoController;
 use App\Http\Controllers\ChiTietChucVuController;
 use App\Http\Controllers\ChucNangController;
@@ -111,6 +112,13 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/thong-tin-cap-nhat', [ViTriDatController::class, 'capnhatViTriDat']);
         Route::delete('/thong-tin-xoa/{id}', [ViTriDatController::class, 'xoaViTriDat']);
     });
+    Route::group(['prefix'  =>  '/cam-giam-soat'], function () {
+        Route::get('/lay-du-lieu', [CamGiamSoatController::class, 'getData']);
+        Route::post('/them-du-lieu', [CamGiamSoatController::class, 'themCamGiamSoat']);
+        Route::post('/thong-tin-cap-nhat', [CamGiamSoatController::class, 'capnhatCamGiamSoat']);
+        Route::delete('/thong-tin-xoa/{id}', [CamGiamSoatController::class, 'xoaCamGiamSoat']);
+    });
+
 
 
 

@@ -31,6 +31,7 @@ class CapNhapXeRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'id.required'                 => 'ID là bắt buộc.',
             'id.exists'                 => 'ID phải nằm trong bảng xe.',
             'id_cu_dan.required'         => 'ID cư dân là bắt buộc.',
             'id_cu_dan.integer'         => 'ID cư dân là là integer.',

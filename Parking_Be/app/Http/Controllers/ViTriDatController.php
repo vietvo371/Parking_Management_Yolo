@@ -25,6 +25,7 @@ class ViTriDatController extends Controller
         return response()->json([
             'message' => 'Thêm vị trí đặt thành công',
             'data' => $vitri,
+            'status' => true,
         ]);
     }
     public function capnhatViTriDat(capnhatViTriDat $request)
@@ -35,6 +36,7 @@ class ViTriDatController extends Controller
         ]);
         return response()->json([
             'message' => 'Đổi trạng thái thành công',
+            'status' => true,
         ]);
 
     }
@@ -44,6 +46,7 @@ class ViTriDatController extends Controller
 
         return response()->json([
             'message' => 'Xóa vị trí đặt thành công',
+            'status' => true,
         ]);
     }
 

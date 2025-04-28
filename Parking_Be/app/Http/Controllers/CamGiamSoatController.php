@@ -2,64 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\capnhatCamGiamSoatRequest;
+use App\Http\Requests\themCamGiamSoatRequest;
 use App\Models\CamGiamSoat;
 use Illuminate\Http\Request;
 
 class CamGiamSoatController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getData()
     {
-        //
+        $data = CamGiamSoat::join('bai_xes', 'bai_xes.id', 'cam_giam_soats.id_bai_xe')
+            ->join('vi_tri_dats', 'vi_tri_dats.id', 'cam_giam_soats.id_vi_tri')
+            ->select('cam_giam_soats.*', 'bai_xes.ten_bai', 'vi_tri_dats.vi_tri_dat')
+            ->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $data
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function themCamGiamSoat(themCamGiamSoatRequest $request)
     {
-        //
+        $camGiamSoat = CamGiamSoat::create([
+            'id_bai_xe' => $request->id_bai_xe,
+            'id_vi_tri' => $request->id_vi_tri,
+        ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Thêm dữ liệu thành công',
+            'data' => $camGiamSoat
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function capnhatCamGiamSoat(capnhatCamGiamSoatRequest $request)
     {
-        //
+        $camGiamSoat = CamGiamSoat::find($request->id);
+        if ($camGiamSoat) {
+            $camGiamSoat->update([
+                'id_bai_xe' => $request->id_bai_xe,
+                'id_vi_tri' => $request->id_vi_tri,
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Cập nhật dữ liệu thành công',
+                'data' => $camGiamSoat
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dữ liệu không tồn tại',
+            ], 404);
+        }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(CamGiamSoat $camGiamSoat)
+    public function xoaCamGiamSoat(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CamGiamSoat $camGiamSoat)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CamGiamSoat $camGiamSoat)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CamGiamSoat $camGiamSoat)
-    {
-        //
+        $camGiamSoat = CamGiamSoat::find($request->id);
+        $camGiamSoat->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Xóa dữ liệu thành công',
+        ]);
     }
 }
