@@ -84,7 +84,7 @@
               <td class="px-6 py-4 whitespace-nowrap">{{ convertDate(vehicle.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex space-x-2">
-                  <button
+                  <button v-if="vehicle.trang_thai_duyet === 0"
                     class="px-3 py-1 text-sm bg-green-600 text-white border border-gray-300 dark:border-gray-600 rounded-md">Duyệt
                   </button>
                   <button
@@ -98,7 +98,7 @@
         <a-modal v-model:open="open_update_xe" title="CẬP NHẬT XE" @ok="capNhatXe">
           <template #footer>
             <a-button key="back" @click="open_update_xe = false">Hủy</a-button>
-            <a-button key="submit" type="primary"  @click="capNhatXe">Cập nhật</a-button>
+            <a-button key="submit" type="primary" @click="capNhatXe">Cập nhật</a-button>
           </template>
           <hr class="my-4">
           <div class="space-y-4">
@@ -108,19 +108,19 @@
                 class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
             </div>
             <div class="space-y-2">
-              <label for="ho_va_ten" class="block text-sm font-medium">Chủ xe</label>
-              <input v-model="update_xe.ho_va_ten" id="ho_va_ten" placeholder="Nguyễn Văn A"
-                class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
+              <label for="brand" class="block text-sm font-medium ">Cư dân</label>
+              <a-select class="w-100" v-model:value="update_xe.id_cu_dan" show-search placeholder="Chọn cư dân"
+                style="width: 100%" :options="options" :filter-option="filterOption()" />
             </div>
             <div class="space-y-2">
-              <label for="so_can_ho" class="block text-sm font-medium">Căn hộ</label>
-              <input v-model="update_xe.so_can_ho" id="so_can_ho" placeholder="100000"
-                class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
-            </div>
-            <div class="space-y-2">
-              <label for="ten_loai_xe" class="block text-sm font-medium">Loại xe</label>
-              <input v-model="update_xe.ten_loai_xe" id="ten_loai_xe" placeholder="Toyota"
-                class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
+              <label for="vehicle-type" class="block text-sm font-medium">Loại xe</label>
+              <select v-model="update_xe.id_loai_xe" id="vehicle-type"
+                class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">
+                <option value="">Chọn loại xe</option>
+                <option v-for="loai_xe in list_loai_xe" :key="loai_xe.id" :value="loai_xe.id">
+                  {{ loai_xe.ten_loai_xe }}
+                </option>
+              </select>
             </div>
 
 
@@ -135,6 +135,7 @@
 <script>
 import { Plus, Search, Filter, Car } from "lucide-vue-next";
 import baseRequest from "../core/baseRequest";
+import { useNotificationStore } from "../stores/notication";
 export default {
   name: "Vehicles",
   components: {
@@ -156,6 +157,7 @@ export default {
       },
       list_loai_xe: [],
       list_cu_dan: [],
+      danh_sach_cudan: [],
     };
   },
   computed: {
@@ -165,6 +167,12 @@ export default {
         this.removeDiacritics(vehicle.ho_va_ten.toLowerCase()).includes(query) ||
         this.removeDiacritics(vehicle.bien_so_xe.toLowerCase()).includes(query)
       );
+    },
+    options() {
+      return this.danh_sach_cudan.map(cudan => ({
+        label: cudan.ho_va_ten + " - Toà " + cudan.ten_toa_nha + " - Phòng " + cudan.so_can_ho,
+        value: cudan.id,
+      }));
     }
   },
   mounted() {
@@ -173,6 +181,11 @@ export default {
     this.getCuDan();
   },
   methods: {
+    filterOption() {
+      return (input, option) => {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      };
+    },
     removeDiacritics(str) {
       return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     },
@@ -205,15 +218,19 @@ export default {
       baseRequest.get("admin/cu-dan/lay-du-lieu")
         .then((res) => {
           this.list_cu_dan = res.data.data;
+          this.danh_sach_cudan = res.data.data;
         })
         .catch((err) => {
           console.log(err);
         });
     },
     capNhatXe() {
-      baseRequest.post("admin/xe/cap-nhat", this.update_xe)
+      const notificationStore = useNotificationStore();
+      baseRequest.post("admin/xe/thong-tin-cap-nhat", this.update_xe)
         .then((res) => {
           this.open_update_xe = false;
+          this.getXe();
+          notificationStore.showSuccess("Cập nhật thành công");
         })
         .catch((res) => {
           var errors = Object.values(res.response.data.errors);

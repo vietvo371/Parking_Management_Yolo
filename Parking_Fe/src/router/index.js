@@ -69,6 +69,13 @@ const routes = [
           component: () => import("../views/Settings.vue"),
           beforeEnter: checkLoginAdmin,
         },
+        {
+          path: "admin/quan-ly-camera/them-camera",
+          name: "AddCamera",
+          component: () => import("../views/AddCamera.vue"),
+          beforeEnter: checkLoginAdmin,
+        },
+
     ],
   },
   {

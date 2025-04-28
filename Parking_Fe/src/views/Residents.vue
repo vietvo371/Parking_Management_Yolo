@@ -16,10 +16,10 @@
           Tất cả: {{ residents.length }}
         </span>
         <span class="px-3 py-1 rounded-lg bg-green-100 text-green-800 border border-green-200 text-sm">
-          Hoạt động: {{residents.filter(r => r.status === 'active').length}}
+          Hoạt động: {{residents.filter(r => r.trang_thai === 1).length}}
         </span>
         <span class="px-3 py-1 rounded-lg bg-gray-100 text-gray-800 border border-gray-200 text-sm">
-          Không hoạt động: {{residents.filter(r => r.status === 'inactive').length}}
+          Không hoạt động: {{residents.filter(r => r.trang_thai === 0).length}}
         </span>
       </div>
       <div class="flex w-full sm:w-auto items-center gap-2">
@@ -159,17 +159,12 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div class="space-y-2">
-                <label for="gender" class="block text-sm font-medium">Căn hộ</label>
-                <select v-model="update_cu_dan.id_can_ho" id="gender"
-                  class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">
-                  <option value="">Chọn căn hộ</option>
-                  <option v-for="apartment in apartments" :key="apartment.id" :value="apartment.id">
-                    Toà {{ apartment.ten_toa_nha }} - Tầng {{ apartment.tang }} - Căn hộ {{ apartment.so_can_ho }}
-                  </option>
-                </select>
-              </div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
+              <div class="space-y-3">
+                  <label for="brand" class="block text-sm font-medium ">Căn hộ</label>
+                  <a-select class="w-100" v-model:value="update_cu_dan.id_can_ho" show-search placeholder="Chọn cư dân"
+                    style="width: 100%" :options="options" :filter-option="filterOption()" />
+                </div>
             </div>
             <div class="flex justify-end space-x-2 mt-4">
               <button @click="closeResidentModal" type="button"
@@ -298,9 +293,20 @@ export default {
   computed: {
     filteredResidents() {
       return this.residents.filter(r => r.status === 'active')
+    },
+    options() {
+      return this.apartments.map(apartment => ({
+        label: "Toà " + apartment.ten_toa_nha + " - Tầng " + apartment.tang + " - Căn hộ " + apartment.so_can_ho,
+        value: apartment.id,
+      }));
     }
   },
   methods: {
+    filterOption() {
+      return (input, option) => {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      };
+    },
     convertDate(date) {
       return new Date(date).toLocaleDateString('vi-VN')
     },

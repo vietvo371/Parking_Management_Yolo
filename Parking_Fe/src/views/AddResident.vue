@@ -60,14 +60,9 @@
 
               <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="space-y-2">
-                  <label for="gender" class="block text-sm font-medium">Căn hộ</label>
-                  <select v-model="create_cu_da.id_can_ho" id="gender"
-                    class="w-full h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">
-                    <option value="">Chọn căn hộ</option>
-                    <option v-for="apartment in apartments" :key="apartment.id" :value="apartment.id">
-                      Toà {{ apartment.ten_toa_nha }} - Tầng {{ apartment.tang }} - Căn hộ {{ apartment.so_can_ho }}
-                    </option> 
-                  </select>
+                  <label for="brand" class="block text-sm font-medium ">Căn hộ</label>
+                  <a-select class="w-100" v-model:value="create_cu_da.id_can_ho" show-search placeholder="Chọn cư dân"
+                    style="width: 100%" :options="options" :filter-option="filterOption()" />
                 </div>
               </div>
               <div class="flex justify-end space-x-2 mt-4">
@@ -411,7 +406,20 @@ export default {
     this.getCanHo()
     this.getCuDan()
   },
+  computed: {
+    options() {
+      return this.cu_dans.map(cudan => ({
+        label: "Toà " + cudan.ten_toa_nha + " - Tầng " + cudan.tang + " - Căn hộ " + cudan.so_can_ho,
+        value: cudan.id,
+      }));
+    }
+  },
   methods: {
+    filterOption() {
+      return (input, option) => {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      };
+    },
     getCanHo() {
       baseRequest.get("admin/can-ho/lay-du-lieu").then((response) => {
         this.apartments = response.data.data

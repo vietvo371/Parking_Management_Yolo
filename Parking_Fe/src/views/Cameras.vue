@@ -2,10 +2,12 @@
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight">Camera & AI</h1>
+        <router-link to="/admin/quan-ly-camera/them-camera">
         <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
           <Plus class="mr-2 h-4 w-4" />
-          Thêm camera mới
-        </button>
+            Thêm camera mới
+          </button>
+        </router-link>
       </div>
   
       <div class="flex space-x-2 overflow-x-auto">
@@ -25,8 +27,8 @@
         <div v-for="camera in cameras" :key="camera.id" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
           <div class="p-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center">
-              <h2 class="text-lg font-medium">{{ camera.name }}</h2>
-              <div :class="`h-3 w-3 rounded-full ${camera.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`"></div>
+              <h2 class="text-lg font-medium">Camera {{ camera.ten_bai }} - {{ camera.vi_tri_dat }}</h2>
+              <div :class="`h-3 w-3 rounded-full ${camera.trang_thai === 1 ? 'bg-green-500' : 'bg-red-500'}`"></div>
             </div>
             <p class="text-sm text-gray-500">{{ camera.location }}</p>
           </div>
@@ -247,87 +249,53 @@
   </template>
   
   <script>
-  import { ref } from 'vue'
-  import { Plus, Settings, RefreshCw, Camera, Check, AlertTriangle } from 'lucide-vue-next'
-  import { useCamerasStore } from '@/stores/cameras'
-  
-  export default {
-    name: 'Cameras',
-    components: {
+import { ref } from 'vue'
+import { useNotificationStore } from '../stores/notication'
+import baseRequest from '../core/baseRequest'
+import { Popconfirm } from 'ant-design-vue';
+import { Plus, Settings, RefreshCw, Camera, AlertTriangle } from 'lucide-vue-next'
+export default {
+  name: 'Cameras',
+  components: {
       Plus,
       Settings,
       RefreshCw,
       Camera,
-      Check,
       AlertTriangle
     },
-    setup() {
-      const camerasStore = useCamerasStore()
-      const activeTab = ref('cameras')
-      const aiTab = ref('upload')
-      const selectedImage = ref(null)
-      const isProcessing = ref(false)
-      const result = ref(null)
-  
-      const cameras = ref(camerasStore.cameras)
-  
-      const aiSettings = ref({
-        accuracy: 85,
-        speed: 75,
-        storage: '7',
-        notifications: 'all',
-        model: 'standard'
-      })
-  
-      const tabs = [
-        { value: 'cameras', label: 'Camera' },
-        { value: 'ai', label: 'Nhận diện AI' },
-        { value: 'settings', label: 'Cài đặt AI' }
-      ]
-  
-      const handleCameraCapture = () => {
-        // Mô phỏng chụp ảnh
-        selectedImage.value = 'Camera Capture'
-      }
-  
-      const processImage = () => {
-        isProcessing.value = true
-  
-        // Mô phỏng xử lý AI
-        camerasStore.detectLicensePlate(selectedImage.value).then(response => {
-          isProcessing.value = false
-  
-          // Mô phỏng kết quả
-          if (Math.random() > 0.5) {
-            result.value = {
-              licensePlate: response.data.licensePlate,
-              confidence: parseFloat(response.data.confidence),
-              status: 'registered',
-              owner: 'Nguyễn Văn A',
-              apartment: 'A-101'
-            }
-          } else {
-            result.value = {
-              licensePlate: response.data.licensePlate,
-              confidence: parseFloat(response.data.confidence),
-              status: 'unregistered'
-            }
-          }
-        })
-      }
-  
+    data() {
       return {
-        activeTab,
-        aiTab,
-        cameras,
-        selectedImage,
-        isProcessing,
-        result,
-        aiSettings,
-        tabs,
-        handleCameraCapture,
-        processImage
+        activeTab: 'cameras',
+        aiTab: 'upload',
+        isProcessing: false,
+        selectedImage: null,
+        result: null,
+        aiSettings: {
+          accuracy: 80,
+          speed: 50,
+          storage: 7,
+          notifications: 'all',
+          model: 'standard'
+        },
+        cameras: [],
+        tabs: [
+          { label: 'Camera', value: 'cameras' },
+          { label: 'AI Detection', value: 'ai' },
+          { label: 'AI Settings', value: 'settings' }
+        ]
+        
       }
+    },
+    mounted() {
+      this.getCamera()
+    },
+    methods: {
+      getCamera() {
+        baseRequest.get("admin/cam-giam-soat/lay-du-lieu")
+        .then((response) => {
+          this.cameras = response.data.data
+        })
+    },
     }
   }
   </script>
