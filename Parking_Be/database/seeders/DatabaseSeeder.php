@@ -20,6 +20,21 @@ class DatabaseSeeder extends Seeder
             ChucVuSeeder::class,
             ChiTietChucVuSeeder::class,
             AdminSeeder::class,
+            CanHoSeeder::class,
+            CuDanSeeder::class,
+            ViTriDatSeeder::class,
+            BaiXeSeeder::class,
+            ChiTietBaiXeSeeder::class,
+            CameraGiamSatSeeder::class,
+            BaoCaoSuCoSeeder::class,
+            BaoCaoKhachVangLaiSeeder::class,
+            AdminThongBaoSeeder::class,
+            XeSeeder::class,
+            LoaiXeSeeder::class,
+            GiaoDichSeeder::class,
+            LichSuRaVaoBaiXeSeeder::class,
+            LoaiXeSeeder::class,
+
         ]);
     }
 }
