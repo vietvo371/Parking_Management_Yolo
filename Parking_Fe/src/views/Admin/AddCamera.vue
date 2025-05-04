@@ -296,8 +296,8 @@
 <script>
 import { ref } from 'vue'
 import { ArrowLeft, User, Camera, Upload, Check } from 'lucide-vue-next'
-import { useNotificationStore } from '../stores/notication'
-import baseRequest from '../core/baseRequest'
+import { useNotificationStore } from '../../stores/notication'
+import baseRequest from '../../core/baseRequest'
 import { Popconfirm, Modal, Button } from 'ant-design-vue';
 
 export default {

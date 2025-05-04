@@ -87,6 +87,9 @@ import {
   BarChart2,
   FileText,
   Shield,
+  AlertCircle,
+  LogIn,
+  Clock,
 } from "lucide-vue-next";
 
 export default {
@@ -104,6 +107,9 @@ export default {
     BarChart2,
     FileText,
     Shield,
+    AlertCircle,
+    LogIn,
+    Clock,
   },
   setup() {
     const router = useRouter();
@@ -117,9 +123,11 @@ export default {
       { name: "Quản lý xe", href: "/admin/quan-ly-xe", icon: Car },
       { name: "Cư dân", href: "/admin/quan-ly-khach-hang", icon: Users },
       { name: "Giao dịch", href: "/admin/quan-ly-giao-dich", icon: CreditCard },
+      { name: "Báo cáo sự cố", href: "/admin/quan-li-bao-cao-su-co", icon: AlertCircle },
       { name: "Camera & AI", href: "/admin/quan-ly-camera", icon: Camera },
+      { name: "Ra vào bãi", href: "/admin/quan-li-bai-giu-xe", icon: LogIn },
       { name: "Báo cáo", href: "/admin/quan-ly-bao-cao", icon: BarChart2 },
-      { name: "Lịch sử ra vào", href: "/admin/quan-ly-lich-su", icon: FileText },
+      { name: "Lịch sử ra vào", href: "/admin/quan-ly-lich-su", icon: Clock },
       { name: "Cài đặt", href: "/admin/quan-ly-cai-dat", icon: Settings },
     ];
 

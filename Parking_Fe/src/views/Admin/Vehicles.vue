@@ -134,8 +134,8 @@
 
 <script>
 import { Plus, Search, Filter, Car } from "lucide-vue-next";
-import baseRequest from "../core/baseRequest";
-import { useNotificationStore } from "../stores/notication";
+import baseRequest from "../../core/baseRequest";
+import { useNotificationStore } from "../../stores/notication";
 export default {
   name: "Vehicles",
   components: {

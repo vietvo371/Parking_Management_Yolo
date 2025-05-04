@@ -94,7 +94,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                  {{ resident.so_xe }}
+                  {{ resident.bien_so_xe }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -227,7 +227,7 @@
             </div>
             <div class="flex justify-between">
               <span class="text-gray-500 dark:text-gray-300 font-medium">Số xe:</span>
-              <span class="text-gray-900 dark:text-white font-semibold">{{ chi_tiet_cu_dan.so_xe }}</span>
+              <span class="text-gray-900 dark:text-white font-semibold">{{ chi_tiet_cu_dan.bien_so_xe }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-gray-500 dark:text-gray-300 font-medium">Căn hộ:</span>
@@ -253,8 +253,8 @@
 <script>
 import { ref, computed } from 'vue'
 import { Plus, Search, Filter, Phone, Mail } from 'lucide-vue-next'
-import baseRequest from '../core/baseRequest'
-import { useNotificationStore } from '../stores/notication'
+import baseRequest from '../../core/baseRequest'
+import { useNotificationStore } from '../../stores/notication'
 export default {
   name: 'Residents',
   components: {
@@ -279,7 +279,7 @@ export default {
         email: '',
         password: '',
         so_dien_thoai: '',
-        so_xe: '',
+        bien_so_xe: '',
         trang_thai: '',
         created_at: ''
       }

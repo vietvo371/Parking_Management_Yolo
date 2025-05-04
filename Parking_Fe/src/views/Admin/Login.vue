@@ -90,7 +90,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { User, Lock, Eye, EyeOff } from "lucide-vue-next";
-import baseRequest from "../core/baseRequest";
+import baseRequest from "../../core/baseRequest";
 import { useNotificationStore } from "@/stores/notication";
 import { useAuthStore } from "@/stores/auth";
 export default {

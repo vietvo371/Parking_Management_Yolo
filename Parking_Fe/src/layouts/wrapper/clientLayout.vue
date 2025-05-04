@@ -13,8 +13,7 @@
           <Menu class="h-6 w-6" />
         </button>
         <div class="flex items-center space-x-2">
-          <!-- <img src="/logo.png" alt="Logo" class="h-8 w-8" /> -->
-          <h1 class="text-lg font-bold">Parking Management</h1>
+          <h1 class="text-lg font-bold">Cư dân</h1>
         </div>
         <div class="relative">
           <button @click="isUserMenuOpen = !isUserMenuOpen" class="flex items-center">
@@ -27,8 +26,7 @@
             v-if="isUserMenuOpen" 
             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1"
           >
-            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Thông tin tài khoản</a>
-            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Cài đặt</a>
+            <router-link to="/user/profile" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Thông tin tài khoản</router-link>
             <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Đăng xuất</a>
           </div>
         </div>
@@ -41,8 +39,7 @@
       >
         <div class="h-16 px-4 flex items-center border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center space-x-2">
-            <!-- <img src="/logo.png" alt="Logo" class="h-8 w-8" /> -->
-            <h1 class="text-lg font-bold">Parking Management</h1>
+            <h1 class="text-lg font-bold">Cư dân</h1>
           </div>
           <button @click="isMobileMenuOpen = false" class="ml-auto p-2 rounded-md md:hidden">
             <X class="h-5 w-5" />
@@ -63,20 +60,6 @@
             </router-link>
           </nav>
         </div>
-        <div class="absolute bottom-0 w-full p-4 border-t border-gray-200 dark:border-gray-700">
-          <div class="flex items-center space-x-3">
-            <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <User class="h-6 w-6 text-gray-500 dark:text-gray-400" />
-            </div>
-            <div>
-              <p class="font-medium">Admin</p>
-              <p class="text-sm text-gray-500">admin@example.com</p>
-            </div>
-            <button class="ml-auto p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
-              <LogOut class="h-5 w-5" />
-            </button>
-          </div>
-        </div>
       </aside>
   
       <!-- Main content -->
@@ -89,7 +72,7 @@
           <div class="flex items-center space-x-4">
             <button class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative">
               <Bell class="h-5 w-5" />
-              <span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+              <span v-if="unreadNotifications > 0" class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
             </button>
             <button @click="toggleDarkMode" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
               <Sun v-if="isDarkMode" class="h-5 w-5" />
@@ -100,7 +83,7 @@
                 <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                   <User class="h-5 w-5 text-gray-500 dark:text-gray-400" />
                 </div>
-                <span>Admin</span>
+                <span>{{ userInfo.name || 'Cư dân' }}</span>
                 <ChevronDown class="h-4 w-4" />
               </button>
               <!-- User dropdown menu -->
@@ -108,8 +91,7 @@
                 v-if="isUserMenuOpen" 
                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1"
               >
-                <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Thông tin tài khoản</a>
-                <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Cài đặt</a>
+                <router-link to="/user/profile" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Thông tin tài khoản</router-link>
                 <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Đăng xuất</a>
               </div>
             </div>
@@ -118,7 +100,7 @@
   
         <!-- Page content -->
         <div class="p-6">
-          <slot></slot>
+          <router-view></router-view>
         </div>
       </main>
     </div>
@@ -126,15 +108,13 @@
   
   <script>
   import { ref, onMounted, onUnmounted } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import { 
     Home, 
     Users, 
     CreditCard, 
-    Camera, 
     FileText, 
     Clock, 
-    Settings as SettingsIcon, 
     Menu, 
     X, 
     User, 
@@ -142,7 +122,8 @@
     Sun, 
     Moon, 
     ChevronDown, 
-    LogOut 
+    LogOut,
+    Car
   } from 'lucide-vue-next'
   
   export default {
@@ -151,10 +132,8 @@
       Home,
       Users,
       CreditCard,
-      Camera,
       FileText,
       Clock,
-      SettingsIcon,
       Menu,
       X,
       User,
@@ -162,22 +141,29 @@
       Sun,
       Moon,
       ChevronDown,
-      LogOut
+      LogOut,
+      Car
     },
     setup() {
       const route = useRoute()
+      const router = useRouter()
       const isMobileMenuOpen = ref(false)
       const isUserMenuOpen = ref(false)
       const isDarkMode = ref(localStorage.getItem('darkMode') === 'true')
+      const unreadNotifications = ref(0)
+      const userInfo = ref({
+        name: 'Nguyễn Văn A',
+        email: 'resident@example.com'
+      })
   
       const navigationItems = [
-        { name: 'Trang chủ', path: '/', icon: Home },
-        { name: 'Cư dân', path: '/residents', icon: Users },
-        { name: 'Giao dịch', path: '/transactions', icon: CreditCard },
-        { name: 'Camera & AI', path: '/cameras', icon: Camera },
-        { name: 'Báo cáo', path: '/reports', icon: FileText },
-        { name: 'Lịch sử', path: '/history', icon: Clock },
-        { name: 'Cài đặt', path: '/settings', icon: SettingsIcon }
+        // { name: 'Trang chủ', path: '/user', icon: Home },
+        { name: 'Chỗ để xe', path: '/user/quan-ly-cho-xe', icon: Car },
+        { name: 'Trang cá nhân', path: '/user/profile', icon: Users },
+        { name: 'Quản lý xe', path: '/user/quan-ly-xe', icon: Car },
+        { name: 'Báo cáo', path: '/user/bao-cao', icon: FileText },
+        { name: 'Lịch sử', path: '/user/lich-su', icon: Clock },
+        { name: 'Thanh toán', path: '/user/thanh-toan', icon: CreditCard }
       ]
   
       const isActive = (path) => {
@@ -198,6 +184,11 @@
         } else {
           document.documentElement.classList.remove('dark')
         }
+      }
+  
+      const handleLogout = () => {
+        // Implement logout logic here
+        router.push('/dang-nhap')
       }
   
       // Close menus when clicking outside
@@ -236,7 +227,10 @@
         navigationItems,
         isActive,
         getCurrentPageTitle,
-        toggleDarkMode
+        toggleDarkMode,
+        handleLogout,
+        userInfo,
+        unreadNotifications
       }
     }
   }

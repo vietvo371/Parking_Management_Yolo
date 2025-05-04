@@ -254,8 +254,8 @@
 
 <script>
 import { ArrowLeft, Car, Camera, Upload, Check } from "lucide-vue-next";
-import baseRequest from "../core/baseRequest";
-import { useNotificationStore } from "../stores/notication";
+import baseRequest from "../../core/baseRequest";
+import { useNotificationStore } from "../../stores/notication";
 import { Modal, Button } from "ant-design-vue";
 
 export default {
