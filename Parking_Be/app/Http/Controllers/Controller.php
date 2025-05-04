@@ -16,6 +16,14 @@ abstract class Controller
         }
         return false;
     }
+    public function isCuDan()
+    {
+        $user = Auth::guard('sanctum')->user();
+        if ($user instanceof \App\Models\CuDan) {
+            return $user;
+        }
+        return false;
+    }
     public function checkQuyen($id_chuc_nang)
     {
         $user = $this->isAdmin();

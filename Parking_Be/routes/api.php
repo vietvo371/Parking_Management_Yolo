@@ -131,3 +131,14 @@ Route::group(['prefix'  =>  '/admin'], function () {
 
 
 });
+
+
+Route::post('/user/login', [CuDanController::class, 'login']);
+Route::post('/user/register', [CuDanController::class, 'register']);
+Route::get('/user/check-token', [CuDanController::class, 'checkToken']);
+Route::post('/user/logout', [CuDanController::class, 'logout']);
+
+Route::group(['prefix'  =>  '/user'], function () {
+
+});
+

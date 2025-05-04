@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+        'cu_dan' => [
+            'driver' => 'session',
+            'provider' => 'cu_dans',
+        ],
     ],
 
     /*
@@ -71,6 +75,10 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Admin::class),
+        ],
+        'cu_dans' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\CuDan::class),
         ],
 
         // 'users' => [

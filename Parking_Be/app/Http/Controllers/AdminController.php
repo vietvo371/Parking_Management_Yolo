@@ -26,9 +26,9 @@ class AdminController extends Controller
                 ]);
             } else {
                 $chuc_vu = ChucVu::join('admins', 'chuc_vus.id', '=', 'admins.id_chuc_vu')
-                ->where('admins.id', $user->id)
-                ->select('admins.ho_va_ten', 'chuc_vus.ten_chuc_vu')
-                ->first();
+                    ->where('admins.id', $user->id)
+                    ->select('admins.ho_va_ten', 'chuc_vus.ten_chuc_vu')
+                    ->first();
                 return response()->json([
                     'status' => true,
                     'message' => "Đăng nhập thành công!",
@@ -242,5 +242,4 @@ class AdminController extends Controller
             'message' => 'Lấy dữ liệu không thành công'
         ]);
     }
-
 }
