@@ -96,7 +96,7 @@ const routes = [
   {
     path: "/user",
     component: () => import("../layouts/wrapper/clientLayout.vue"),
-    redirect: "/user",
+    redirect: "/user/profile",
     children: [
       {
         path: "profile",
