@@ -93,7 +93,7 @@
           <div class="p-6 border-t border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900/30">
             <p class="text-sm text-gray-500 dark:text-gray-400">
               Đã có tài khoản?
-              <router-link to="/dang-nhap" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium">Đăng nhập</router-link>
+              <router-link to="/login" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium">Đăng nhập</router-link>
             </p>
           </div>
         </div>
@@ -139,7 +139,7 @@
           .then((response) => {
             if (response.data.status) {
               notificationStore.showSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
-              router.push("/dang-nhap");
+              router.push("/login");
             } else {
               notificationStore.showError(response.data.message || "Đăng ký thất bại!");
             }

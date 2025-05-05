@@ -141,7 +141,7 @@ export default {
 
     const logout = () => {
       authStore.logout();
-      router.push("/dang-nhap");
+      router.push("/login");
       notificationStore.showSuccess("Đăng xuất thành công");
     };
 

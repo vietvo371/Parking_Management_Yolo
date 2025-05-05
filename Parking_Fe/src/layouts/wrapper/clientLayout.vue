@@ -27,7 +27,7 @@
             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1"
           >
             <router-link to="/user/profile" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Thông tin tài khoản</router-link>
-            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Đăng xuất</a>
+            <button @click="logout" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Đăng xuất</button>
           </div>
         </div>
       </header>
@@ -79,20 +79,20 @@
               <Moon v-else class="h-5 w-5" />
             </button>
             <div class="relative">
-              <button @click="isUserMenuOpen = !isUserMenuOpen" class="flex items-center space-x-2">
+              <button @click="isUserMenuOpen = !isUserMenuOpen" class="flex items-center space-x-2 user-menu">
                 <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                   <User class="h-5 w-5 text-gray-500 dark:text-gray-400" />
                 </div>
-                <span>{{ userInfo.name || 'Cư dân' }}</span>
+                <span>{{ userInfo?.ho_va_ten || 'Cư dân' }}</span>
                 <ChevronDown class="h-4 w-4" />
               </button>
               <!-- User dropdown menu -->
               <div 
                 v-if="isUserMenuOpen" 
-                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1"
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 user-menu"
               >
                 <router-link to="/user/profile" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">Thông tin tài khoản</router-link>
-                <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Đăng xuất</a>
+                <button @click="handleLogout" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Đăng xuất</button>
               </div>
             </div>
           </div>
@@ -109,6 +109,8 @@
   <script>
   import { ref, onMounted, onUnmounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
+  import { useAuthStore } from '../../stores/auth';
+  import { useNotificationStore } from '../../stores/notication';
   import { 
     Home, 
     Users, 
@@ -151,15 +153,12 @@
       const isUserMenuOpen = ref(false)
       const isDarkMode = ref(localStorage.getItem('darkMode') === 'true')
       const unreadNotifications = ref(0)
-      const userInfo = ref({
-        name: 'Nguyễn Văn A',
-        email: 'resident@example.com'
-      })
-  
+      const authStore = useAuthStore();
+      const notificationStore = useNotificationStore();
+      const userInfo = ref(authStore.getUser());
       const navigationItems = [
         // { name: 'Trang chủ', path: '/user', icon: Home },
         { name: 'Chỗ để xe', path: '/user/quan-ly-cho-xe', icon: Car },
-        { name: 'Trang cá nhân', path: '/user/profile', icon: Users },
         { name: 'Quản lý xe', path: '/user/quan-ly-xe', icon: Car },
         { name: 'Báo cáo', path: '/user/bao-cao', icon: FileText },
         { name: 'Lịch sử', path: '/user/lich-su', icon: Clock },
@@ -187,13 +186,15 @@
       }
   
       const handleLogout = () => {
-        // Implement logout logic here
-        router.push('/dang-nhap')
+        authStore.logout();
+        notificationStore.showSuccess('Đăng xuất thành công');
+        router.push('/user/login');
       }
   
       // Close menus when clicking outside
       const handleClickOutside = (event) => {
-        if (isUserMenuOpen.value && !event.target.closest('.user-menu')) {
+        const userMenu = event.target.closest('.user-menu')
+        if (!userMenu && isUserMenuOpen.value) {
           isUserMenuOpen.value = false
         }
       }
@@ -207,6 +208,10 @@
   
       onMounted(() => {
         // Initialize dark mode
+        const storedUser = authStore.getUserUser();
+        if (storedUser) {
+          userInfo.value = storedUser;
+        }
         if (isDarkMode.value) {
           document.documentElement.classList.add('dark')
         }

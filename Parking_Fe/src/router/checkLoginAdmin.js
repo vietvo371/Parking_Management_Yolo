@@ -12,11 +12,11 @@ export default function (to, from, next) {
         next();
       } else {
         notificationStore.showWarning("Bạn cần đăng nhập hệ thống trước");
-        next("/dang-nhap");
+        next("/login");
       }
     })
     .catch(() => {
       notificationStore.showWarning("Bạn cần đăng nhập hệ thống trước");
-      next("/dang-nhap");
+      next("/login");
     });
 }

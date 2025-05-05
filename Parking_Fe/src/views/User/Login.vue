@@ -86,61 +86,67 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { User, Lock, Eye, EyeOff } from "lucide-vue-next";
-import baseRequest from "../../core/baseRequest";
+import baseRequestUser from "../../core/baseRequestUser";
 import { useNotificationStore } from "@/stores/notication";
 import { useAuthStore } from "@/stores/auth";
 export default {
-  name: "LoginUser",
+  name: "Login",
   components: {
     User,
     Lock,
     Eye,
     EyeOff,
   },
-  setup() {
-    const router = useRouter();
-    const notificationStore = useNotificationStore();
-    const authStore = useAuthStore();
-    const user = ref({
-      email: "",
-      password: "",
-    });
-    const showPassword = ref(false);
-    const isLoading = ref(false);
-
-    const toggleShowPassword = () => {
-      showPassword.value = !showPassword.value;
-    };
-
-    const handleLogin = () => {
-      isLoading.value = true;
-      baseRequest.post("resident/login", user.value).then((response) => {
+  data() {
+    return {
+      user: {
+        email: "",
+        password: "",
+      },
+      showPassword: false,
+      isLoading: false,
+    }
+  },
+  methods: {
+    toggleShowPassword() {
+      this.showPassword = !this.showPassword;
+    },
+    handleLogin() {
+      const authStore = useAuthStore();
+      const notificationStore = useNotificationStore();
+      this.isLoading = true;
+      baseRequestUser.post("user/login", this.user).then((response) => {
         if (response.data.status) {
-          authStore.setToken(response.data.token);
+          authStore.setTokenUser(response.data.token);
           authStore.setUser(response.data.user);
-          notificationStore.showSuccess(response.data.message || "Đăng nhập thành công!");
-          router.push("/user");
+          notificationStore.showSuccess(response.data.message);
+          this.checkToken();
+          this.isLoading = false;
         } else {
-          notificationStore.showError(response.data.message || "Đăng nhập thất bại!");
+          notificationStore.showError(response.data.message);
+          this.isLoading = false;
         }
       })
-      .catch((res) => {
-        notificationStore.showError("Đăng nhập thất bại!");
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
-    };
-
-    return {
-      user,
-      showPassword,
-      isLoading,
-      toggleShowPassword,
-      handleLogin,
-    };
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+          this.isLoading = false;
+        });
+    },
+    checkToken() {
+      baseRequestUser.get("user/check-token")
+        .then((response) => {
+          if (response.data.status) {
+            this.$router.push("/user/profile");
+          }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
+    }
   }
-};
+}
 </script>
 
 <style></style>

@@ -101,42 +101,42 @@ const routes = [
       {
         path: "profile",
         component: () => import("../views/User/Profile.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       {
         path: "bao-cao",
         component: () => import("../views/User/Reports.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       {
         path: "lich-su",
         component: () => import("../views/User/History.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       {
         path: "thanh-toan",
         component: () => import("../views/User/Transaction.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       {
         path: "quan-ly-xe",
         component: () => import("../views/User/MyVehicles.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       {
         path: "quan-ly-cho-xe",
         component: () => import("../views/User/ParkingManger.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       {
         path: "thanh-toan-online",
         component: () => import("../views/User/ThanhToanOnl.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
     ],
   },
   {
-    path: "/dang-nhap",
+    path: "/login",
     component: () => import("../views/Admin/Login.vue"),
   },
   {

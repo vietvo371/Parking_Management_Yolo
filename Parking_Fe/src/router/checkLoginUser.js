@@ -1,6 +1,6 @@
 //Sau này đổi tên lại thành Middleware nhé
 
-import baseRequest from "../core/baseRequest";
+import baseRequest from "../core/baseRequestUser";
 import { useNotificationStore } from "@/stores/notication";
 
 export default function (to, from, next) {
@@ -10,13 +10,14 @@ export default function (to, from, next) {
     .then((res) => {
       if (res.data.status) {
         next();
-      } else {
+      } 
+      else {
         notificationStore.showWarning("Bạn cần đăng nhập hệ thống trước");
-        next("/");
+        next("/user/login");
       }
     })
     .catch(() => {
       notificationStore.showWarning("Bạn cần đăng nhập hệ thống trước");
-      next("/");
+      next("/user/login");
     });
 }

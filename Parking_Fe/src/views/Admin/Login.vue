@@ -122,7 +122,7 @@ export default {
       baseRequest.post("admin/login", this.user).then((response) => {
         if (response.data.status) {
           authStore.setToken(response.data.token);
-          authStore.setUser(response.data.user);
+          authStore.setAdmin(response.data.user);
           notificationStore.showSuccess(response.data.message);
           this.checkToken();
           this.isLoading = false;
