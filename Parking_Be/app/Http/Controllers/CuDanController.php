@@ -129,7 +129,8 @@ class CuDanController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => "Đăng nhập thành công!",
-                    'token' => $user->createToken('cu_dan_token')->plainTextToken
+                    'token' => $user->createToken('cu_dan_token')->plainTextToken,
+                    'user' => $user
                 ]);
             }
         } else {
