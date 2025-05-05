@@ -77,6 +77,8 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/thong-tin-cap-nhat', [XeController::class, 'capnhatXe']);
         Route::post('/doi-trang-thai', [XeController::class, 'doiTrangThaiXe']);
         Route::delete('/thong-tin-xoa/{id}', [XeController::class, 'xoaXe']);
+        Route::post('/duyet', [XeController::class, 'duyetXe']);
+
     });
     Route::group(['prefix'  =>  '/loai-xe'], function () {
         Route::get('/lay-du-lieu', [LoaiXeController::class, 'getData']);

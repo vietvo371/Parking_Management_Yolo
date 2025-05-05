@@ -15,8 +15,40 @@ class CuDanController extends Controller
     public function getData()
     {
         $cudan = CuDan::join('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
-            ->join('xes', 'xes.id_cu_dan', '=', 'cu_dans.id')
-            ->select('cu_dans.*', 'xes.bien_so_xe', 'can_hos.ten_toa_nha', 'can_hos.tang', 'can_hos.so_can_ho')
+            ->leftJoin('xes', function($join) {
+                $join->on('xes.id_cu_dan', '=', 'cu_dans.id');
+            })
+            ->select(
+                'cu_dans.id',
+                'cu_dans.ho_va_ten',
+                'cu_dans.email',
+                'cu_dans.password',
+                'cu_dans.so_dien_thoai',
+                'cu_dans.so_cccd',
+                'cu_dans.id_can_ho',
+                'cu_dans.so_du',
+                'cu_dans.phe_duyet',
+                'cu_dans.trang_thai',
+                'can_hos.ten_toa_nha',
+                'can_hos.tang',
+                'can_hos.so_can_ho',
+                DB::raw('MIN(xes.bien_so_xe) as bien_so_xe')
+            )
+            ->groupBy(
+                'cu_dans.id',
+                'cu_dans.ho_va_ten',
+                'cu_dans.email',
+                'cu_dans.password',
+                'cu_dans.so_dien_thoai',
+                'cu_dans.so_cccd',
+                'cu_dans.id_can_ho',
+                'cu_dans.so_du',
+                'cu_dans.phe_duyet',
+                'cu_dans.trang_thai',
+                'can_hos.ten_toa_nha',
+                'can_hos.tang',
+                'can_hos.so_can_ho'
+            )
             ->get();
         return response()->json([
             'status' => true,

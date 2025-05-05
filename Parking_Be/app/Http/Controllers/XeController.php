@@ -88,4 +88,23 @@ class XeController extends Controller
             ]);
         }
     }
+    public function duyetXe(Request $request)
+    {
+        $xe = Xe::find($request->id);
+        if ($xe) {
+            $xe->update([
+                'trang_thai_duyet' => !$request->trang_thai_duyet,
+            ]);
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Bạn đã duyệt Xe thành công!',
+            ]);
+        } else {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Xe không tồn tại!',
+            ]);
+        }
+    }
+
 }
