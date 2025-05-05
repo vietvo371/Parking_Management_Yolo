@@ -358,31 +358,29 @@ export default {
     LogOut,
     AlertTriangle
   },
-  setup() {
-    const currentTime = ref('')
-    
-    // Sample cameras data
-    const cameras = ref([
+  data() {
+    return {
+      cameras: [
       { name: 'Camera cổng vào', status: 'online' },
       { name: 'Camera cổng ra', status: 'online' },
       { name: 'Camera bãi đỗ A', status: 'online' },
       { name: 'Camera bãi đỗ B', status: 'online' },
       { name: 'Camera hầm xe', status: 'online' },
       { name: 'Camera an ninh', status: 'online' }
-    ])
-    
-    // Sample recent events
-    const recentEvents = ref([
+      ],
+      recentEvents: [
       { time: '10:25', camera: 'Camera cổng vào', type: 'Xe vào', licensePlate: '30A-12345', status: 'Cho phép' },
       { time: '10:15', camera: 'Camera cổng ra', type: 'Xe ra', licensePlate: '30F-54321', status: 'Cho phép' },
       { time: '09:45', camera: 'Camera cổng vào', type: 'Xe vào', licensePlate: '29P2-12345', status: 'Cho phép' },
       { time: '09:30', camera: 'Camera cổng vào', type: 'Cảnh báo', licensePlate: '30H-98765', status: 'Cảnh báo' },
       { time: '09:15', camera: 'Camera cổng ra', type: 'Xe ra', licensePlate: '30K1-65432', status: 'Cho phép' },
       { time: '08:45', camera: 'Camera cổng vào', type: 'Xe vào', licensePlate: '30A-56789', status: 'Từ chối' }
-    ])
-    
-    // Get event icon
-    const getEventIcon = (type) => {
+      ],
+      currentTime: ''
+    }
+  },
+  methods: {
+    getEventIcon(type) {
       switch (type) {
         case 'Xe vào':
           return LogIn
@@ -393,44 +391,30 @@ export default {
         default:
           return Eye
       }
-    }
-    
-    // Get event icon color
-    const getEventIconColor = (type) => {
+    },
+    getEventIconColor(type) {
       switch (type) {
         case 'Xe vào':
           return 'text-green-600'
         case 'Xe ra':
-          return 'text-blue-600'
+          return 'text-blue-600'  
         case 'Cảnh báo':
           return 'text-orange-600'
         default:
           return 'text-gray-600'
       }
-    }
-    
-    // Update current time
-    const updateCurrentTime = () => {
+    },
+    updateCurrentTime() {
       const now = new Date()
       const hours = now.getHours().toString().padStart(2, '0')
       const minutes = now.getMinutes().toString().padStart(2, '0')
       const seconds = now.getSeconds().toString().padStart(2, '0')
-      currentTime.value = `${hours}:${minutes}:${seconds}`
+      this.currentTime = `${hours}:${minutes}:${seconds}`
     }
-    
-    onMounted(() => {
-      updateCurrentTime()
-      // Update time every second
-      setInterval(updateCurrentTime, 1000)
-    })
-    
-    return {
-      currentTime,
-      cameras,
-      recentEvents,
-      getEventIcon,
-      getEventIconColor
-    }
+  },
+  mounted() {
+    this.updateCurrentTime()
+    setInterval(this.updateCurrentTime, 1000)
   }
 }
 </script>

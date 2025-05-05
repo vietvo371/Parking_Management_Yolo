@@ -91,6 +91,16 @@ const routes = [
         component: () => import("../views/Admin/Profile.vue"),
         beforeEnter: checkLoginAdmin,
       },
+      {
+        path: "admin/quan-ly-khach-vang-lai",
+        component: () => import("../views/User/KhachVangLai.vue"),
+        beforeEnter: checkLoginAdmin,
+      },
+      {
+        path: "admin/phan-quyen",
+        component: () => import("../views/Admin/PhanQuyen.vue"),
+        beforeEnter: checkLoginAdmin,
+      },
     ],
   },
   {
@@ -131,8 +141,9 @@ const routes = [
       {
         path: "thanh-toan-online",
         component: () => import("../views/User/ThanhToanOnl.vue"),
-        beforeEnter: checkLoginUser,
+        // beforeEnter: checkLoginUser,
       },
+      
     ],
   },
   {

@@ -107,6 +107,9 @@ export default {
       isLoading: false,
     }
   },
+  mounted() {
+    this.checkToken();
+  },
   methods: {
     toggleShowPassword() {
       this.showPassword = !this.showPassword;

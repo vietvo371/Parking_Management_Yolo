@@ -380,43 +380,9 @@
       Clock,
       AlertTriangle
     },
-    setup() {
-      const filterVehicle = ref('')
-      const filterType = ref('')
-      const filterStatus = ref('')
-      const startDate = ref('')
-      const endDate = ref('')
-      const selectedTransaction = ref(null)
-      
-      // Transaction stats
-      const transactionStats = ref({
-        total: 15,
-        totalAmount: 3250000,
-        thisMonth: 5,
-        thisMonthAmount: 1200000
-      })
-      
-      // Sample vehicles data
-      const vehicles = ref([
-        {
-          id: 'VEH-001',
-          licensePlate: '30A-12345',
-          type: 'car'
-        },
-        {
-          id: 'VEH-002',
-          licensePlate: '30F-54321',
-          type: 'car'
-        },
-        {
-          id: 'VEH-003',
-          licensePlate: '29P2-12345',
-          type: 'motorbike'
-        }
-      ])
-      
-      // Sample transactions data
-      const transactions = ref([
+    data() {
+      return {
+        transactions: [
         {
           id: 'TRX-001',
           date: '24/04/2023',
@@ -642,23 +608,50 @@
             }
           ]
         }
-      ])
-      
-      // Filter transactions based on filters
-      const filteredTransactions = computed(() => {
-        return transactions.value.filter(transaction => {
-          const matchesVehicle = filterVehicle.value ? transaction.licensePlate === filterVehicle.value : true
-          const matchesType = filterType.value ? transaction.type === filterType.value : true
-          const matchesStatus = filterStatus.value ? transaction.status === filterStatus.value : true
-          
-          // Date filtering would be implemented here in a real app
-          
+        ],
+        selectedTransaction: null,
+        filterVehicle: '',
+        filterType: '',
+        filterStatus: '',
+        startDate: '',
+        endDate: '',
+        vehicles: [
+        {
+          id: 'VEH-001',
+          licensePlate: '30A-12345',
+          type: 'car'
+        },
+        {
+          id: 'VEH-002',
+          licensePlate: '30F-54321',
+          type: 'car'
+        },
+        {
+          id: 'VEH-003',
+          licensePlate: '29P2-12345',
+          type: 'motorbike'
+        }
+        ],
+        transactionStats: {
+          total: 15,
+          totalAmount: 3250000,
+          thisMonth: 5,
+          thisMonthAmount: 1200000
+        }
+      }
+    },
+    computed: {
+      filteredTransactions() {
+        return this.transactions.filter(transaction => {
+          const matchesVehicle = this.filterVehicle ? transaction.licensePlate === this.filterVehicle : true
+          const matchesType = this.filterType ? transaction.type === this.filterType : true
+          const matchesStatus = this.filterStatus ? transaction.status === this.filterStatus : true
           return matchesVehicle && matchesType && matchesStatus
         })
-      })
-      
-      // Get transaction type text
-      function getTransactionTypeText(type) {
+      }
+    },
+    methods: {
+      getTransactionTypeText(type) {
         switch (type) {
           case 'parking':
             return 'Phí gửi xe'
@@ -669,25 +662,22 @@
           default:
             return type
         }
-      }
-      
-      // Get payment method icon
-      function getPaymentMethodIcon(method) {
+      },
+      getPaymentMethodIcon(method) {
         switch (method) {
           case 'bank':
             return CreditCardIcon
           case 'momo':
-          case 'vnpay':
             return Smartphone
+          case 'vnpay':
+            return CreditCardIcon
           case 'cash':
             return DollarSign
           default:
             return CreditCardIcon
         }
-      }
-      
-      // Get payment method text
-      function getPaymentMethodText(method) {
+      },
+      getPaymentMethodText(method) {
         switch (method) {
           case 'bank':
             return 'Chuyển khoản ngân hàng'
@@ -700,49 +690,22 @@
           default:
             return method
         }
-      }
-      
-      // Get status text
-      function getStatusText(status) {
-        switch (status) {
+      },
+      getStatusText(status) {
+        switch (status) { 
           case 'completed':
             return 'Đã hoàn thành'
           case 'pending':
             return 'Đang xử lý'
           case 'failed':
-            return 'Thất bại'
-          default:
-            return status
+            return 'Thất bại' 
         }
-      }
-      
-      // View transaction details
-      function viewTransaction(transaction) {
-        selectedTransaction.value = { ...transaction }
-      }
-      
-      // Format currency
-      function formatCurrency(value) {
+      },
+      viewTransaction(transaction) {
+        this.selectedTransaction = { ...transaction }
+      },
+      formatCurrency(value) { 
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-      }
-      
-      return {
-        filterVehicle,
-        filterType,
-        filterStatus,
-        startDate,
-        endDate,
-        selectedTransaction,
-        transactionStats,
-        vehicles,
-        transactions,
-        filteredTransactions,
-        getTransactionTypeText,
-        getPaymentMethodIcon,
-        getPaymentMethodText,
-        getStatusText,
-        viewTransaction,
-        formatCurrency
       }
     }
   }

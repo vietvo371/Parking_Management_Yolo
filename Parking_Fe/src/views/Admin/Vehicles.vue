@@ -84,7 +84,7 @@
               <td class="px-6 py-4 whitespace-nowrap">{{ convertDate(vehicle.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex space-x-2">
-                  <button v-if="vehicle.trang_thai_duyet === 0"
+                  <button @click="duyetXe(vehicle)" v-if="vehicle.trang_thai_duyet === 0"
                     class="px-3 py-1 text-sm bg-green-600 text-white border border-gray-300 dark:border-gray-600 rounded-md">Duyệt
                   </button>
                   <button
@@ -195,6 +195,19 @@ export default {
     openUpdateXe(vehicle) {
       this.open_update_xe = true;
       Object.assign(this.update_xe, vehicle);
+    },
+    duyetXe(vehicle) {
+      const notificationStore = useNotificationStore();
+      baseRequest.post("admin/xe/duyet", vehicle)
+        .then((res) => {
+          this.open_update_xe = false;
+          this.getXe();
+          notificationStore.showSuccess("Duyệt thành công");
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
     },
     getXe() {
       baseRequest.get("admin/xe/lay-du-lieu")

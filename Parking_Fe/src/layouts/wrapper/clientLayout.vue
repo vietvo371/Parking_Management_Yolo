@@ -125,7 +125,8 @@
     Moon, 
     ChevronDown, 
     LogOut,
-    Car
+    Car,
+    UserRoundCheck
   } from 'lucide-vue-next'
   
   export default {
@@ -144,7 +145,8 @@
       Moon,
       ChevronDown,
       LogOut,
-      Car
+      Car,
+      UserRoundCheck
     },
     setup() {
       const route = useRoute()
@@ -162,7 +164,7 @@
         { name: 'Quản lý xe', path: '/user/quan-ly-xe', icon: Car },
         { name: 'Báo cáo', path: '/user/bao-cao', icon: FileText },
         { name: 'Lịch sử', path: '/user/lich-su', icon: Clock },
-        { name: 'Thanh toán', path: '/user/thanh-toan', icon: CreditCard }
+        { name: 'Thanh toán', path: '/user/thanh-toan', icon: CreditCard },
       ]
   
       const isActive = (path) => {

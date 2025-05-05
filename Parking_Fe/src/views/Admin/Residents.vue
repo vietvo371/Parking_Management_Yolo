@@ -24,13 +24,53 @@
       </div>
       <div class="flex w-full sm:w-auto items-center gap-2">
         <div class="relative w-full sm:w-auto">
-          <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-          <input v-model="searchQuery" type="search" placeholder="Tìm kiếm cư dân..."
-            class="pl-9 w-full sm:w-[250px] h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+              <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <input v-model="searchQuery" type="search" placeholder="Tìm theo tên..."
+                class="pl-9 w-full sm:w-[200px] h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
+            </div>
+            <div class="relative flex-1">
+              <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <input v-model="searchLicensePlate" type="search" placeholder="Tìm theo biển số..."
+                class="pl-9 w-full sm:w-[200px] h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md" />
+            </div>
+          </div>
         </div>
-        <button class="p-2 rounded-md border border-gray-300 dark:border-gray-600">
-          <Filter class="h-4 w-4" />
-        </button>
+        <div class="relative">
+          <button @click="toggleFilterMenu" class="p-2 rounded-md border border-gray-300 dark:border-gray-600">
+            <Filter class="h-4 w-4" />
+          </button>
+          <!-- Filter Dropdown -->
+          <div v-if="showFilterMenu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
+            <div class="p-2">
+              <div class="mb-2">
+                <label class="block text-sm font-medium mb-1">Trạng thái</label>
+                <select v-model="statusFilter" class="w-full h-8 px-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
+                  <option value="all">Tất cả</option>
+                  <option value="1">Hoạt động</option>
+                  <option value="0">Không hoạt động</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="block text-sm font-medium mb-1">Sắp xếp theo</label>
+                <select v-model="sortBy" class="w-full h-8 px-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
+                  <option value="name">Tên</option>
+                  <option value="apartment">Căn hộ</option>
+                  <option value="date">Ngày đăng ký</option>
+                  <option value="status">Trạng thái</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="block text-sm font-medium mb-1">Thứ tự</label>
+                <select v-model="sortOrder" class="w-full h-8 px-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
+                  <option value="asc">Tăng dần</option>
+                  <option value="desc">Giảm dần</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -43,31 +83,47 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Cư dân</th>
-              <th scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Căn hộ</th>
+              <th scope="col" @click="sortByColumn('name')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                Cư dân
+                <span v-if="sortBy === 'name'" class="ml-1">
+                  {{ sortOrder === 'asc' ? '↑' : '↓' }}
+                </span>
+              </th>
+              <th scope="col" @click="sortByColumn('apartment')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                Căn hộ
+                <span v-if="sortBy === 'apartment'" class="ml-1">
+                  {{ sortOrder === 'asc' ? '↑' : '↓' }}
+                </span>
+              </th>
               <th scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Liên hệ</th>
               <th scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Số xe</th>
-              <th scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Trạng thái</th>
-              <th scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Ngày đăng ký</th>
+              <th scope="col" @click="sortByColumn('status')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                Trạng thái
+                <span v-if="sortBy === 'status'" class="ml-1">
+                  {{ sortOrder === 'asc' ? '↑' : '↓' }}
+                </span>
+              </th>
+              <th scope="col" @click="sortByColumn('date')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                Ngày đăng ký
+                <span v-if="sortBy === 'date'" class="ml-1">
+                  {{ sortOrder === 'asc' ? '↑' : '↓' }}
+                </span>
+              </th>
               <th scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Hành động</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-            <tr v-for="resident in residents" :key="resident.id">
+            <tr v-for="resident in filteredAndSortedResidents" :key="resident.id">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center space-x-3">
                   <div
@@ -252,7 +308,7 @@
 
 <script>
 import { ref, computed } from 'vue'
-import { Plus, Search, Filter, Phone, Mail } from 'lucide-vue-next'
+import { Plus, Search, Filter, Phone, Mail, Check } from 'lucide-vue-next'
 import baseRequest from '../../core/baseRequest'
 import { useNotificationStore } from '../../stores/notication'
 export default {
@@ -262,12 +318,14 @@ export default {
     Search,
     Filter,
     Phone,
-    Mail
+    Mail,
+    Check
   },
   data() {
     return {
       residents: [],
       searchQuery: '',
+      searchLicensePlate: '',
       isSubmitting: false,
       isSuccess: false,
       apartments: [],
@@ -282,17 +340,72 @@ export default {
         bien_so_xe: '',
         trang_thai: '',
         created_at: ''
-      }
+      },
+      // New sorting and filtering states
+      showFilterMenu: false,
+      statusFilter: 'all',
+      sortBy: 'name',
+      sortOrder: 'asc'
     }
   },
 
   mounted() {
     this.getCuDan()
     this.getCanHo()
+    // Close filter menu when clicking outside
+    document.addEventListener('click', this.handleClickOutside)
   },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
+
   computed: {
-    filteredResidents() {
-      return this.residents.filter(r => r.status === 'active')
+    filteredAndSortedResidents() {
+      let result = [...this.residents]
+
+      // Apply name search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase()
+        result = result.filter(resident => 
+          resident.ho_va_ten.toLowerCase().includes(query)
+        )
+      }
+
+      // Apply license plate search filter
+      if (this.searchLicensePlate) {
+        const query = this.searchLicensePlate.toLowerCase()
+        result = result.filter(resident => 
+          resident.bien_so_xe.toLowerCase().includes(query)
+        )
+      }
+
+      // Apply status filter
+      if (this.statusFilter !== 'all') {
+        result = result.filter(resident => resident.trang_thai === parseInt(this.statusFilter))
+      }
+
+      // Apply sorting
+      result.sort((a, b) => {
+        let comparison = 0
+        switch (this.sortBy) {
+          case 'name':
+            comparison = a.ho_va_ten.localeCompare(b.ho_va_ten)
+            break
+          case 'apartment':
+            comparison = a.id_can_ho.localeCompare(b.id_can_ho)
+            break
+          case 'status':
+            comparison = a.trang_thai - b.trang_thai
+            break
+          case 'date':
+            comparison = new Date(a.created_at) - new Date(b.created_at)
+            break
+        }
+        return this.sortOrder === 'asc' ? comparison : -comparison
+      })
+
+      return result
     },
     options() {
       return this.apartments.map(apartment => ({
@@ -302,10 +415,24 @@ export default {
     }
   },
   methods: {
-    filterOption() {
-      return (input, option) => {
-        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-      };
+    toggleFilterMenu() {
+      this.showFilterMenu = !this.showFilterMenu
+    },
+
+    handleClickOutside(event) {
+      const filterButton = event.target.closest('.relative')
+      if (!filterButton) {
+        this.showFilterMenu = false
+      }
+    },
+
+    sortByColumn(column) {
+      if (this.sortBy === column) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
+      } else {
+        this.sortBy = column
+        this.sortOrder = 'asc'
+      }
     },
     convertDate(date) {
       return new Date(date).toLocaleDateString('vi-VN')
@@ -349,6 +476,11 @@ export default {
     closeResidentModal() {
       this.showUpdateResidentModal = false
       this.showChiTietCuDanModal = false
+    },
+    filterOption() {
+      return (input, option) => {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      };
     }
   }
 }

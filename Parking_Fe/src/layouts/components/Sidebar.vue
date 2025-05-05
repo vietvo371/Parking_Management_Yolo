@@ -90,6 +90,8 @@ import {
   AlertCircle,
   LogIn,
   Clock,
+  UserRoundCheck,
+  Key
 } from "lucide-vue-next";
 
 export default {
@@ -110,6 +112,8 @@ export default {
     AlertCircle,
     LogIn,
     Clock,
+    UserRoundCheck,
+    Key
   },
   setup() {
     const router = useRouter();
@@ -122,12 +126,14 @@ export default {
       { name: "Trang chủ", href: "/admin", icon: Home },
       { name: "Quản lý xe", href: "/admin/quan-ly-xe", icon: Car },
       { name: "Cư dân", href: "/admin/quan-ly-khach-hang", icon: Users },
+      { name: "Khách vãng lai", href: "/admin/quan-ly-khach-vang-lai", icon: UserRoundCheck },
       { name: "Giao dịch", href: "/admin/quan-ly-giao-dich", icon: CreditCard },
       { name: "Báo cáo sự cố", href: "/admin/quan-li-bao-cao-su-co", icon: AlertCircle },
       { name: "Camera & AI", href: "/admin/quan-ly-camera", icon: Camera },
       { name: "Ra vào bãi", href: "/admin/quan-li-bai-giu-xe", icon: LogIn },
       { name: "Báo cáo", href: "/admin/quan-ly-bao-cao", icon: BarChart2 },
       { name: "Lịch sử ra vào", href: "/admin/quan-ly-lich-su", icon: Clock },
+      { name: "Phân quyền", href: "/admin/phan-quyen", icon: Key   },
       { name: "Cài đặt", href: "/admin/quan-ly-cai-dat", icon: Settings },
     ];
 
