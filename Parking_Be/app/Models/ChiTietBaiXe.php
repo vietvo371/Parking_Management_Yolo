@@ -10,6 +10,7 @@ class ChiTietBaiXe extends Model
     protected $fillable = [
         'id_bai_xe',
         'thu_tu',
+        'loai_xe',
         'trang_thai',
     ];
 }
