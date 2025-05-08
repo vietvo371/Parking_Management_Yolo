@@ -174,12 +174,12 @@ class CuDanController extends Controller
     }
     public function register(ThemCuDanRequest $request)
     {
-        if ($request->password != $request->password_confirm) {
-            return response()->json([
-                'message'   => 'Mật khẩu không khớp!!',
-                'status'    => false
-            ]);
-        }
+        // if ($request->password != $request->password_confirm) {
+        //     return response()->json([
+        //         'message'   => 'Mật khẩu không khớp!!',
+        //         'status'    => false
+        //     ]);
+        // }
         CuDan::create([
             'ho_va_ten' => $request->ho_va_ten,
             'email' => $request->email,
@@ -225,6 +225,27 @@ class CuDanController extends Controller
         return response()->json([
             'message'   => 'Bạn chưa đăng nhập tài khoản cư dân!',
             'status'    => false
+        ]);
+    }
+    public function duyetCuDan(Request $request)
+    {
+
+
+        $cudan = CuDan::find($request->id);
+        if (!$cudan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Cư dân không tồn tại'
+            ]);
+        }
+
+        $cudan->update([
+            'phe_duyet' => 1
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cư dân đã được duyệt'
         ]);
     }
 }

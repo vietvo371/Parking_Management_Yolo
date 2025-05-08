@@ -16,7 +16,26 @@ class GiaoDichController extends Controller
             ->orderBy('giao_dichs.created_at', 'desc')
             ->get();
         return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
             'data' => $giaodichs,
         ]);
     }
+    public function themGiaoDich(Request $request)
+    {
+        $giaodich = GiaoDich::create([
+            'so_tien_giao_dich'         => $request->so_tien_giao_dich,
+            'ma_giao_dich'              => $request->ma_giao_dich,
+            'id_xe'                     => $request->id_xe,
+            'phuong_thuc_thanh_toan'    => $request->phuong_thuc_thanh_toan,
+            'trang_thai_giao_dich'      => $request->trang_thai_giao_dich,
+            'ngay_het_han'              => $request->ngay_het_han,
+        ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Thêm giao dịch thành công',
+        ]);
+    }
+
+    
 }

@@ -14,4 +14,8 @@ class BaoCaoSuCo extends Model
         'ngay_tao',
         'id_admin_xu_ly'
     ];
+
+    const TRANG_THAI_CHUA_XU_LY = 0;
+    const TRANG_THAI_DA_XU_LY = 1;
+
 }

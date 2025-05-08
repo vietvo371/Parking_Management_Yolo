@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminThongBaoController;
 use App\Http\Controllers\BaiXeController;
 use App\Http\Controllers\BaoCaoKhachVangLaiController;
+use App\Http\Controllers\BaoCaoSuCoController;
 use App\Http\Controllers\CamGiamSoatController;
 use App\Http\Controllers\CanHoController;
 use App\Http\Controllers\ChiTietChucVuController;
@@ -63,6 +64,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/doi-trang-thai', [CuDanController::class, 'doiTrangThaiCuDan']);
         Route::delete('/thong-tin-xoa/{id}', [CuDanController::class, 'xoaCuDan']);
         Route::post('/doi-mat-khau', [CuDanController::class, 'doiPass']);
+        Route::post('/duyet', [CuDanController::class, 'duyetCuDan']);
 
     });
 
@@ -80,8 +82,8 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/doi-trang-thai', [XeController::class, 'doiTrangThaiXe']);
         Route::delete('/thong-tin-xoa/{id}', [XeController::class, 'xoaXe']);
         Route::post('/duyet', [XeController::class, 'duyetXe']);
-
     });
+
     Route::group(['prefix'  =>  '/loai-xe'], function () {
         Route::get('/lay-du-lieu', [LoaiXeController::class, 'getData']);
         Route::post('/them-du-lieu', [LoaiXeController::class, 'themLoaiXe']);
@@ -101,6 +103,9 @@ Route::group(['prefix'  =>  '/admin'], function () {
 
     Route::group(['prefix'  =>  '/giao-dich'], function () {
         Route::get('/lay-du-lieu', [GiaoDichController::class, 'getData']);
+        Route::post('/them-du-lieu', [GiaoDichController::class, 'themGiaoDich']);
+        Route::post('/thong-tin-cap-nhat', [GiaoDichController::class, 'capnhatGiaoDich']);
+        Route::delete('/thong-tin-xoa/{id}', [GiaoDichController::class, 'xoaGiaoDich']);
     });
 
     Route::group(['prefix'  =>  '/bai-xe'], function () {
@@ -132,7 +137,15 @@ Route::group(['prefix'  =>  '/admin'], function () {
 
     });
 
-    
+    Route::group(['prefix'  =>  '/bao-cao-su-co'], function () {
+        Route::get('/lay-du-lieu', [BaoCaoSuCoController::class, 'getData']);
+        Route::post('/them-du-lieu', [BaoCaoSuCoController::class, 'themBaoCaoSuCo']);
+        Route::post('/thong-tin-cap-nhat', [BaoCaoSuCoController::class, 'capnhatBaoCaoSuCo']);
+        Route::delete('/thong-tin-xoa/{id}', [BaoCaoSuCoController::class, 'xoaBaoCaoSuCo']);
+    });
+
+
+
 
 
 

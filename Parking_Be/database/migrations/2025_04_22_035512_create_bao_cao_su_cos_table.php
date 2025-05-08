@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('id_cu_dan_bao_cao');
             $table->longText('noi_dung_bao_cao')->nullable();
-            $table->integer('trang_thai_xu_ly');
+            $table->integer('trang_thai_xu_ly')->default(0);
             $table->dateTime('ngay_tao');
             $table->integer('id_admin_xu_ly');
             $table->timestamps();
