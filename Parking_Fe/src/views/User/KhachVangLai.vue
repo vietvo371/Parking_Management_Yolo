@@ -130,7 +130,7 @@
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-            <tr v-for="guest in filteredGuests" :key="guest.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
+            <tr v-for="guest in paginatedGuests" :key="guest.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 {{ guest.id }}
               </td>

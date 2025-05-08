@@ -93,7 +93,7 @@
           <div class="p-6 border-t border-gray-200 dark:border-gray-700 text-center bg-gray-50 dark:bg-gray-900/30">
             <p class="text-sm text-gray-500 dark:text-gray-400">
               Đã có tài khoản?
-              <router-link to="/login" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium">Đăng nhập</router-link>
+              <router-link to="/user/login" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 font-medium">Đăng nhập</router-link>
             </p>
           </div>
         </div>
@@ -135,18 +135,20 @@
           return;
         }
         isLoading.value = true;
-        baseRequest.post("resident/register", form.value)
+        baseRequest.post("user/register", form.value)
           .then((response) => {
             if (response.data.status) {
               notificationStore.showSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
-              router.push("/login");
+              router.push("/user/login");
             } else {
               notificationStore.showError(response.data.message || "Đăng ký thất bại!");
             }
           })
-          .catch(() => {
-            notificationStore.showError("Đăng ký thất bại!");
-          })
+          .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+          this.isLoading = false;
+        })
           .finally(() => {
             isLoading.value = false;
           });

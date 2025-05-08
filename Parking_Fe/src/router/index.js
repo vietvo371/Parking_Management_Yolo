@@ -6,7 +6,7 @@ const routes = [
   {
     path: "/",
     component: () => import("../layouts/wrapper/index.vue"),
-    redirect: "/admin",
+    redirect: "/user/profile",
     children: [
       {
         path: "admin",

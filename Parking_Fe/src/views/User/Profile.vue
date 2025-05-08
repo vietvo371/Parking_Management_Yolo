@@ -246,7 +246,6 @@
   </template>
   
   <script>
-  import { ref, reactive, computed } from 'vue'
   import { 
     User, 
     Edit, 
@@ -272,83 +271,78 @@
       Key,
       AlertTriangle
     },
-    setup() {
-      const isEditing = ref(false)
-      
-      // User profile data
-      const userProfile = ref({
-        residentId: 'RES-001',
-        fullName: 'Nguyễn Văn A',
-        email: 'nguyenvana@example.com',
-        phone: '0912345678',
-        idNumber: '012345678901',
-        address: 'Số 123, Đường ABC, Quận XYZ, Hà Nội',
-        apartment: 'A1201',
-        registrationDate: '15/01/2023',
-        status: 'approved',
-        avatar: null,
-        registeredVehicles: 2,
-        residentType: 'Chủ hộ'
-      })
-      
-      // Edited profile data
-      const editedProfile = ref({...userProfile.value})
-      
-      // Password change data
-      const passwordChange = ref({
-        current: '',
-        new: '',
-        confirm: ''
-      })
-      
-      // Show password toggles
-      const showPassword = reactive({
-        current: false,
-        new: false,
-        confirm: false
-      })
-      
-      // Account activities
-      const accountActivities = ref([
-        {
-          title: 'Đăng nhập thành công',
-          time: '24/04/2023 - 10:25',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
+    data() {
+      return {
+        isEditing: false,
+        userProfile: {
+          residentId: 'RES-001',
+          fullName: 'Nguyễn Văn A',
+          email: 'nguyenvana@example.com',
+          phone: '0912345678',
+          idNumber: '012345678901',
+          address: 'Số 123, Đường ABC, Quận XYZ, Hà Nội',
+          apartment: 'A1201',
+          registrationDate: '15/01/2023',
+          status: 'approved',
+          avatar: null,
+          registeredVehicles: 2,
+          residentType: 'Chủ hộ'
         },
-        {
-          title: 'Thay đổi mật khẩu',
-          time: '20/04/2023 - 15:30',
-          icon: Key,
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600'
+        editedProfile: {},
+        passwordChange: {
+          current: '',
+          new: '',
+          confirm: ''
         },
-        {
-          title: 'Cập nhật thông tin cá nhân',
-          time: '15/04/2023 - 09:45',
-          icon: Settings,
-          iconBg: 'bg-purple-100',
-          iconColor: 'text-purple-600'
+        showPassword: {
+          current: false,
+          new: false,
+          confirm: false
         },
-        {
-          title: 'Đăng nhập thất bại',
-          time: '10/04/2023 - 18:20',
-          icon: AlertTriangle,
-          iconBg: 'bg-red-100',
-          iconColor: 'text-red-600'
-        },
-        {
-          title: 'Đăng nhập thành công',
-          time: '10/04/2023 - 18:25',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
-        }
-      ])
-      
-      // Get status text
-      function getStatusText(status) {
+        accountActivities: [
+          {
+            title: 'Đăng nhập thành công',
+            time: '24/04/2023 - 10:25',
+            icon: LogIn,
+            iconBg: 'bg-green-100',
+            iconColor: 'text-green-600'
+          },
+          {
+            title: 'Thay đổi mật khẩu',
+            time: '20/04/2023 - 15:30',
+            icon: Key,
+            iconBg: 'bg-blue-100',
+            iconColor: 'text-blue-600'
+          },
+          {
+            title: 'Cập nhật thông tin cá nhân',
+            time: '15/04/2023 - 09:45',
+            icon: Settings,
+            iconBg: 'bg-purple-100',
+            iconColor: 'text-purple-600'
+          },
+          {
+            title: 'Đăng nhập thất bại',
+            time: '10/04/2023 - 18:20',
+            icon: AlertTriangle,
+            iconBg: 'bg-red-100',
+            iconColor: 'text-red-600'
+          },
+          {
+            title: 'Đăng nhập thành công',
+            time: '10/04/2023 - 18:25',
+            icon: LogIn,
+            iconBg: 'bg-green-100',
+            iconColor: 'text-green-600'
+          }
+        ]
+      }
+    },
+    mounted() {
+      this.editedProfile = { ...this.userProfile }
+    },
+    methods: {
+      getStatusText(status) {
         switch (status) {
           case 'pending':
             return 'Chờ phê duyệt'
@@ -359,53 +353,29 @@
           default:
             return status
         }
-      }
-      
-      // Toggle password visibility
-      function togglePasswordVisibility(field) {
-        showPassword[field] = !showPassword[field]
-      }
-      
-      // Cancel edit
-      function cancelEdit() {
-        editedProfile.value = {...userProfile.value}
-        passwordChange.value = {
-          current: '',
-          new: '',
-          confirm: ''
-        }
-        isEditing.value = false
-      }
-      
-      // Save profile
-      function saveProfile() {
-        // In a real app, you would send the data to the server here
-        // For demo purposes, we'll just update the local data
-        userProfile.value = {...editedProfile.value}
-        
-        // Handle password change if provided
-        if (passwordChange.value.current && 
-            passwordChange.value.new && 
-            passwordChange.value.confirm && 
-            passwordChange.value.new === passwordChange.value.confirm) {
+      },
+      togglePasswordVisibility(field) {
+        this.showPassword[field] = !this.showPassword[field]
+      },
+      cancelEdit() {
+        this.editedProfile = { ...this.userProfile }
+        this.passwordChange = { current: '', new: '', confirm: '' }
+        this.isEditing = false
+      },
+      saveProfile() {
+        this.userProfile = { ...this.editedProfile }
+        // Password change logic (if needed)
+        if (
+          this.passwordChange.current &&
+          this.passwordChange.new &&
+          this.passwordChange.confirm &&
+          this.passwordChange.new === this.passwordChange.confirm
+        ) {
           // Password change logic would go here
-          console.log('Password changed')
+          // For demo: just clear fields
+          this.passwordChange = { current: '', new: '', confirm: '' }
         }
-        
-        isEditing.value = false
-      }
-      
-      return {
-        isEditing,
-        userProfile,
-        editedProfile,
-        passwordChange,
-        showPassword,
-        accountActivities,
-        getStatusText,
-        togglePasswordVisibility,
-        cancelEdit,
-        saveProfile
+        this.isEditing = false
       }
     }
   }

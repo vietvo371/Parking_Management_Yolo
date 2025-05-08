@@ -162,6 +162,8 @@
               <td class="px-6 py-4 whitespace-nowrap">{{ convertDate(resident.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex space-x-2">
+                  <button v-if="resident.phe_duyet === 0" @click="duyetCuDan(resident)"
+                    class="px-3 py-1 text-sm text-white bg-green-600 border border-gray-300 dark:border-gray-600 rounded-md">Duyệt</button>
                   <button @click="openChiTietCuDan(resident)"
                     class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md">Chi
                     tiết</button>
@@ -418,7 +420,21 @@ export default {
     toggleFilterMenu() {
       this.showFilterMenu = !this.showFilterMenu
     },
-
+    duyetCuDan(resident) {
+      const notificationStore = useNotificationStore();
+      baseRequest.post("admin/cu-dan/duyet", { id: resident.id }).then((response) => {
+        if (response.data.status) {
+          notificationStore.showSuccess(response.data.message)
+          this.getCuDan()
+        } else {
+          notificationStore.showError(response.data.message)
+        }
+      })
+      .catch((res) => {
+        var errors = Object.values(res.response.data.errors);
+        notificationStore.showError(errors[0]);
+      });
+    },
     handleClickOutside(event) {
       const filterButton = event.target.closest('.relative')
       if (!filterButton) {

@@ -27,7 +27,7 @@
             <div>
               <div class="flex justify-between items-center mb-1">
                 <span class="text-sm font-medium">Ô tô</span>
-                <span class="text-sm">{{ parkingStatus.car.used }}/{{ parkingStatus.car.total }}</span>
+                <span v-if="parkingStatus && parkingStatus.car" class="text-sm">{{ parkingStatus.car.used }}/{{ parkingStatus.car.total }}</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                 <div 
@@ -142,7 +142,7 @@
               <h3 class="text-md font-medium mb-3">Khu vực A - Ô tô</h3>
               <div class="grid grid-cols-5 gap-2">
                 <div 
-                  v-for="spot in parkingSpots.A.car" 
+                  v-for="spot in parkingSpots.A?.car || []" 
                   :key="`A-car-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
@@ -155,7 +155,7 @@
               <h3 class="text-md font-medium mb-3 mt-4">Khu vực A - Xe máy</h3>
               <div class="grid grid-cols-8 gap-1">
                 <div 
-                  v-for="spot in parkingSpots.A.motorbike" 
+                  v-for="spot in parkingSpots.A?.motorbike || []" 
                   :key="`A-motorbike-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
@@ -171,7 +171,7 @@
               <h3 class="text-md font-medium mb-3">Khu vực B - Ô tô</h3>
               <div class="grid grid-cols-5 gap-2">
                 <div 
-                  v-for="spot in parkingSpots.B.car" 
+                  v-for="spot in parkingSpots.B?.car || []" 
                   :key="`B-car-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
@@ -184,7 +184,7 @@
               <h3 class="text-md font-medium mb-3 mt-4">Khu vực B - Xe máy</h3>
               <div class="grid grid-cols-8 gap-1">
                 <div 
-                  v-for="spot in parkingSpots.B.motorbike" 
+                  v-for="spot in parkingSpots.B?.motorbike || []" 
                   :key="`B-motorbike-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
@@ -200,7 +200,7 @@
               <h3 class="text-md font-medium mb-3">Khu vực C - Ô tô</h3>
               <div class="grid grid-cols-5 gap-2">
                 <div 
-                  v-for="spot in parkingSpots.C.car" 
+                  v-for="spot in parkingSpots.C?.car || []" 
                   :key="`C-car-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
@@ -213,7 +213,7 @@
               <h3 class="text-md font-medium mb-3 mt-4">Khu vực C - Xe máy</h3>
               <div class="grid grid-cols-8 gap-1">
                 <div 
-                  v-for="spot in parkingSpots.C.motorbike" 
+                  v-for="spot in parkingSpots.C?.motorbike || []" 
                   :key="`C-motorbike-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
@@ -418,7 +418,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex justify-end space-x-2">
-                    <button class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
+                    <button class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400" @click="openHistoryDetailModal(entry)">
                       <Eye class="h-4 w-4" />
                     </button>
                     <button class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
@@ -431,11 +431,50 @@
           </table>
         </div>
       </div>
+  
+      <!-- Modal chi tiết lịch sử gần đây -->
+      <div v-if="showHistoryDetailModal && selectedHistoryEntry" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="text-lg font-medium">Chi tiết lượt {{ selectedHistoryEntry.type === 'in' ? 'vào' : 'ra' }}</h3>
+            <button @click="closeHistoryDetailModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+              <X class="h-5 w-5" />
+            </button>
+          </div>
+          <div class="p-4 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Biển số xe</p>
+                <p class="font-medium">{{ selectedHistoryEntry.licensePlate }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Loại</p>
+                <p class="font-medium">{{ selectedHistoryEntry.type === 'in' ? 'Vào' : 'Ra' }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Vị trí</p>
+                <p class="font-medium">{{ selectedHistoryEntry.spot }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Thời gian</p>
+                <p class="font-medium">{{ selectedHistoryEntry.time }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Thời gian đỗ</p>
+                <p class="font-medium">{{ selectedHistoryEntry.duration || '-' }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Phí</p>
+                <p class="font-medium">{{ selectedHistoryEntry.fee ? formatCurrency(selectedHistoryEntry.fee) : '-' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
   
   <script>
-  import { ref, computed } from 'vue'
   import { 
     Search, 
     RefreshCcw, 
@@ -459,184 +498,104 @@
       Eye,
       Printer
     },
-    setup() {
-      const searchQuery = ref('')
-      const selectedArea = ref('all')
-      const selectedVehicleType = ref('all')
-      const selectedSpot = ref(null)
-      
-      // Parking status data
-      const parkingStatus = ref({
-        car: {
-          total: 60,
-          used: 42
+    data() {
+      return {
+        searchQuery: '',
+        selectedArea: 'all',
+        selectedVehicleType: 'all',
+        selectedSpot: null,
+        // Modal states
+        showCheckInModal: false,
+        showCheckOutModal: false,
+        showReserveModal: false,
+        showCancelReserveModal: false,
+        showVehicleDetailModal: false,
+        showHistoryDetailModal: false,
+        selectedHistoryEntry: null,
+        // Form data for modals
+        checkInForm: {
+          licensePlate: '',
+          owner: '',
+          model: '',
+          entryTime: ''
         },
-        motorbike: {
-          total: 120,
-          used: 85
+        checkOutForm: {
+          licensePlate: '',
+          exitTime: ''
         },
-        visitor: {
-          total: 20,
-          used: 8
+        reserveForm: {
+          name: '',
+          time: ''
+        },
+        // Parking status data
+        parkingStatus: {
+          car: { total: 0, used: 0 },
+          motorbike: { total: 0, used: 0 },
+          visitor: { total: 0, used: 0 }
+        },
+        // Today's statistics
+        todayStats: {
+          entries: 85,
+          entriesChange: 12,
+          exits: 65,
+          exitsChange: 8,
+          avgTime: 45,
+          occupancyRate: 75,
+          occupancyChange: 5
+        },
+        // Recent activities
+        recentActivities: [
+          { title: 'Xe vào: 30A-12345', time: '10:25', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+          { title: 'Xe ra: 30F-54321', time: '10:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+          { title: 'Xe vào: 29P2-12345', time: '09:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+          { title: 'Xe ra: 30K1-65432', time: '09:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+          { title: 'Xe vào: 30A-56789', time: '08:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' }
+        ],
+        // Parking spots data
+        parkingSpots: {},
+        // Recent entries and exits
+        recentEntries: [
+          { id: 'ENT-001', time: '10:25', type: 'in', licensePlate: '30A-12345', spot: 'A-C05', duration: null, fee: null },
+          { id: 'ENT-002', time: '10:15', type: 'out', licensePlate: '30F-54321', spot: 'B-C12', duration: '2h 30m', fee: 20000 },
+          { id: 'ENT-003', time: '09:45', type: 'in', licensePlate: '29P2-12345', spot: 'C-M08', duration: null, fee: null },
+          { id: 'ENT-004', time: '09:30', type: 'in', licensePlate: '30H-98765', spot: 'A-C18', duration: null, fee: null },
+          { id: 'ENT-005', time: '09:15', type: 'out', licensePlate: '30K1-65432', spot: 'A-M22', duration: '1h 45m', fee: 10000 },
+          { id: 'ENT-006', time: '08:45', type: 'in', licensePlate: '30A-56789', spot: 'B-C08', duration: null, fee: null },
+          { id: 'ENT-007', time: '08:30', type: 'out', licensePlate: '30H-98765', spot: 'C-C15', duration: '12h 15m', fee: 50000 },
+          { id: 'ENT-008', time: '08:15', type: 'in', licensePlate: '29Y2-54321', spot: 'A-M15', duration: null, fee: null }
+        ]
+      }
+    },
+    mounted() {
+      this.generateAllParkingSpots()
+    },
+    methods: {
+      generateAllParkingSpots() {
+        this.parkingSpots = {
+          A: {
+            car: this.generateParkingSpots('A', 'car', 20),
+            motorbike: this.generateParkingSpots('A', 'motorbike', 40)
+          },
+          B: {
+            car: this.generateParkingSpots('B', 'car', 20),
+            motorbike: this.generateParkingSpots('B', 'motorbike', 40)
+          },
+          C: {
+            car: this.generateParkingSpots('C', 'car', 20),
+            motorbike: this.generateParkingSpots('C', 'motorbike', 40)
+          }
         }
-      })
-      
-      // Today's statistics
-      const todayStats = ref({
-        entries: 85,
-        entriesChange: 12,
-        exits: 65,
-        exitsChange: 8,
-        avgTime: 45,
-        occupancyRate: 75,
-        occupancyChange: 5
-      })
-      
-      // Recent activities
-      const recentActivities = ref([
-        {
-          title: 'Xe vào: 30A-12345',
-          time: '10:25',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
-        },
-        {
-          title: 'Xe ra: 30F-54321',
-          time: '10:15',
-          icon: LogOut,
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600'
-        },
-        {
-          title: 'Xe vào: 29P2-12345',
-          time: '09:45',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
-        },
-        {
-          title: 'Xe ra: 30K1-65432',
-          time: '09:15',
-          icon: LogOut,
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600'
-        },
-        {
-          title: 'Xe vào: 30A-56789',
-          time: '08:45',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
-        }
-      ])
-      
-      // Parking spots data
-      const parkingSpots = ref({
-        A: {
-          car: generateParkingSpots('A', 'car', 20),
-          motorbike: generateParkingSpots('A', 'motorbike', 40)
-        },
-        B: {
-          car: generateParkingSpots('B', 'car', 20),
-          motorbike: generateParkingSpots('B', 'motorbike', 40)
-        },
-        C: {
-          car: generateParkingSpots('C', 'car', 20),
-          motorbike: generateParkingSpots('C', 'motorbike', 40)
-        }
-      })
-      
-      // Recent entries and exits
-      const recentEntries = ref([
-        {
-          id: 'ENT-001',
-          time: '10:25',
-          type: 'in',
-          licensePlate: '30A-12345',
-          spot: 'A-C05',
-          duration: null,
-          fee: null
-        },
-        {
-          id: 'ENT-002',
-          time: '10:15',
-          type: 'out',
-          licensePlate: '30F-54321',
-          spot: 'B-C12',
-          duration: '2h 30m',
-          fee: 20000
-        },
-        {
-          id: 'ENT-003',
-          time: '09:45',
-          type: 'in',
-          licensePlate: '29P2-12345',
-          spot: 'C-M08',
-          duration: null,
-          fee: null
-        },
-        {
-          id: 'ENT-004',
-          time: '09:30',
-          type: 'in',
-          licensePlate: '30H-98765',
-          spot: 'A-C18',
-          duration: null,
-          fee: null
-        },
-        {
-          id: 'ENT-005',
-          time: '09:15',
-          type: 'out',
-          licensePlate: '30K1-65432',
-          spot: 'A-M22',
-          duration: '1h 45m',
-          fee: 10000
-        },
-        {
-          id: 'ENT-006',
-          time: '08:45',
-          type: 'in',
-          licensePlate: '30A-56789',
-          spot: 'B-C08',
-          duration: null,
-          fee: null
-        },
-        {
-          id: 'ENT-007',
-          time: '08:30',
-          type: 'out',
-          licensePlate: '30H-98765',
-          spot: 'C-C15',
-          duration: '12h 15m',
-          fee: 50000
-        },
-        {
-          id: 'ENT-008',
-          time: '08:15',
-          type: 'in',
-          licensePlate: '29Y2-54321',
-          spot: 'A-M15',
-          duration: null,
-          fee: null
-        }
-      ])
-      
-      // Generate parking spots
-      function generateParkingSpots(area, type, count) {
+      },
+      generateParkingSpots(area, type, count) {
         const spots = []
         const prefix = type === 'car' ? 'C' : 'M'
-        
         for (let i = 1; i <= count; i++) {
           const id = `${prefix}${i.toString().padStart(2, '0')}`
           const randomStatus = Math.random()
           let status, isResident, vehicle, reservation
-          
           if (randomStatus < 0.6) {
             status = 'occupied'
             isResident = Math.random() > 0.3
-            
             if (isResident) {
               vehicle = {
                 licensePlate: `30${String.fromCharCode(65 + Math.floor(Math.random() * 26))}-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -663,7 +622,6 @@
           } else {
             status = 'available'
           }
-          
           spots.push({
             id,
             area,
@@ -674,12 +632,9 @@
             reservation
           })
         }
-        
         return spots
-      }
-      
-      // Get CSS class for parking spot
-      function getSpotClass(spot) {
+      },
+      getSpotClass(spot) {
         if (spot.status === 'available') {
           return 'bg-gray-100 border-gray-300 text-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300'
         } else if (spot.status === 'occupied') {
@@ -693,48 +648,55 @@
         } else if (spot.status === 'reserved') {
           return 'bg-purple-100 border-purple-300 text-purple-800 dark:bg-purple-900 dark:border-purple-700 dark:text-purple-300'
         }
-      }
-      
-      // Get text for status
-      function getStatusText(status) {
+      },
+      getStatusText(status) {
         switch (status) {
-          case 'available':
-            return 'Trống'
-          case 'occupied':
-            return 'Đã đỗ'
-          case 'unavailable':
-            return 'Không khả dụng'
-          case 'reserved':
-            return 'Đã đặt trước'
-          default:
-            return status
+          case 'available': return 'Trống'
+          case 'occupied': return 'Đã đỗ'
+          case 'unavailable': return 'Không khả dụng'
+          case 'reserved': return 'Đã đặt trước'
+          default: return status
         }
-      }
-      
-      // Select a parking spot
-      function selectSpot(spot) {
-        selectedSpot.value = { ...spot }
-      }
-      
-      // Format currency
-      function formatCurrency(value) {
+      },
+      selectSpot(spot) {
+        this.selectedSpot = { ...spot }
+      },
+      // Modal open/close handlers
+      openCheckInModal() {
+        this.checkInForm = { licensePlate: '', owner: '', model: '', entryTime: '' }
+        this.showCheckInModal = true
+      },
+      openCheckOutModal() {
+        this.checkOutForm = { licensePlate: this.selectedSpot?.vehicle?.licensePlate || '', exitTime: '' }
+        this.showCheckOutModal = true
+      },
+      openReserveModal() {
+        this.reserveForm = { name: '', time: '' }
+        this.showReserveModal = true
+      },
+      openCancelReserveModal() {
+        this.showCancelReserveModal = true
+      },
+      openVehicleDetailModal() {
+        this.showVehicleDetailModal = true
+      },
+      closeAllModals() {
+        this.showCheckInModal = false
+        this.showCheckOutModal = false
+        this.showReserveModal = false
+        this.showCancelReserveModal = false
+        this.showVehicleDetailModal = false
+      },
+      formatCurrency(value) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-      }
-      
-      return {
-        searchQuery,
-        selectedArea,
-        selectedVehicleType,
-        selectedSpot,
-        parkingStatus,
-        todayStats,
-        recentActivities,
-        parkingSpots,
-        recentEntries,
-        getSpotClass,
-        getStatusText,
-        selectSpot,
-        formatCurrency
+      },
+      openHistoryDetailModal(entry) {
+        this.selectedHistoryEntry = entry
+        this.showHistoryDetailModal = true
+      },
+      closeHistoryDetailModal() {
+        this.showHistoryDetailModal = false
+        this.selectedHistoryEntry = null
       }
     }
   }

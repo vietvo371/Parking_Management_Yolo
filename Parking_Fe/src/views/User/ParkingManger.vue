@@ -205,360 +205,272 @@
       </div>
   
       <!-- Reserve Spot Modal -->
-      <div v-if="showReserveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Đặt chỗ đỗ xe</h3>
-            <button @click="showReserveModal = false" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
+      <a-modal v-model:open="showReserveModal" title="Đặt chỗ đỗ xe" width="520px" :bodyStyle="{padding: '28px 24px 12px 24px'}">
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <a-button @click="showReserveModal = false">Hủy</a-button>
+            <a-button type="primary" @click="reserveSpot">
+              <template #icon><Calendar class="h-4 w-4 mr-1" /></template>
+              Đặt chỗ
+            </a-button>
           </div>
-          <div class="p-4">
-            <form @submit.prevent="reserveSpot">
-              <div class="space-y-4">
-                <div>
-                  <label for="reserveFloor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tầng *</label>
-                  <select 
-                    id="reserveFloor" 
-                    v-model="reserveData.floorId"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option v-for="floor in floors" :key="floor.id" :value="floor.id">
-                      {{ floor.name }}
-                    </option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="reserveVehicleType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loại xe *</label>
-                  <select 
-                    id="reserveVehicleType" 
-                    v-model="reserveData.vehicleType"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option value="car">Ô tô</option>
-                    <option value="motorbike">Xe máy</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="reserveVehicle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Xe *</label>
-                  <select 
-                    id="reserveVehicle" 
-                    v-model="reserveData.vehicleId"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option value="">Chọn xe</option>
-                    <option v-for="vehicle in filteredVehicles" :key="vehicle.id" :value="vehicle.id">
-                      {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
-                    </option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label for="reserveDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ngày đặt *</label>
-                  <input 
-                    id="reserveDate" 
-                    type="date" 
-                    v-model="reserveData.date"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  />
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
+        </template>
+        <a-form :model="reserveData" layout="vertical">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a-form-item label="Tầng" required class="mb-0">
+              <a-select v-model:value="reserveData.floorId" size="large">
+                <template #suffixIcon><LayoutGrid class="h-4 w-4 text-gray-500" /></template>
+                <a-select-option v-for="floor in floors" :key="floor.id" :value="floor.id">
+                  {{ floor.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item label="Loại xe" required class="mb-0">
+              <a-select v-model:value="reserveData.vehicleType" size="large">
+                <template #suffixIcon><Car class="h-4 w-4 text-gray-500" /></template>
+                <a-select-option value="car">Ô tô</a-select-option>
+                <a-select-option value="motorbike">Xe máy</a-select-option>
+              </a-select>
+            </a-form-item>
+          </div>
+          <a-form-item label="Xe" required class="mt-4">
+            <a-select v-model:value="reserveData.vehicleId" size="large">
+              <template #suffixIcon><Car class="h-4 w-4 text-gray-500" /></template>
+              <a-select-option value="">Chọn xe</a-select-option>
+              <a-select-option v-for="vehicle in filteredVehicles" :key="vehicle.id" :value="vehicle.id">
+                <div class="flex items-center">
+                  <Car class="h-4 w-4 mr-2 text-gray-500" />
                   <div>
-                    <label for="reserveStartTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Giờ bắt đầu *</label>
-                    <input 
-                      id="reserveStartTime" 
-                      type="time" 
-                      v-model="reserveData.startTime"
-                      required
-                      class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    />
-                  </div>
-                  <div>
-                    <label for="reserveEndTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Giờ kết thúc *</label>
-                    <input 
-                      id="reserveEndTime" 
-                      type="time" 
-                      v-model="reserveData.endTime"
-                      required
-                      class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    />
+                    <div class="font-medium">{{ vehicle.licensePlate }}</div>
+                    <div class="text-xs text-gray-500">{{ vehicle.brand }} {{ vehicle.model }}</div>
                   </div>
                 </div>
-                
-                <div>
-                  <label for="reserveNote" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ghi chú</label>
-                  <textarea 
-                    id="reserveNote" 
-                    v-model="reserveData.note"
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    placeholder="Nhập ghi chú (nếu có)"
-                    rows="2"
-                  ></textarea>
-                </div>
-                
-                <div class="pt-4 flex justify-end space-x-2">
-                  <button 
-                    type="button" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    @click="showReserveModal = false"
-                  >
-                    Hủy
-                  </button>
-                  <button 
-                    type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    Đặt chỗ
-                  </button>
-                </div>
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a-form-item label="Ngày đặt" required class="mb-0">
+              <a-date-picker v-model:value="reserveData.date" class="w-full" size="large">
+                <template #suffixIcon><Calendar class="h-4 w-4 text-gray-500" /></template>
+              </a-date-picker>
+            </a-form-item>
+            <div class="grid grid-cols-2 gap-2">
+              <a-form-item label="Giờ bắt đầu" required class="mb-0">
+                <a-time-picker v-model:value="reserveData.startTime" class="w-full" size="large">
+                  <template #suffixIcon><Clock class="h-4 w-4 text-gray-500" /></template>
+                </a-time-picker>
+              </a-form-item>
+              <a-form-item label="Giờ kết thúc" required class="mb-0">
+                <a-time-picker v-model:value="reserveData.endTime" class="w-full" size="large">
+                  <template #suffixIcon><Clock class="h-4 w-4 text-gray-500" /></template>
+                </a-time-picker>
+              </a-form-item>
+            </div>
+          </div>
+          <a-form-item label="Ghi chú" class="mt-4">
+            <a-textarea 
+              v-model:value="reserveData.note" 
+              placeholder="Nhập ghi chú (nếu có)" 
+              :rows="2"
+              class="resize-none"
+              size="large"
+            />
+          </a-form-item>
+          <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-4 py-3 mt-6 mb-2">
+            <h4 class="font-semibold text-base mb-2">Thông tin đặt chỗ</h4>
+            <div class="flex flex-col gap-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Phí đặt chỗ:</span>
+                <span class="font-semibold">{{ formatCurrency(calculateReservationFee()) }}</span>
               </div>
-            </form>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Thời gian:</span>
+                <span class="font-semibold">{{ calculateDuration() }}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </a-form>
+      </a-modal>
   
       <!-- Spot Details Modal -->
-      <div v-if="selectedSpot" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-2xl w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Chi tiết vị trí đỗ xe</h3>
-            <button @click="selectedSpot = null" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
+      <a-modal v-model:open="showSpotDetailsModal" title="Chi tiết vị trí đỗ xe" width="800px">
+        <template #footer>
+          <div class="flex justify-end space-x-2">
+            <a-button @click="showSpotDetailsModal = false">Đóng</a-button>
+            <a-button v-if="isExpiringSoon(selectedSpot?.expiryDate)" type="primary" @click="showRenewModal(selectedSpot)">
+              Gia hạn
+            </a-button>
+            <a-button type="primary" @click="showAssignVehicleModal(selectedSpot)">
+              Đăng ký xe
+            </a-button>
           </div>
-          <div class="p-4">
-            <div class="space-y-6">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                  <MapPin class="h-5 w-5 mr-2 text-blue-600" />
-                  <h2 class="text-xl font-bold">{{ selectedSpot.code }}</h2>
-                </div>
-                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                  :class="{
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': selectedSpot.status === 'available',
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300': selectedSpot.status === 'occupied',
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300': selectedSpot.status === 'reserved'
-                  }">
-                  {{ getStatusText(selectedSpot.status) }}
-                </span>
+        </template>
+        <div v-if="selectedSpot" class="space-y-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <MapPin class="h-5 w-5 mr-2 text-blue-600" />
+              <h2 class="text-xl font-bold">{{ selectedSpot.code }}</h2>
+            </div>
+            <a-tag :color="getStatusColor(selectedSpot.status)">
+              {{ getStatusText(selectedSpot.status) }}
+            </a-tag>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-500">Tầng</p>
+              <p class="font-medium">{{ getFloorName(selectedSpot.floorId) }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Loại xe</p>
+              <p class="font-medium">{{ selectedSpot.vehicleType === 'car' ? 'Ô tô' : 'Xe máy' }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Kích thước</p>
+              <p class="font-medium">{{ selectedSpot.size }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Hạn sử dụng</p>
+              <p class="font-medium" :class="{
+                'text-red-600': isExpiringSoon(selectedSpot.expiryDate),
+                'text-green-600': !isExpiringSoon(selectedSpot.expiryDate)
+              }">{{ selectedSpot.expiryDate }}</p>
+            </div>
+          </div>
+          
+          <div v-if="selectedSpot.licensePlate" class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <h4 class="font-medium mb-2">Thông tin xe đang đỗ</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Biển số xe</p>
+                <p class="font-medium">{{ selectedSpot.licensePlate }}</p>
               </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p class="text-sm text-gray-500">Tầng</p>
-                  <p class="font-medium">{{ getFloorName(selectedSpot.floorId) }}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Loại xe</p>
-                  <p class="font-medium">{{ selectedSpot.vehicleType === 'car' ? 'Ô tô' : 'Xe máy' }}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Kích thước</p>
-                  <p class="font-medium">{{ selectedSpot.size }}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Hạn sử dụng</p>
-                  <p class="font-medium" :class="{
-                    'text-red-600': isExpiringSoon(selectedSpot.expiryDate),
-                    'text-green-600': !isExpiringSoon(selectedSpot.expiryDate)
-                  }">{{ selectedSpot.expiryDate }}</p>
-                </div>
+              <div>
+                <p class="text-sm text-gray-500">Thời gian vào</p>
+                <p class="font-medium">{{ selectedSpot.entryTime || 'N/A' }}</p>
               </div>
-              
-              <div v-if="selectedSpot.licensePlate" class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-                <h4 class="font-medium mb-2">Thông tin xe đang đỗ</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+          </div>
+          
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <h4 class="font-medium mb-2">Lịch sử đỗ xe gần đây</h4>
+            <div class="space-y-2">
+              <div v-for="(history, index) in selectedSpot.history" :key="index" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                <div class="flex justify-between">
                   <div>
-                    <p class="text-sm text-gray-500">Biển số xe</p>
-                    <p class="font-medium">{{ selectedSpot.licensePlate }}</p>
+                    <p class="text-sm font-medium">{{ history.licensePlate }}</p>
+                    <p class="text-xs text-gray-500">{{ history.entryTime }} - {{ history.exitTime }}</p>
                   </div>
-                  <div>
-                    <p class="text-sm text-gray-500">Thời gian vào</p>
-                    <p class="font-medium">{{ selectedSpot.entryTime || 'N/A' }}</p>
-                  </div>
+                  <p class="text-sm">{{ history.duration }}</p>
                 </div>
               </div>
-              
-              <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-                <h4 class="font-medium mb-2">Lịch sử đỗ xe gần đây</h4>
-                <div class="space-y-2">
-                  <div v-for="(history, index) in selectedSpot.history" :key="index" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
-                    <div class="flex justify-between">
-                      <div>
-                        <p class="text-sm font-medium">{{ history.licensePlate }}</p>
-                        <p class="text-xs text-gray-500">{{ history.entryTime }} - {{ history.exitTime }}</p>
-                      </div>
-                      <p class="text-sm">{{ history.duration }}</p>
-                    </div>
-                  </div>
-                  <div v-if="!selectedSpot.history || selectedSpot.history.length === 0" class="text-sm text-gray-500 text-center py-2">
-                    Không có lịch sử đỗ xe
-                  </div>
-                </div>
-              </div>
-              
-              <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 flex justify-end space-x-2">
-                <button v-if="isExpiringSoon(selectedSpot.expiryDate)" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm" @click="showRenewModal(selectedSpot)">
-                  Gia hạn
-                </button>
-                <button class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-sm" @click="showAssignVehicleModal(selectedSpot)">
-                  Đăng ký xe
-                </button>
+              <div v-if="!selectedSpot.history || selectedSpot.history.length === 0" class="text-sm text-gray-500 text-center py-2">
+                Không có lịch sử đỗ xe
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </a-modal>
   
       <!-- Assign Vehicle Modal -->
-      <div v-if="showAssignModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Đăng ký xe cho vị trí {{ assignData.spotCode }}</h3>
-            <button @click="showAssignModal = false" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
+      <a-modal v-model:open="showAssignModal" title="Đăng ký xe cho vị trí" width="420px" :bodyStyle="{padding: '28px 24px 12px 24px'}">
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <a-button @click="showAssignModal = false">Hủy</a-button>
+            <a-button type="primary" @click="assignVehicle">
+              <template #icon><Car class="h-4 w-4 mr-1" /></template>
+              Đăng ký
+            </a-button>
           </div>
-          <div class="p-4">
-            <form @submit.prevent="assignVehicle">
-              <div class="space-y-4">
-                <div>
-                  <label for="assignVehicle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Chọn xe *</label>
-                  <select 
-                    id="assignVehicle" 
-                    v-model="assignData.vehicleId"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option value="">Chọn xe</option>
-                    <option v-for="vehicle in filteredVehiclesForSpot" :key="vehicle.id" :value="vehicle.id">
-                      {{ vehicle.licensePlate }} - {{ vehicle.brand }} {{ vehicle.model }}
-                    </option>
-                  </select>
+        </template>
+        <a-form :model="assignData" layout="vertical">
+          <div class="rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-4 py-3 mb-4 flex items-center gap-3">
+            <MapPin class="h-5 w-5 text-blue-600" />
+            <div>
+              <div class="font-semibold text-base">{{ assignData.spotCode }}</div>
+              <div class="text-xs text-gray-500">{{ getFloorName(assignData.floorId) }}</div>
+            </div>
+          </div>
+          <a-form-item label="Chọn xe" required>
+            <a-select v-model:value="assignData.vehicleId" size="large">
+              <template #suffixIcon><Car class="h-4 w-4 text-gray-500" /></template>
+              <a-select-option value="">Chọn xe</a-select-option>
+              <a-select-option v-for="vehicle in filteredVehiclesForSpot" :key="vehicle.id" :value="vehicle.id">
+                <div class="flex items-center">
+                  <Car class="h-4 w-4 mr-2 text-gray-500" />
+                  <div>
+                    <div class="font-medium">{{ vehicle.licensePlate }}</div>
+                    <div class="text-xs text-gray-500">{{ vehicle.brand }} {{ vehicle.model }}</div>
+                  </div>
                 </div>
-                
-                <div>
-                  <label for="assignDefault" class="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    <input 
-                      id="assignDefault" 
-                      type="checkbox" 
-                      v-model="assignData.isDefault"
-                      class="rounded border-gray-300 dark:border-gray-600 text-blue-600"
-                    />
-                    <span>Đặt làm xe mặc định cho vị trí này</span>
-                  </label>
-                </div>
-                
-                <div class="pt-4 flex justify-end space-x-2">
-                  <button 
-                    type="button" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    @click="showAssignModal = false"
-                  >
-                    Hủy
-                  </button>
-                  <button 
-                    type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    Đăng ký
-                  </button>
-                </div>
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item class="mt-2">
+            <a-checkbox v-model:checked="assignData.isDefault">
+              <span class="flex items-center"><Star class="h-4 w-4 mr-1 text-yellow-500" /> Đặt làm xe mặc định cho vị trí này</span>
+            </a-checkbox>
+          </a-form-item>
+          <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-4 py-3 mt-6 mb-2">
+            <h4 class="font-semibold text-base mb-2">Thông tin đăng ký</h4>
+            <div class="flex flex-col gap-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Loại xe:</span>
+                <span class="font-semibold">{{ getVehicleTypeText(assignData.vehicleType) }}</span>
               </div>
-            </form>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Kích thước vị trí:</span>
+                <span class="font-semibold">{{ getSpotSize(assignData.spotId) }}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </a-form>
+      </a-modal>
   
       <!-- Renew Spot Modal -->
-      <div v-if="showRenewSpotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Gia hạn vị trí đỗ xe</h3>
-            <button @click="showRenewSpotModal = false" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
+      <a-modal v-model:open="showRenewSpotModal" title="Gia hạn vị trí đỗ xe" width="500px">
+        <template #footer>
+          <div class="flex justify-end space-x-2">
+            <a-button @click="showRenewSpotModal = false">Hủy</a-button>
+            <a-button type="primary" @click="renewSpot">Thanh toán và gia hạn</a-button>
           </div>
-          <div class="p-4">
-            <form @submit.prevent="renewSpot">
-              <div class="space-y-4">
-                <div>
-                  <p class="text-sm text-gray-500">Vị trí đỗ xe</p>
-                  <p class="font-medium">{{ renewData.spotCode }}</p>
-                </div>
-                
-                <div>
-                  <p class="text-sm text-gray-500">Hạn sử dụng hiện tại</p>
-                  <p class="font-medium text-red-600">{{ renewData.currentExpiryDate }}</p>
-                </div>
-                
-                <div>
-                  <label for="renewPeriod" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thời hạn gia hạn *</label>
-                  <select 
-                    id="renewPeriod" 
-                    v-model="renewData.period"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option value="1">1 tháng</option>
-                    <option value="3">3 tháng</option>
-                    <option value="6">6 tháng</option>
-                    <option value="12">12 tháng</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <p class="text-sm text-gray-500">Phí gia hạn</p>
-                  <p class="font-medium text-lg">{{ formatCurrency(calculateRenewalFee(renewData.period, renewData.vehicleType)) }}</p>
-                </div>
-                
-                <div>
-                  <label for="renewPaymentMethod" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phương thức thanh toán *</label>
-                  <select 
-                    id="renewPaymentMethod" 
-                    v-model="renewData.paymentMethod"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option value="bank">Chuyển khoản ngân hàng</option>
-                    <option value="momo">Ví MoMo</option>
-                    <option value="vnpay">VNPay</option>
-                    <option value="cash">Tiền mặt</option>
-                  </select>
-                </div>
-                
-                <div class="pt-4 flex justify-end space-x-2">
-                  <button 
-                    type="button" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    @click="showRenewSpotModal = false"
-                  >
-                    Hủy
-                  </button>
-                  <button 
-                    type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    Thanh toán và gia hạn
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+        </template>
+        <a-form :model="renewData" layout="vertical">
+          <a-form-item label="Vị trí đỗ xe">
+            <p class="font-medium">{{ renewData.spotCode }}</p>
+          </a-form-item>
+          
+          <a-form-item label="Hạn sử dụng hiện tại">
+            <p class="font-medium text-red-600">{{ renewData.currentExpiryDate }}</p>
+          </a-form-item>
+          
+          <a-form-item label="Thời hạn gia hạn" required>
+            <a-select v-model:value="renewData.period">
+              <a-select-option value="1">1 tháng</a-select-option>
+              <a-select-option value="3">3 tháng</a-select-option>
+              <a-select-option value="6">6 tháng</a-select-option>
+              <a-select-option value="12">12 tháng</a-select-option>
+            </a-select>
+          </a-form-item>
+          
+          <a-form-item label="Phí gia hạn">
+            <p class="font-medium text-lg">{{ formatCurrency(calculateRenewalFee(renewData.period, renewData.vehicleType)) }}</p>
+          </a-form-item>
+          
+          <a-form-item label="Phương thức thanh toán" required>
+            <a-select v-model:value="renewData.paymentMethod">
+              <a-select-option value="bank">Chuyển khoản ngân hàng</a-select-option>
+              <a-select-option value="momo">Ví MoMo</a-select-option>
+              <a-select-option value="vnpay">VNPay</a-select-option>
+              <a-select-option value="cash">Tiền mặt</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </div>
   </template>
   
   <script>
-  import { ref, computed } from 'vue'
   import { 
     Calendar, 
     MapPin, 
@@ -568,8 +480,10 @@
     Eye, 
     Car, 
     X, 
-    User 
+    User, 
+    Star 
   } from 'lucide-vue-next'
+  import { Modal, Button, Form, Input, Select, DatePicker, TimePicker, Checkbox } from 'ant-design-vue'
   
   export default {
     name: 'ParkingSpots',
@@ -582,239 +496,243 @@
       Eye,
       Car,
       X,
-      User
+      User,
+      Star,
+      [Modal.name]: Modal,
+      [Button.name]: Button,
+      [Form.name]: Form,
+      [Input.name]: Input,
+      [Select.name]: Select,
+      [DatePicker.name]: DatePicker,
+      [TimePicker.name]: TimePicker,
+      [Checkbox.name]: Checkbox
     },
-    setup() {
-      const selectedFloor = ref('floor-1')
-      const showReserveModal = ref(false)
-      const showAssignModal = ref(false)
-      const showRenewSpotModal = ref(false)
-      const selectedSpot = ref(null)
-      
-      // Parking stats
-      const parkingStats = ref({
-        mySpots: 2,
-        available: 15,
-        reserved: 3,
-        total: 50
-      })
-      
-      // Floors data
-      const floors = ref([
-        { id: 'floor-1', name: 'Tầng 1' },
-        { id: 'floor-2', name: 'Tầng 2' },
-        { id: 'floor-3', name: 'Tầng 3' }
-      ])
-      
-      // Sample vehicles data
-      const vehicles = ref([
-        {
-          id: 'VEH-001',
-          licensePlate: '30A-12345',
-          type: 'car',
-          brand: 'Toyota',
-          model: 'Camry'
-        },
-        {
-          id: 'VEH-002',
-          licensePlate: '30F-54321',
-          type: 'car',
-          brand: 'Honda',
-          model: 'CR-V'
-        },
-        {
-          id: 'VEH-003',
-          licensePlate: '29P2-12345',
-          type: 'motorbike',
-          brand: 'Honda',
-          model: 'SH'
-        }
-      ])
-      
-      // Sample parking spots data
-      const parkingSpots = ref([
-        {
-          id: 'spot-1',
-          code: 'A-C01',
-          floorId: 'floor-1',
-          vehicleType: 'car',
-          status: 'occupied',
-          isOwner: true,
-          licensePlate: '30A-12345',
-          entryTime: '24/04/2023 - 08:30',
-          expiryDate: '31/05/2023',
-          size: '2.5m x 5.5m',
-          history: [
-            {
-              licensePlate: '30A-12345',
-              entryTime: '20/04/2023 - 08:30',
-              exitTime: '20/04/2023 - 17:45',
-              duration: '9h 15m'
-            },
-            {
-              licensePlate: '30A-12345',
-              entryTime: '21/04/2023 - 08:15',
-              exitTime: '21/04/2023 - 18:00',
-              duration: '9h 45m'
-            }
-          ]
-        },
-        {
-          id: 'spot-2',
-          code: 'B-C05',
-          floorId: 'floor-1',
-          vehicleType: 'car',
-          status: 'available',
-          isOwner: true,
-          licensePlate: '',
-          expiryDate: '15/05/2023',
-          size: '2.5m x 5.5m',
-          history: []
-        },
-        {
-          id: 'spot-3',
-          code: 'A-C02',
-          floorId: 'floor-1',
-          vehicleType: 'car',
-          status: 'occupied',
-          isOwner: false,
-          licensePlate: '30B-12345',
-          size: '2.5m x 5.5m'
-        },
-        {
-          id: 'spot-4',
-          code: 'A-C03',
-          floorId: 'floor-1',
-          vehicleType: 'car',
-          status: 'reserved',
-          isOwner: false,
-          licensePlate: '',
-          size: '2.5m x 5.5m'
-        },
-        {
-          id: 'spot-5',
-          code: 'A-C04',
-          floorId: 'floor-1',
-          vehicleType: 'car',
-          status: 'available',
-          isOwner: false,
-          licensePlate: '',
-          size: '2.5m x 5.5m'
-        },
-        {
-          id: 'spot-6',
-          code: 'A-M01',
-          floorId: 'floor-1',
-          vehicleType: 'motorbike',
-          status: 'available',
-          isOwner: false,
-          licensePlate: '',
-          size: '1.2m x 2.5m'
-        },
-        {
-          id: 'spot-7',
-          code: 'A-M02',
-          floorId: 'floor-1',
-          vehicleType: 'motorbike',
-          status: 'occupied',
-          isOwner: false,
-          licensePlate: '29P1-12345',
-          size: '1.2m x 2.5m'
-        },
-        {
-          id: 'spot-8',
-          code: 'A-C05',
-          floorId: 'floor-2',
-          vehicleType: 'car',
-          status: 'available',
-          isOwner: false,
-          licensePlate: '',
-          size: '2.5m x 5.5m'
-        },
-        {
-          id: 'spot-9',
-          code: 'A-C06',
-          floorId: 'floor-2',
-          vehicleType: 'car',
-          status: 'available',
-          isOwner: false,
-          licensePlate: '',
-          size: '2.5m x 5.5m'
-        },
-        {
-          id: 'spot-10',
-          code: 'A-C07',
-          floorId: 'floor-2',
-          vehicleType: 'car',
-          status: 'available',
-          isOwner: false,
-          licensePlate: '',
-          size: '2.5m x 5.5m'
-        }
-      ])
-      
-      // My parking spots
-      const mySpots = computed(() => {
-        return parkingSpots.value.filter(spot => spot.isOwner)
-      })
-      
-      // Reserve data
-      const reserveData = ref({
-        floorId: 'floor-1',
-        vehicleType: 'car',
-        vehicleId: '',
-        date: '',
-        startTime: '',
-        endTime: '',
-        note: ''
-      })
-      
-      // Assign vehicle data
-      const assignData = ref({
-        spotId: '',
-        spotCode: '',
-        vehicleId: '',
-        isDefault: false
-      })
-      
-      // Renew spot data
-      const renewData = ref({
-        spotId: '',
-        spotCode: '',
-        vehicleType: '',
-        currentExpiryDate: '',
-        period: '3',
-        paymentMethod: 'bank'
-      })
-      
-      // Filtered vehicles based on vehicle type
-      const filteredVehicles = computed(() => {
-        return vehicles.value.filter(vehicle => vehicle.type === reserveData.value.vehicleType)
-      })
-      
-      // Filtered vehicles for spot
-      const filteredVehiclesForSpot = computed(() => {
-        if (!assignData.value.spotId) return []
+    data() {
+      return {
+        selectedFloor: 'floor-1',
+        showReserveModal: false,
+        showAssignModal: false,
+        showRenewSpotModal: false,
+        showSpotDetailsModal: false,
+        selectedSpot: null,
         
-        const spot = parkingSpots.value.find(s => s.id === assignData.value.spotId)
+        // Parking stats
+        parkingStats: {
+          mySpots: 2,
+          available: 15,
+          reserved: 3,
+          total: 50
+        },
+        
+        // Floors data
+        floors: [
+          { id: 'floor-1', name: 'Tầng 1' },
+          { id: 'floor-2', name: 'Tầng 2' },
+          { id: 'floor-3', name: 'Tầng 3' }
+        ],
+        
+        // Sample vehicles data
+        vehicles: [
+          {
+            id: 'VEH-001',
+            licensePlate: '30A-12345',
+            type: 'car',
+            brand: 'Toyota',
+            model: 'Camry'
+          },
+          {
+            id: 'VEH-002',
+            licensePlate: '30F-54321',
+            type: 'car',
+            brand: 'Honda',
+            model: 'CR-V'
+          },
+          {
+            id: 'VEH-003',
+            licensePlate: '29P2-12345',
+            type: 'motorbike',
+            brand: 'Honda',
+            model: 'SH'
+          }
+        ],
+        
+        // Sample parking spots data
+        parkingSpots: [
+          {
+            id: 'spot-1',
+            code: 'A-C01',
+            floorId: 'floor-1',
+            vehicleType: 'car',
+            status: 'occupied',
+            isOwner: true,
+            licensePlate: '30A-12345',
+            entryTime: '24/04/2023 - 08:30',
+            expiryDate: '31/05/2023',
+            size: '2.5m x 5.5m',
+            history: [
+              {
+                licensePlate: '30A-12345',
+                entryTime: '20/04/2023 - 08:30',
+                exitTime: '20/04/2023 - 17:45',
+                duration: '9h 15m'
+              },
+              {
+                licensePlate: '30A-12345',
+                entryTime: '21/04/2023 - 08:15',
+                exitTime: '21/04/2023 - 18:00',
+                duration: '9h 45m'
+              }
+            ]
+          },
+          {
+            id: 'spot-2',
+            code: 'B-C05',
+            floorId: 'floor-1',
+            vehicleType: 'car',
+            status: 'available',
+            isOwner: true,
+            licensePlate: '',
+            expiryDate: '15/05/2023',
+            size: '2.5m x 5.5m',
+            history: []
+          },
+          {
+            id: 'spot-3',
+            code: 'A-C02',
+            floorId: 'floor-1',
+            vehicleType: 'car',
+            status: 'occupied',
+            isOwner: false,
+            licensePlate: '30B-12345',
+            size: '2.5m x 5.5m'
+          },
+          {
+            id: 'spot-4',
+            code: 'A-C03',
+            floorId: 'floor-1',
+            vehicleType: 'car',
+            status: 'reserved',
+            isOwner: false,
+            licensePlate: '',
+            size: '2.5m x 5.5m'
+          },
+          {
+            id: 'spot-5',
+            code: 'A-C04',
+            floorId: 'floor-1',
+            vehicleType: 'car',
+            status: 'available',
+            isOwner: false,
+            licensePlate: '',
+            size: '2.5m x 5.5m'
+          },
+          {
+            id: 'spot-6',
+            code: 'A-M01',
+            floorId: 'floor-1',
+            vehicleType: 'motorbike',
+            status: 'available',
+            isOwner: false,
+            licensePlate: '',
+            size: '1.2m x 2.5m'
+          },
+          {
+            id: 'spot-7',
+            code: 'A-M02',
+            floorId: 'floor-1',
+            vehicleType: 'motorbike',
+            status: 'occupied',
+            isOwner: false,
+            licensePlate: '29P1-12345',
+            size: '1.2m x 2.5m'
+          },
+          {
+            id: 'spot-8',
+            code: 'A-C05',
+            floorId: 'floor-2',
+            vehicleType: 'car',
+            status: 'available',
+            isOwner: false,
+            licensePlate: '',
+            size: '2.5m x 5.5m'
+          },
+          {
+            id: 'spot-9',
+            code: 'A-C06',
+            floorId: 'floor-2',
+            vehicleType: 'car',
+            status: 'available',
+            isOwner: false,
+            licensePlate: '',
+            size: '2.5m x 5.5m'
+          },
+          {
+            id: 'spot-10',
+            code: 'A-C07',
+            floorId: 'floor-2',
+            vehicleType: 'car',
+            status: 'available',
+            isOwner: false,
+            licensePlate: '',
+            size: '2.5m x 5.5m'
+          }
+        ],
+        
+        // Reserve data
+        reserveData: {
+          floorId: 'floor-1',
+          vehicleType: 'car',
+          vehicleId: '',
+          date: '',
+          startTime: '',
+          endTime: '',
+          note: ''
+        },
+        
+        // Assign vehicle data
+        assignData: {
+          spotId: '',
+          spotCode: '',
+          vehicleId: '',
+          isDefault: false
+        },
+        
+        // Renew spot data
+        renewData: {
+          spotId: '',
+          spotCode: '',
+          vehicleType: '',
+          currentExpiryDate: '',
+          period: '3',
+          paymentMethod: 'bank'
+        }
+      }
+    },
+    computed: {
+      mySpots() {
+        return this.parkingSpots.filter(spot => spot.isOwner)
+      },
+      filteredVehicles() {
+        return this.vehicles.filter(vehicle => vehicle.type === this.reserveData.vehicleType)
+      },
+      filteredVehiclesForSpot() {
+        if (!this.assignData.spotId) return []
+        
+        const spot = this.parkingSpots.find(s => s.id === this.assignData.spotId)
         if (!spot) return []
         
-        return vehicles.value.filter(vehicle => vehicle.type === spot.vehicleType)
-      })
-      
-      // Get floor spots
-      function getFloorSpots() {
-        return parkingSpots.value.filter(spot => spot.floorId === selectedFloor.value)
+        return this.vehicles.filter(vehicle => vehicle.type === spot.vehicleType)
       }
-      
-      // Get floor name
-      function getFloorName(floorId) {
-        const floor = floors.value.find(f => f.id === floorId)
+    },
+    methods: {
+      getFloorSpots() {
+        return this.parkingSpots.filter(spot => spot.floorId === this.selectedFloor)
+      },
+      getFloorName(floorId) {
+        const floor = this.floors.find(f => f.id === floorId)
         return floor ? floor.name : floorId
-      }
-      
-      // Get status text
-      function getStatusText(status) {
+      },
+      getStatusText(status) {
         switch (status) {
           case 'available':
             return 'Trống'
@@ -825,49 +743,39 @@
           default:
             return status
         }
-      }
-      
-      // Check if expiry date is soon (within 30 days)
-      function isExpiringSoon(expiryDate) {
+      },
+      isExpiringSoon(expiryDate) {
         const today = new Date()
         const expiry = new Date(expiryDate.split('/').reverse().join('-'))
         const diffTime = expiry - today
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
         
         return diffDays <= 30 && diffDays > 0
-      }
-      
-      // Handle spot click
-      function handleSpotClick(spot) {
+      },
+      handleSpotClick(spot) {
         if (spot.isOwner) {
-          showSpotDetails(spot)
+          this.showSpotDetails(spot)
         } else if (spot.status === 'available') {
-          // In a real app, you would implement the reservation functionality
           console.log('Reserve spot:', spot)
         }
-      }
-      
-      // Show spot details
-      function showSpotDetails(spot) {
-        selectedSpot.value = { ...spot }
-      }
-      
-      // Show assign vehicle modal
-      function showAssignVehicleModal(spot) {
-        assignData.value = {
+      },
+      showSpotDetails(spot) {
+        this.selectedSpot = spot
+        this.showSpotDetailsModal = true
+      },
+      showAssignVehicleModal(spot) {
+        this.assignData = {
           spotId: spot.id,
           spotCode: spot.code,
           vehicleId: '',
           isDefault: false
         }
         
-        showAssignModal.value = true
-        if (selectedSpot.value) selectedSpot.value = null
-      }
-      
-      // Show renew modal
-      function showRenewModal(spot) {
-        renewData.value = {
+        this.showAssignModal = true
+        if (this.selectedSpot) this.selectedSpot = null
+      },
+      showRenewModal(spot) {
+        this.renewData = {
           spotId: spot.id,
           spotCode: spot.code,
           vehicleType: spot.vehicleType,
@@ -876,23 +784,17 @@
           paymentMethod: 'bank'
         }
         
-        showRenewSpotModal.value = true
-        if (selectedSpot.value) selectedSpot.value = null
-      }
-      
-      // Calculate renewal fee
-      function calculateRenewalFee(period, vehicleType) {
+        this.showRenewSpotModal = true
+        if (this.selectedSpot) this.selectedSpot = null
+      },
+      calculateRenewalFee(period, vehicleType) {
         const baseRate = vehicleType === 'car' ? 1000000 : 300000 // VND per month
         return baseRate * parseInt(period)
-      }
-      
-      // Reserve spot
-      function reserveSpot() {
-        // In a real app, you would send the data to the server here
-        console.log('Reserve spot:', reserveData.value)
+      },
+      reserveSpot() {
+        console.log('Reserve spot:', this.reserveData)
         
-        // Reset form and close modal
-        reserveData.value = {
+        this.reserveData = {
           floorId: 'floor-1',
           vehicleType: 'car',
           vehicleId: '',
@@ -902,58 +804,45 @@
           note: ''
         }
         
-        showReserveModal.value = false
-      }
-      
-      // Assign vehicle
-      function assignVehicle() {
-        // In a real app, you would send the data to the server here
-        console.log('Assign vehicle:', assignData.value)
+        this.showReserveModal = false
+      },
+      assignVehicle() {
+        console.log('Assign vehicle:', this.assignData)
         
-        // Update spot in local data
-        const spotIndex = parkingSpots.value.findIndex(s => s.id === assignData.value.spotId)
+        const spotIndex = this.parkingSpots.findIndex(s => s.id === this.assignData.spotId)
         if (spotIndex !== -1) {
-          const vehicle = vehicles.value.find(v => v.id === assignData.value.vehicleId)
+          const vehicle = this.vehicles.find(v => v.id === this.assignData.vehicleId)
           if (vehicle) {
-            parkingSpots.value[spotIndex].licensePlate = vehicle.licensePlate
-            parkingSpots.value[spotIndex].status = 'occupied'
+            this.parkingSpots[spotIndex].licensePlate = vehicle.licensePlate
+            this.parkingSpots[spotIndex].status = 'occupied'
           }
         }
         
-        // Reset form and close modal
-        assignData.value = {
+        this.assignData = {
           spotId: '',
           spotCode: '',
           vehicleId: '',
           isDefault: false
         }
         
-        showAssignModal.value = false
-      }
-      
-      // Renew spot
-      function renewSpot() {
-        // In a real app, you would send the data to the server here
-        console.log('Renew spot:', renewData.value)
+        this.showAssignModal = false
+      },
+      renewSpot() {
+        console.log('Renew spot:', this.renewData)
         
-        // Parse current expiry date
-        const parts = renewData.value.currentExpiryDate.split('/')
+        const parts = this.renewData.currentExpiryDate.split('/')
         const expiryDate = new Date(parts[2], parts[1] - 1, parts[0])
         
-        // Add renewal period
-        expiryDate.setMonth(expiryDate.getMonth() + parseInt(renewData.value.period))
+        expiryDate.setMonth(expiryDate.getMonth() + parseInt(this.renewData.period))
         
-        // Format new expiry date
         const newExpiryDate = `${expiryDate.getDate().toString().padStart(2, '0')}/${(expiryDate.getMonth() + 1).toString().padStart(2, '0')}/${expiryDate.getFullYear()}`
         
-        // Update spot in local data
-        const spotIndex = parkingSpots.value.findIndex(s => s.id === renewData.value.spotId)
+        const spotIndex = this.parkingSpots.findIndex(s => s.id === this.renewData.spotId)
         if (spotIndex !== -1) {
-          parkingSpots.value[spotIndex].expiryDate = newExpiryDate
+          this.parkingSpots[spotIndex].expiryDate = newExpiryDate
         }
         
-        // Reset form and close modal
-        renewData.value = {
+        this.renewData = {
           spotId: '',
           spotCode: '',
           vehicleType: '',
@@ -962,43 +851,38 @@
           paymentMethod: 'bank'
         }
         
-        showRenewSpotModal.value = false
-      }
-      
-      // Format currency
-      function formatCurrency(value) {
+        this.showRenewSpotModal = false
+      },
+      formatCurrency(value) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-      }
-      
-      return {
-        selectedFloor,
-        showReserveModal,
-        showAssignModal,
-        showRenewSpotModal,
-        selectedSpot,
-        parkingStats,
-        floors,
-        vehicles,
-        parkingSpots,
-        mySpots,
-        reserveData,
-        assignData,
-        renewData,
-        filteredVehicles,
-        filteredVehiclesForSpot,
-        getFloorSpots,
-        getFloorName,
-        getStatusText,
-        isExpiringSoon,
-        handleSpotClick,
-        showSpotDetails,
-        showAssignVehicleModal,
-        showRenewModal,
-        calculateRenewalFee,
-        reserveSpot,
-        assignVehicle,
-        renewSpot,
-        formatCurrency
+      },
+      getStatusColor(status) {
+        switch (status) {
+          case 'available':
+            return 'success'
+          case 'occupied':
+            return 'error'
+          case 'reserved':
+            return 'warning'
+          default:
+            return 'default'
+        }
+      },
+      calculateReservationFee() {
+        // Implement fee calculation logic
+        return 50000
+      },
+      calculateDuration() {
+        if (!this.reserveData.startTime || !this.reserveData.endTime) return '--:--'
+        // Implement duration calculation logic
+        return '2 giờ'
+      },
+      getVehicleTypeText(type) {
+        return type === 'car' ? 'Ô tô' : 'Xe máy'
+      },
+      getSpotSize(spotId) {
+        const spot = this.parkingSpots.find(s => s.id === spotId)
+        return spot ? spot.size : '--'
       }
     }
   }

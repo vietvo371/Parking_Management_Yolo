@@ -99,7 +99,7 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <button class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md">
+                  <button @click="openHistoryDetailModal(entry)" class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md">
                     Chi tiết
                   </button>
                 </td>
@@ -108,13 +108,56 @@
           </table>
         </div>
       </div>
+  
+      <!-- Modal chi tiết lịch sử -->
+      <div v-if="showHistoryDetailModal && selectedHistoryEntry" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="text-lg font-medium">Chi tiết lượt {{ selectedHistoryEntry.type }}</h3>
+            <button @click="closeHistoryDetailModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+              <Filter class="h-5 w-5" />
+            </button>
+          </div>
+          <div class="p-4 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Biển số xe</p>
+                <p class="font-medium">{{ selectedHistoryEntry.licensePlate }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Cư dân</p>
+                <p class="font-medium">{{ selectedHistoryEntry.resident }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Căn hộ</p>
+                <p class="font-medium">{{ selectedHistoryEntry.apartment }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Loại</p>
+                <p class="font-medium">{{ selectedHistoryEntry.type }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Thời gian</p>
+                <p class="font-medium">{{ selectedHistoryEntry.time }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Camera</p>
+                <p class="font-medium">{{ selectedHistoryEntry.camera }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Độ chính xác</p>
+                <p class="font-medium">{{ selectedHistoryEntry.confidence }}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
   
   <script>
-  import { ref, computed } from 'vue'
   import { Search, Filter, Download } from 'lucide-vue-next'
-  import { useHistoryStore } from '@/stores/history'
+  import { useHistoryStore } from '../../stores/history'
   
   export default {
     name: 'History',
@@ -123,20 +166,26 @@
       Filter,
       Download
     },
-    setup() {
-      const historyStore = useHistoryStore()
-      const searchQuery = ref('')
-      const startDate = ref('')
-      const endDate = ref('')
-  
-      const historyEntries = computed(() => historyStore.historyEntries)
-  
-      const filteredHistory = computed(() => {
-        let result = [...historyEntries.value]
-  
-        // Lọc theo tìm kiếm
-        if (searchQuery.value) {
-          const query = searchQuery.value.toLowerCase()
+    data() {
+      return {
+        searchQuery: '',
+        startDate: '',
+        endDate: '',
+        showHistoryDetailModal: false,
+        selectedHistoryEntry: null
+      }
+    },
+    computed: {
+      historyEntries() {
+        // Nếu dùng Pinia:
+        // return useHistoryStore().historyEntries
+        // Nếu dùng Vuex:
+        return this.$store?.state?.historyEntries || []
+      },
+      filteredHistory() {
+        let result = [...this.historyEntries]
+        if (this.searchQuery) {
+          const query = this.searchQuery.toLowerCase()
           result = result.filter(
             h => 
               h.licensePlate.toLowerCase().includes(query) ||
@@ -144,28 +193,25 @@
               h.apartment.toLowerCase().includes(query)
           )
         }
-  
-        // Lọc theo khoảng thời gian
-        if (startDate.value && endDate.value) {
-          // Trong thực tế sẽ cần xử lý chuyển đổi định dạng ngày tháng
-          // Đây chỉ là mô phỏng đơn giản
+        if (this.startDate && this.endDate) {
           result = result.filter(h => {
-            const historyDate = new Date(h.time.split(' - ')[1].split('/').reverse().join('-'))
-            const start = new Date(startDate.value)
-            const end = new Date(endDate.value)
+            const historyDate = new Date(h.time.split(' - ')[1]?.split('/').reverse().join('-'))
+            const start = new Date(this.startDate)
+            const end = new Date(this.endDate)
             return historyDate >= start && historyDate <= end
           })
         }
-  
         return result
-      })
-  
-      return {
-        historyEntries,
-        searchQuery,
-        startDate,
-        endDate,
-        filteredHistory
+      }
+    },
+    methods: {
+      openHistoryDetailModal(entry) {
+        this.selectedHistoryEntry = entry
+        this.showHistoryDetailModal = true
+      },
+      closeHistoryDetailModal() {
+        this.showHistoryDetailModal = false
+        this.selectedHistoryEntry = null
       }
     }
   }
