@@ -16,4 +16,13 @@ class GiaoDich extends Model
         'trang_thai_giao_dich',
         'ngay_het_han'
     ];
+
+    const TRANG_THAI_GIAO_DICH_CHUA_THANH_TOAN = 0;
+    const TRANG_THAI_GIAO_DICH_DA_THANH_TOAN = 1;
+
+
+    const PHUONG_THUC_THANH_TOAN_TIEN_MAT = 1;
+    const PHUONG_THUC_THANH_TOAN_TIEN_CHUYEN_KHOAN = 2;
+
+
 }

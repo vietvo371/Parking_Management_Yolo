@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('ho_va_ten');
             $table->string('so_dien_thoai')->nullable();
             $table->dateTime('thoi_gian_vao');
-            $table->dateTime('thoi_gian_ra');
-            $table->integer('tien_thanh_toan');
+            $table->dateTime('thoi_gian_ra')->nullable();
+            $table->integer('tien_thanh_toan')->default(0);
             $table->integer('is_thanh_toan')->default(0);
             $table->integer('id_vi_tri_trong_bai');
             $table->timestamps();

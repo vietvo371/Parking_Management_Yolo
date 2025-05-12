@@ -9,11 +9,10 @@ class GiaoDichController extends Controller
 {
     public function getData()
     {
-        $giaodichs = GiaoDich::join('xes', 'giao_dichs.id_xe', '=', 'xes.id')
+        $giaodichs = GiaoDich::join('xes', 'giao_diches.id_xe', '=', 'xes.id')
             ->join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
-            ->select('giao_dichs.*', 'xes.bien_so', 'cu_dans.ho_va_ten as ten_cu_dan', 'cu_dans.so_du')
-            ->where('giao_dichs.trang_thai', 1)
-            ->orderBy('giao_dichs.created_at', 'desc')
+            ->select('giao_diches.*', 'xes.bien_so_xe', 'cu_dans.ho_va_ten as ten_cu_dan', 'cu_dans.so_du')
+            ->orderBy('giao_diches.created_at', 'asc')
             ->get();
         return response()->json([
             'status' => true,
@@ -23,13 +22,15 @@ class GiaoDichController extends Controller
     }
     public function themGiaoDich(Request $request)
     {
+        $magiaodich = 'GD' . date('Ymd') . str_pad(GiaoDich::count() + 1, 4, '0', STR_PAD_LEFT);
+
         $giaodich = GiaoDich::create([
             'so_tien_giao_dich'         => $request->so_tien_giao_dich,
-            'ma_giao_dich'              => $request->ma_giao_dich,
+            'ma_giao_dich'              => $magiaodich,
             'id_xe'                     => $request->id_xe,
             'phuong_thuc_thanh_toan'    => $request->phuong_thuc_thanh_toan,
-            'trang_thai_giao_dich'      => $request->trang_thai_giao_dich,
-            'ngay_het_han'              => $request->ngay_het_han,
+            'trang_thai_giao_dich'      => $request->is_thanh_toan == true ? 1 : 0,
+            'ngay_het_han'              => now()->addMonth(),
         ]);
         return response()->json([
             'status' => true,
@@ -37,5 +38,5 @@ class GiaoDichController extends Controller
         ]);
     }
 
-    
+
 }

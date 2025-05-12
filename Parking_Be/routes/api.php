@@ -11,6 +11,7 @@ use App\Http\Controllers\ChiTietChucVuController;
 use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\ChucVuController;
 use App\Http\Controllers\CuDanController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GiaoDichController;
 use App\Http\Controllers\LichSuRaVaoBaiXeController;
 use App\Http\Controllers\LoaiXeController;
@@ -92,7 +93,6 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::delete('/thong-tin-xoa/{id}', [LoaiXeController::class, 'xoaLoaiXe']);
     });
 
-
     Route::group(['prefix'  =>  '/lich-su-ra-vao'], function () {
         Route::get('/lay-du-lieu', [LichSuRaVaoBaiXeController::class, 'getLichSuRaVao']);
     });
@@ -134,6 +134,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/thong-tin-cap-nhat', [BaoCaoKhachVangLaiController::class, 'capnhatBaoCaoKhachVangLai']);
         Route::delete('/thong-tin-xoa/{id}', [BaoCaoKhachVangLaiController::class, 'xoaBaoCaoKhachVangLai']);
         Route::post('/thanh-toan', [BaoCaoKhachVangLaiController::class, 'thanhToanBaoCaoKhachVangLai']);
+        Route::post('/xoa-du-lieu', [BaoCaoKhachVangLaiController::class, 'xoaBaoCaoKhachVangLai']);
 
     });
 
@@ -142,7 +143,9 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/them-du-lieu', [BaoCaoSuCoController::class, 'themBaoCaoSuCo']);
         Route::post('/thong-tin-cap-nhat', [BaoCaoSuCoController::class, 'capnhatBaoCaoSuCo']);
         Route::delete('/thong-tin-xoa/{id}', [BaoCaoSuCoController::class, 'xoaBaoCaoSuCo']);
+        Route::post('/xu-ly-bao-cao', [BaoCaoSuCoController::class, 'xuLyBaoCaoSuCo']);
     });
+
 
 
 

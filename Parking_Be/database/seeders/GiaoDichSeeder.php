@@ -25,6 +25,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-06-30'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 500000,
@@ -33,6 +35,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-07-05'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 300000,
@@ -41,6 +45,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 0,
                 'ngay_het_han' => Carbon::parse('2025-07-10'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 150000,
@@ -49,6 +55,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-07-15'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 600000,
@@ -57,6 +65,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-01'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 450000,
@@ -65,6 +75,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-10'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 800000,
@@ -73,6 +85,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 0,
                 'ngay_het_han' => Carbon::parse('2025-08-15'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 320000,
@@ -81,6 +95,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-20'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 200000,
@@ -89,6 +105,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-25'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 750000,
@@ -97,6 +115,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-09-01'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 400000,
@@ -105,6 +125,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-09-01'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'so_tien_giao_dich' => 200000,
@@ -113,6 +135,8 @@ class GiaoDichSeeder extends Seeder
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-09-01'),
                 'ma_giao_dich' => 'GD-' . strtoupper(Str::random(8)),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 

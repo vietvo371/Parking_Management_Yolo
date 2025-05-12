@@ -9,8 +9,8 @@ class BaoCaoSuCoController extends Controller
 {
     public function getData(Request $request)
     {
-        $baoCaoSuCo = BaoCaoSuCo::join('cu_dans', 'bao_cao_su_cos.id_cu_dan','cu_dans.id')
-            ->join('admins', 'bao_cao_su_cos.id_admin_xu_ly', 'admins.id')
+        $baoCaoSuCo = BaoCaoSuCo::join('cu_dans', 'bao_cao_su_cos.id_cu_dan_bao_cao','cu_dans.id')
+            ->leftJoin('admins', 'bao_cao_su_cos.id_admin_xu_ly', 'admins.id')
             ->select('bao_cao_su_cos.*', 'cu_dans.ho_va_ten as ten_cu_dan', 'admins.ho_va_ten as ten_admin_xu_ly')
             ->get();
 
@@ -23,20 +23,26 @@ class BaoCaoSuCoController extends Controller
 
     public function themBaoCaoSuCo(Request $request)
     {
-        $admin = $this->isAdmin();
-        if (!$admin) {
+        // $admin = $this->isAdmin();
+        // if (!$admin) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Bạn không có quyền thực hiện hành động này'
+        //     ]);
+        // }
+        $user = $this->isCuDan();
+        if(!$user){
             return response()->json([
                 'status' => false,
-                'message' => 'Bạn không có quyền thực hiện hành động này'
+                'message' => 'Bạn không phải là cư dân'
             ]);
         }
 
         $data = BaoCaoSuCo::create([
-            'id_cu_dan_bao_cao'     => $request->id_cu_dan_bao_cao,
+            'id_cu_dan_bao_cao'     => $user->id,
             'noi_dung_bao_cao'      => $request->noi_dung_bao_cao,
             'trang_thai_xu_ly'      => 0,
             'ngay_tao'              => now(),
-            'id_admin_xu_ly'        => $admin->id
         ]);
 
         return response()->json([
@@ -80,4 +86,31 @@ class BaoCaoSuCoController extends Controller
         ]);
     }
 
+    public function xuLyBaoCaoSuCo(Request $request)
+    {
+        $admin = $this->isAdmin();
+        if(!$admin){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không có quyền thực hiện hành động này'
+            ]);
+        }
+        $data = BaoCaoSuCo::find($request->id);
+        if (!$data) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Báo cáo sự cố không tồn tại'
+            ]);
+        }
+
+        $data->update([
+            'trang_thai_xu_ly' => 1,
+            'id_admin_xu_ly' => $admin->id,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Xử lý báo cáo sự cố thành công',
+        ]);
+    }
 }
