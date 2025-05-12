@@ -93,7 +93,7 @@ const routes = [
       },
       {
         path: "admin/quan-ly-khach-vang-lai",
-        component: () => import("../views/User/KhachVangLai.vue"),
+        component: () => import("../views/Admin/KhachVangLai.vue"),
         beforeEnter: checkLoginAdmin,
       },
       {

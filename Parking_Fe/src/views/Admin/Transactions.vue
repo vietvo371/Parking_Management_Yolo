@@ -75,22 +75,13 @@
             />
           </div>
           <select 
-            v-model="filters.type" 
-            class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
-          >
-            <option value="">Tất cả loại</option>
-            <option value="Phí gửi xe tháng">Phí gửi xe tháng</option>
-            <option value="Phí gửi xe ngày">Phí gửi xe ngày</option>
-            <option value="Phí gửi xe giờ">Phí gửi xe giờ</option>
-          </select>
-          <select 
             v-model="filters.status" 
             class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
           >
             <option value="">Tất cả trạng thái</option>
-            <option value="Thành công">Thành công</option>
-            <option value="Đang xử lý">Đang xử lý</option>
-            <option value="Thất bại">Thất bại</option>
+            <option value="1">Thành công</option>
+            <option value="2">Đang xử lý</option>
+            <option value="3">Thất bại</option>
           </select>
         </div>
         <div class="flex items-center space-x-2">
@@ -128,7 +119,7 @@
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Biển số xe</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Loại giao dịch</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mã giao dịch</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Số tiền</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phương thức</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Thời gian</th>
@@ -142,27 +133,26 @@
                 {{ transaction.id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                {{ transaction.licensePlate }}
+                {{ transaction.bien_so_xe }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                {{ transaction.type }}
+                {{ transaction.ma_giao_dich }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                {{ formatCurrency(transaction.amount) }}
+                {{ formatCurrency(transaction.so_tien_giao_dich) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <div class="flex items-center">
-                  <component :is="getPaymentIcon(transaction.paymentMethod)" class="h-4 w-4 mr-2" />
-                  {{ transaction.paymentMethod }}
+                  <component :is="getPaymentIcon(transaction.phuong_thuc_thanh_toan)" class="h-4 w-4 mr-2" />
+                  {{ transaction.phuong_thuc_thanh_toan == 1 ? 'Chuyển khoản' : 'Tiền mặt' }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDateTime(transaction.time) }}
+                {{ formatDateTime(transaction.created_at) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                  :class="getStatusClass(transaction.status)">
-                  {{ transaction.status }}
+                <span :class="getStatusClass(transaction.trang_thai_giao_dich) + ' px-2 inline-flex text-xs leading-5 font-semibold rounded-full'">
+                  {{ transaction.trang_thai_giao_dich == 1 ? 'Thành công' : transaction.trang_thai_giao_dich == 0 ? 'Chưa thanh toán' : 'Thất bại' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -181,7 +171,7 @@
                   >
                     <Printer class="h-4 w-4" />
                   </a-button>
-                  <a-popconfirm
+                  <!-- <a-popconfirm
                     title="Bạn có chắc chắn muốn xóa giao dịch này không?"
                     ok-text="Có"
                     cancel-text="Không"
@@ -194,7 +184,7 @@
                     >
                       <Trash2 class="h-4 w-4" />
                     </a-button>
-                  </a-popconfirm>
+                  </a-popconfirm> -->
                 </div>
               </td>
             </tr>
@@ -269,44 +259,29 @@
     <!-- Modal thêm giao dịch -->
     <a-modal v-model:open="showAddModal" title="Thêm giao dịch" @ok="addTransaction">
       <template #footer>
-        <a-button key="back" @click="showAddModal = false">Hủy</a-button>
+        <a-button key="back" @click="closeAddModal">Hủy</a-button>
         <a-button key="submit" type="primary" :loading="isSubmitting" @click="addTransaction">
           {{ isSubmitting ? "Đang lưu..." : "Thêm" }}
         </a-button>
       </template>
       <div class="space-y-4">
         <div>
-          <label for="licensePlate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Biển số xe *</label>
-          <input 
-            id="licensePlate" 
-            type="text" 
-            v-model="newTransaction.licensePlate"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-            placeholder="Nhập biển số xe"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Biển số xe *</label>
+          <a-select
+            v-model:value="newTransaction.id_xe"
+            show-search
+            placeholder="Chọn biển số xe"
+            style="width: 100%"
+            :options="xeCuDan.map(xe => ({ value: xe.id, label: xe.bien_so_xe + ' - ' + xe.ten_loai_xe + ' - ' + xe.ho_va_ten }))"
+            :filter-option="filterOption"
           />
         </div>
         
         <div>
-          <label for="transactionType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loại giao dịch *</label>
-          <select 
-            id="transactionType"
-            v-model="newTransaction.type"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-          >
-            <option value="Phí gửi xe tháng">Phí gửi xe tháng</option>
-            <option value="Phí gửi xe ngày">Phí gửi xe ngày</option>
-            <option value="Phí gửi xe giờ">Phí gửi xe giờ</option>
-          </select>
-        </div>
-        
-        <div>
-          <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Số tiền *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Số tiền *</label>
           <input 
-            id="amount" 
             type="number" 
-            v-model="newTransaction.amount"
+            v-model="newTransaction.so_tien_giao_dich"
             required
             class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
             placeholder="Nhập số tiền"
@@ -314,42 +289,19 @@
         </div>
         
         <div>
-          <label for="paymentMethod" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phương thức thanh toán *</label>
-          <select 
-            id="paymentMethod"
-            v-model="newTransaction.paymentMethod"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phương thức thanh toán *</label>
+          <a-select
+            v-model:value="newTransaction.phuong_thuc_thanh_toan"
+            placeholder="Chọn phương thức thanh toán"
+            style="width: 100%"
           >
-            <option value="Thẻ tín dụng">Thẻ tín dụng</option>
-            <option value="Tiền mặt">Tiền mặt</option>
-            <option value="Ví điện tử">Ví điện tử</option>
-          </select>
+            <a-select-option value="1">Chuyển khoản</a-select-option>
+            <a-select-option value="2">Tiền mặt</a-select-option>
+          </a-select>
         </div>
-        
         <div>
-          <label for="transactionTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thời gian *</label>
-          <input 
-            id="transactionTime" 
-            type="datetime-local" 
-            v-model="newTransaction.time"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-          />
-        </div>
-        
-        <div>
-          <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trạng thái *</label>
-          <select 
-            id="status"
-            v-model="newTransaction.status"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-          >
-            <option value="Thành công">Thành công</option>
-            <option value="Đang xử lý">Đang xử lý</option>
-            <option value="Thất bại">Thất bại</option>
-          </select>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thanh toán</label> 
+          <a-checkbox v-model:checked="newTransaction.is_thanh_toan">Thanh toán</a-checkbox>
         </div>
       </div>
     </a-modal>
@@ -359,46 +311,69 @@
       <template #footer>
         <div class="flex justify-end space-x-2">
           <a-button @click="closeDetailModal">Đóng</a-button>
+          <a-button type="primary" @click="printTransaction(selectedTransaction)">
+            <Printer class="h-4 w-4 mr-2" />
+           
+          </a-button>
         </div>
       </template>
       <div v-if="selectedTransaction" class="space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-bold">Giao dịch {{ selectedTransaction.id }}</h2>
-            <p class="text-sm text-gray-500">{{ formatDateTime(selectedTransaction.time) }}</p>
+            <h2 class="text-xl font-bold">Giao dịch #{{ selectedTransaction.ma_giao_dich }}</h2>
+            <p class="text-sm text-gray-500">{{ formatDateTime(selectedTransaction.ngay_het_han) }}</p>
           </div>
           <span 
             class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-            :class="getStatusClass(selectedTransaction.status)"
+            :class="getStatusClass(selectedTransaction.trang_thai_giao_dich)"
           >
-            {{ selectedTransaction.status }}
+            {{ selectedTransaction.trang_thai_giao_dich == 1 ? 'Thành công' : 
+               selectedTransaction.trang_thai_giao_dich == 2 ? 'Đang xử lý' : 'Thất bại' }}
           </span>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <p class="text-sm text-gray-500">Biển số xe</p>
-            <p class="font-medium">{{ selectedTransaction.licensePlate }}</p>
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-500 mb-1">Biển số xe</p>
+            <p class="font-medium">{{ selectedTransaction.bien_so_xe }}</p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Loại giao dịch</p>
-            <p class="font-medium">{{ selectedTransaction.type }}</p>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-500 mb-1">Số tiền</p>
+            <p class="font-medium text-lg text-blue-600 dark:text-blue-400">
+              {{ formatCurrency(selectedTransaction.so_tien_giao_dich) }}
+            </p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Số tiền</p>
-            <p class="font-medium">{{ formatCurrency(selectedTransaction.amount) }}</p>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-500 mb-1">Phương thức thanh toán</p>
+            <div class="flex items-center">
+              <component 
+                :is="getPaymentIcon(selectedTransaction.phuong_thuc_thanh_toan)" 
+                class="h-4 w-4 mr-2" 
+              />
+              <p class="font-medium">
+                {{ selectedTransaction.phuong_thuc_thanh_toan == 1 ? 'Chuyển khoản' : 'Tiền mặt' }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Phương thức thanh toán</p>
-            <p class="font-medium">{{ selectedTransaction.paymentMethod }}</p>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-500 mb-1">Thời gian giao dịch</p>
+            <p class="font-medium">{{ formatDateTime(selectedTransaction.ngay_het_han) }}</p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Thời gian</p>
-            <p class="font-medium">{{ formatDateTime(selectedTransaction.time) }}</p>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-500 mb-1">Trạng thái</p>
+            <p class="font-medium">
+              {{ selectedTransaction.trang_thai_giao_dich == 1 ? 'Thành công' : 
+                 selectedTransaction.trang_thai_giao_dich == 2 ? 'Đang xử lý' : 'Thất bại' }}
+            </p>
           </div>
-          <div>
-            <p class="text-sm text-gray-500">Trạng thái</p>
-            <p class="font-medium">{{ selectedTransaction.status }}</p>
+          
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-500 mb-1">Phương thức thanh toán</p>
+            <p class="font-medium">{{ selectedTransaction.phuong_thuc_thanh_toan == 1 ? 'Chuyển khoản' : 'Tiền mặt' }}</p>
           </div>
         </div>
       </div>
@@ -422,7 +397,9 @@ import {
   Wallet,
   Smartphone
 } from 'lucide-vue-next'
-import { Modal, Button, Popconfirm } from 'ant-design-vue'
+import { Modal, Button, Popconfirm, Select,Checkbox } from 'ant-design-vue'
+import baseRequest from '../../core/baseRequest'
+import { useNotificationStore } from '../../stores/notication'
 
 export default {
   name: 'Transactions',
@@ -442,7 +419,8 @@ export default {
     Smartphone,
     [Modal.name]: Modal,
     [Button.name]: Button,
-    [Popconfirm.name]: Popconfirm
+    [Popconfirm.name]: Popconfirm,
+    [Select.name]: Select
   },
   data() {
     return {
@@ -475,14 +453,10 @@ export default {
       selectedTransaction: null,
       // Giao dịch mới
       newTransaction: {
-        licensePlate: '',
-        type: '',
-        amount: 0,
-        paymentMethod: '',
-        time: '',
-        status: 'Thành công'
+      
       },
-      isSubmitting: false
+      isSubmitting: false,
+      xeCuDan: []
     }
   },
   computed: {
@@ -493,9 +467,14 @@ export default {
       if (this.filters.search) {
         const searchLower = this.filters.search.toLowerCase()
         result = result.filter(transaction => 
-          transaction.id.toLowerCase().includes(searchLower) || 
-          transaction.licensePlate.toLowerCase().includes(searchLower)
+          transaction.id.toString().toLowerCase().includes(searchLower) || 
+          (transaction.bien_so_xe && transaction.bien_so_xe.toLowerCase().includes(searchLower))
         )
+      }
+      
+      // Lọc theo trạng thái
+      if (this.filters.status) {
+        result = result.filter(transaction => transaction.trang_thai_giao_dich == this.filters.status)
       }
       
       // Lọc theo loại
@@ -503,25 +482,20 @@ export default {
         result = result.filter(transaction => transaction.type === this.filters.type)
       }
       
-      // Lọc theo trạng thái
-      if (this.filters.status) {
-        result = result.filter(transaction => transaction.status === this.filters.status)
-      }
-      
       // Lọc theo ngày
       if (this.filters.dateFrom) {
         const fromDate = new Date(this.filters.dateFrom)
-        result = result.filter(transaction => new Date(transaction.time) >= fromDate)
+        result = result.filter(transaction => new Date(transaction.ngay_het_han) >= fromDate)
       }
       
       if (this.filters.dateTo) {
         const toDate = new Date(this.filters.dateTo)
         toDate.setHours(23, 59, 59)
-        result = result.filter(transaction => new Date(transaction.time) <= toDate)
+        result = result.filter(transaction => new Date(transaction.ngay_het_han) <= toDate)
       }
       
       // Sắp xếp theo thời gian mới nhất
-      result.sort((a, b) => new Date(b.time) - new Date(a.time))
+      result.sort((a, b) => new Date(b.ngay_het_han) - new Date(a.ngay_het_han))
       
       // Cập nhật tổng số trang
       this.pagination.totalPages = Math.ceil(result.length / this.pagination.itemsPerPage)
@@ -548,78 +522,38 @@ export default {
     }
   },
   mounted() {
-    this.fetchData()
+    this.fetchData();
+    this.getXe();
   },
   methods: {
+    getXe() {
+      baseRequest.get("admin/xe/lay-du-lieu")
+        .then((res) => {
+          this.xeCuDan = res.data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     async fetchData() {
-      try {
-        // Trong thực tế, bạn sẽ gọi API để lấy dữ liệu
-        // Ở đây chúng ta sẽ sử dụng dữ liệu mẫu
-        this.transactions = [
-          {
-            id: 'TRX-001',
-            licensePlate: '30A-12345',
-            type: 'Phí gửi xe tháng',
-            amount: 500000,
-            paymentMethod: 'Thẻ tín dụng',
-            time: '2023-05-01T08:30:00',
-            status: 'Thành công'
-          },
-          {
-            id: 'TRX-002',
-            licensePlate: '30F-54321',
-            type: 'Phí gửi xe tháng',
-            amount: 500000,
-            paymentMethod: 'Tiền mặt',
-            time: '2023-05-01T09:45:00',
-            status: 'Thành công'
-          },
-          {
-            id: 'TRX-003',
-            licensePlate: '29P2-12345',
-            type: 'Phí gửi xe ngày',
-            amount: 20000,
-            paymentMethod: 'Ví điện tử',
-            time: '2023-05-01T09:30:00',
-            status: 'Đang xử lý'
-          },
-          {
-            id: 'TRX-004',
-            licensePlate: '30K1-65432',
-            type: 'Phí gửi xe tháng',
-            amount: 300000,
-            paymentMethod: 'Thẻ tín dụng',
-            time: '2023-05-01T09:15:00',
-            status: 'Thành công'
-          },
-          {
-            id: 'TRX-005',
-            licensePlate: '30A-56789',
-            type: 'Phí gửi xe ngày',
-            amount: 20000,
-            paymentMethod: 'Ví điện tử',
-            time: '2023-05-01T08:45:00',
-            status: 'Thất bại'
-          }
-        ]
-        
-        this.updateStats()
-      } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu:', error)
-      }
+        // const notificationStore = useNotificationStore();
+        const res = await baseRequest.get("admin/giao-dich/lay-du-lieu");
+        this.transactions = res.data.data;
+        this.updateStats();
+     
     },
     updateStats() {
       const today = new Date().toISOString().split('T')[0]
       
       this.stats.total = this.transactions.length
-      this.stats.successful = this.transactions.filter(t => t.status === 'Thành công').length
-      this.stats.processing = this.transactions.filter(t => t.status === 'Đang xử lý').length
+      this.stats.successful = this.transactions.filter(t => t.trang_thai_giao_dich == 1).length
+      this.stats.processing = this.transactions.filter(t => t.trang_thai_giao_dich == 2).length
       this.stats.todayRevenue = this.transactions
         .filter(t => {
-          const transactionDate = new Date(t.time).toISOString().split('T')[0]
-          return transactionDate === today && t.status === 'Thành công'
+          const transactionDate = new Date(t.ngay_het_han).toISOString().split('T')[0]
+          return transactionDate === today && t.trang_thai_giao_dich == 1
         })
-        .reduce((sum, t) => sum + t.amount, 0)
+        .reduce((sum, t) => sum + t.so_tien_giao_dich, 0)
     },
     formatDateTime(dateTimeStr) {
       if (!dateTimeStr) return ''
@@ -641,11 +575,11 @@ export default {
     },
     getStatusClass(status) {
       switch (status) {
-        case 'Thành công':
+        case 1:
           return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-        case 'Đang xử lý':
+        case 0:
           return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-        case 'Thất bại':
+        case 3:
           return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
         default:
           return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
@@ -653,12 +587,10 @@ export default {
     },
     getPaymentIcon(method) {
       switch (method) {
-        case 'Thẻ tín dụng':
+        case 1:
           return CreditCard
-        case 'Tiền mặt':
+        case 2:
           return Wallet
-        case 'Ví điện tử':
-          return Smartphone
         default:
           return CreditCard
       }
@@ -673,29 +605,45 @@ export default {
       }
       this.pagination.currentPage = 1
     },
-    addTransaction() {
-      // Trong thực tế, bạn sẽ gọi API để thêm giao dịch
-      const newId = `TRX-${String(this.transactions.length + 1).padStart(3, '0')}`
-      
-      const transaction = {
-        id: newId,
-        ...this.newTransaction
-      }
-      
-      this.transactions.push(transaction)
-      this.updateStats()
-      
-      // Đặt lại form
+    filterOption(input, option) {
+      return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+    },
+    closeAddModal() {
+      this.showAddModal = false;
+      this.resetNewTransaction();
+    },
+    resetNewTransaction() {
       this.newTransaction = {
-        licensePlate: '',
-        type: '',
-        amount: 0,
-        paymentMethod: '',
-        time: '',
-        status: 'Thành công'
+        bien_so_xe: '',
+        so_tien_giao_dich: 0,
+        phuong_thuc_thanh_toan: '',
+        trang_thai_giao_dich: 1,
+        ngay_het_han: new Date().toISOString().slice(0, 16),
+        ma_giao_dich: ''
       }
+    },
+    addTransaction() {
+      this.isSubmitting = true;
+      const notificationStore = useNotificationStore();
       
-      this.showAddModal = false
+      // Tự động tạo mã giao dịch
+      
+      baseRequest.post("admin/giao-dich/them-du-lieu", this.newTransaction)
+        .then((response) => {
+          if (response.data.status) {
+            this.fetchData();
+            this.closeAddModal();
+            notificationStore.showSuccess(response.data.message);
+          } else {
+            notificationStore.showError('Thêm giao dịch thất bại');
+          }
+          this.isSubmitting = false;
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+          this.isSubmitting = false;
+        });
     },
     viewTransactionDetails(transaction) {
       this.selectedTransaction = { ...transaction }

@@ -163,21 +163,21 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
                   <a-button 
-                    v-if="!guest.thoi_gian_ra" 
+                    v-if="!guest.thoi_gian_ra || !guest.is_thanh_toan" 
                     type="primary"
                     size="small"
                     @click="checkoutGuest(guest)"
                   >
                     <LogOut class="h-4 w-4" />
                   </a-button>
-                  <a-button 
+                  <!-- <a-button 
                     v-if="!guest.is_thanh_toan" 
                     type="primary"
                     size="small"
                     @click="markAsPaid(guest)"
                   >
                     <DollarSign class="h-4 w-4" />
-                  </a-button>
+                  </a-button> -->
                   <a-button 
                     type="primary"
                     size="small"
@@ -309,44 +309,18 @@
             v-model:value="newGuest.id_vi_tri_trong_bai"
             placeholder="Chọn vị trí"
             style="width: 100%"
+            show-search
+            :filter-option="(input, option) => {
+              const spot = availableSpots.find(s => s.id === option.value);
+              if (!spot) return false;
+              const searchText = `${spot.thu_tu} ${spot.loai_xe}`.toLowerCase();
+              return searchText.includes(input.toLowerCase());
+            }"
           >
             <a-select-option v-for="spot in availableSpots" :key="spot.id" :value="spot.id">
-              {{ spot.code }} - {{ spot.area }}
+              {{ spot.thu_tu }} - {{ spot.loai_xe }}
             </a-select-option>
           </a-select>
-        </div>
-        
-        <div>
-          <label for="guestEntryTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thời gian vào *</label>
-          <input 
-            id="guestEntryTime" 
-            type="datetime-local" 
-            v-model="newGuest.thoi_gian_vao"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-          />
-        </div>
-        
-        <div>
-          <label for="guestPayment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tiền thanh toán</label>
-          <input 
-            id="guestPayment" 
-            type="number" 
-            v-model="newGuest.tien_thanh_toan"
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-            placeholder="Nhập số tiền"
-          />
-        </div>
-        
-        <div>
-          <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            <input 
-              type="checkbox" 
-              v-model="newGuest.is_thanh_toan"
-              class="rounded border-gray-300 dark:border-gray-600 text-blue-600"
-            />
-            <span>Đã thanh toán</span>
-          </label>
         </div>
       </div>
     </a-modal>
@@ -405,11 +379,11 @@
           </div>
           <div>
             <p class="text-sm text-gray-500">Thời gian đỗ xe</p>
-            <p class="font-medium">{{ calculateParkingDuration(selectedGuest) }}</p>
+            <p class="font-medium ">{{ calculateParkingDuration(selectedGuest) }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Người quản lý</p>
-            <p class="font-medium">{{ getAdminName(selectedGuest.id_admin) }}</p>
+            <p class="font-medium">{{ getAdminName(selectedGuest.ten_admin) }}</p>
           </div>
         </div>
       </div>
@@ -422,6 +396,47 @@
         <a-button key="submit" type="primary" danger @click="confirmDelete">Xóa</a-button>
       </template>
       <p>Bạn có chắc chắn muốn xóa thông tin khách vãng lai này không?</p>
+    </a-modal>
+
+    <!-- Modal checkout -->
+    <a-modal v-model:open="showCheckoutModal" title="Thanh toán" @ok="confirmCheckout">
+      <template #footer>
+        <a-button key="back" @click="showCheckoutModal = false">Hủy</a-button>
+        <a-button key="submit" type="primary" :loading="isSubmitting" @click="confirmCheckout">
+          {{ isSubmitting ? "Đang xử lý..." : "Xác nhận thanh toán" }}
+        </a-button>
+      </template>
+      <div v-if="selectedGuest" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold">{{ selectedGuest.ho_va_ten }}</h2>
+            <p class="text-sm text-gray-500">ID: {{ selectedGuest.id }}</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <p class="text-sm text-gray-500">Thời gian vào</p>
+            <p class="font-medium">{{ formatDateTime(selectedGuest.thoi_gian_vao) }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Thời gian ra</p>
+            <p class="font-medium">{{ formatDateTime(new Date()) }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Thời gian đỗ xe</p>
+            <p class="font-medium">{{ calculateParkingDuration(selectedGuest) }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Vị trí đỗ xe</p>
+            <p class="font-medium">{{ getSpotName(selectedGuest.id_vi_tri_trong_bai) }}</p>
+          </div>
+          <div class="border-t pt-4">
+            <p class="text-sm text-gray-500">Tổng tiền thanh toán</p>
+            <p class="text-xl font-bold text-blue-600">{{ formatCurrency(calculatePayment(selectedGuest)) }}</p>
+          </div>
+        </div>
+      </div>
     </a-modal>
   </div>
 </template>
@@ -442,7 +457,8 @@ import {
   X 
 } from 'lucide-vue-next'
 import { Modal, Button, Select, Popconfirm } from 'ant-design-vue'
-
+import baseRequest from '../../core/baseRequest'
+import { useNotificationStore } from '../../stores/notication'
 export default {
   name: 'KhachVangLai',
   components: {
@@ -495,6 +511,7 @@ export default {
       showAddModal: false,
       showDeleteModal: false,
       showDetailModal: false,
+      showCheckoutModal: false,
       selectedGuest: null,
       guestToDelete: null,
       // Khách vãng lai mới
@@ -588,13 +605,26 @@ export default {
     }
   },
   mounted() {
-    this.fetchData()
+    this.getKhachVangLai()
   },
   methods: {
+    getKhachVangLai() {
+      const notificationStore = useNotificationStore();
+      baseRequest.get("admin/bao-cao-khach-vang-lai/lay-du-lieu")
+        .then((res) => {
+          this.guests = res.data.data;
+          this.parkingSpots = res.data.chiTietBaiXes;
+          this.updateStats()
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+
+        });
+    },
     async fetchData() {
       try {
-        // Trong thực tế, bạn sẽ gọi API để lấy dữ liệu
-        // Ở đây chúng ta sẽ sử dụng dữ liệu mẫu
+        this.getKhachVangLai();
         this.guests = [
           {
             id: 1,
@@ -664,13 +694,7 @@ export default {
           { id: 'C-02', code: 'C-02', area: 'Khu C' }
         ]
         
-        this.admins = [
-          { id: 1, name: 'Admin 1' },
-          { id: 2, name: 'Admin 2' },
-          { id: 3, name: 'Admin 3' }
-        ]
         
-        this.updateStats()
       } catch (error) {
         console.error('Lỗi khi lấy dữ liệu:', error)
       }
@@ -690,11 +714,11 @@ export default {
     },
     getSpotName(spotId) {
       const spot = this.parkingSpots.find(s => s.id === spotId)
-      return spot ? `${spot.code} - ${spot.area}` : spotId
+      return spot ? `${spot.thu_tu} - ${spot.loai_xe}` : spotId
     },
     getAdminName(adminId) {
       const admin = this.admins.find(a => a.id === adminId)
-      return admin ? admin.name : `Admin ID: ${adminId}`
+      return admin ? admin.name : `Admin: ${adminId}`
     },
     formatDateTime(dateTimeStr) {
       if (!dateTimeStr) return ''
@@ -756,48 +780,63 @@ export default {
       this.pagination.currentPage = 1
     },
     addGuest() {
-      // Trong thực tế, bạn sẽ gọi API để thêm khách vãng lai
-      const newId = Math.max(...this.guests.map(g => g.id)) + 1
-      
-      const guest = {
-        id: newId,
-        ...this.newGuest
-      }
-      
-      this.guests.push(guest)
-      this.updateStats()
-      
-      // Đặt lại form
-      this.newGuest = {
-        ho_va_ten: '',
-        so_dien_thoai: '',
-        thoi_gian_vao: '',
-        id_vi_tri_trong_bai: '',
-        tien_thanh_toan: 0,
-        is_thanh_toan: false,
-        id_admin: 1
-      }
-      
-      this.showAddModal = false
+      this.isSubmitting = true
+      const notificationStore = useNotificationStore();
+
+      baseRequest.post("admin/bao-cao-khach-vang-lai/them-du-lieu", this.newGuest)
+        .then((response) => {
+          if (response.data.status) {
+            this.getKhachVangLai()
+            this.showAddModal = false
+            this.newGuest = {}
+            notificationStore.showSuccess(response.data.message)
+          } else {
+            notificationStore.showError('Thêm khách vãng lai thất bại')
+          }
+          this.isSubmitting = false
+          this.showAddModal = false
+          this.closeApartmentModal()
+
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+          // this.showAddModal = false
+          this.isSubmitting = false
+
+        });
     },
     checkoutGuest(guest) {
-      // Trong thực tế, bạn sẽ gọi API để cập nhật thông tin
-      const index = this.guests.findIndex(g => g.id === guest.id)
-      if (index !== -1) {
-        this.guests[index].thoi_gian_ra = new Date().toISOString()
-        
-        // Tính tiền nếu chưa có
-        if (!this.guests[index].tien_thanh_toan) {
-          const entryTime = new Date(this.guests[index].thoi_gian_vao)
-          const exitTime = new Date(this.guests[index].thoi_gian_ra)
-          const diffHrs = Math.ceil((exitTime - entryTime) / (1000 * 60 * 60))
-          
-          // Giả sử phí là 5000đ/giờ
-          this.guests[index].tien_thanh_toan = diffHrs * 5000
-        }
-        
-        this.updateStats()
+      this.selectedGuest = { ...guest }
+      this.showCheckoutModal = true
+    },
+    confirmCheckout() {
+      this.isSubmitting = true
+      const notificationStore = useNotificationStore()
+      
+      const checkoutData = {
+        id: this.selectedGuest.id,
+        thoi_gian_ra: new Date().toISOString(),
+        tien_thanh_toan: this.calculatePayment(this.selectedGuest),
+        is_thanh_toan: true
       }
+
+      baseRequest.post("admin/bao-cao-khach-vang-lai/thanh-toan", checkoutData)
+        .then((response) => {
+          if (response.data.status) {
+            this.getKhachVangLai()
+            this.showCheckoutModal = false
+            notificationStore.showSuccess(response.data.message)
+          } else {
+            notificationStore.showError('Thanh toán thất bại')
+          }
+          this.isSubmitting = false
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors)
+          notificationStore.showError(errors[0])
+          this.isSubmitting = false
+        })
     },
     markAsPaid(guest) {
       // Trong thực tế, bạn sẽ gọi API để cập nhật thông tin
@@ -829,11 +868,39 @@ export default {
     },
     confirmDelete() {
       // Trong thực tế, bạn sẽ gọi API để xóa khách vãng lai
-      this.guests = this.guests.filter(g => g.id !== this.guestToDelete.id)
-      this.updateStats()
+      const notificationStore = useNotificationStore();
+      baseRequest.post("admin/bao-cao-khach-vang-lai/xoa-du-lieu", { id: this.guestToDelete.id })
+        .then((response) => {
+          if (response.data.status) {
+            this.getKhachVangLai()
+            this.showDeleteModal = false
+            notificationStore.showSuccess(response.data.message)
+          } else {
+            notificationStore.showError(response.data.message)
+          }
+          this.isSubmitting = false
+          this.showDeleteModal = false
+
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors)
+          notificationStore.showError(errors[0])
+          this.isSubmitting = false
+        })
+    },
+    filterOption(input, option) {
+      const spot = this.availableSpots.find(s => s.id === option.value);
+      if (!spot) return false;
+      const searchText = `${spot.thu_tu} ${spot.loai_xe}`.toLowerCase();
+      return searchText.includes(input.toLowerCase());
+    },
+    calculatePayment(guest) {
+      const entryTime = new Date(guest.thoi_gian_vao)
+      const exitTime = new Date()
+      const diffHrs = Math.ceil((exitTime - entryTime) / (1000 * 60 * 60))
       
-      this.showDeleteModal = false
-      this.guestToDelete = null
+      // Giả sử phí là 5000đ/giờ
+      return diffHrs * 5000
     }
   }
 }
