@@ -101,6 +101,11 @@ const routes = [
         component: () => import("../views/Admin/PhanQuyen.vue"),
         beforeEnter: checkLoginAdmin,
       },
+      {
+        path: "admin/quan-ly-thong-bao",
+        component: () => import("../views/Admin/Notification.vue"),
+        beforeEnter: checkLoginAdmin,
+      },
     ],
   },
   {

@@ -19,94 +19,6 @@
         </div>
       </div>
   
-      <!-- Parking Overview -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-          <h2 class="text-lg font-medium mb-4">Tổng quan bãi đỗ</h2>
-          <div class="space-y-4">
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm font-medium">Ô tô</span>
-                <span v-if="parkingStatus && parkingStatus.car" class="text-sm">{{ parkingStatus.car.used }}/{{ parkingStatus.car.total }}</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div 
-                  class="bg-blue-600 h-2.5 rounded-full" 
-                  :style="{ width: `${(parkingStatus.car.used / parkingStatus.car.total) * 100}%` }"
-                ></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm font-medium">Xe máy</span>
-                <span class="text-sm">{{ parkingStatus.motorbike.used }}/{{ parkingStatus.motorbike.total }}</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div 
-                  class="bg-green-600 h-2.5 rounded-full" 
-                  :style="{ width: `${(parkingStatus.motorbike.used / parkingStatus.motorbike.total) * 100}%` }"
-                ></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm font-medium">Khách vãng lai</span>
-                <span class="text-sm">{{ parkingStatus.visitor.used }}/{{ parkingStatus.visitor.total }}</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div 
-                  class="bg-orange-600 h-2.5 rounded-full" 
-                  :style="{ width: `${(parkingStatus.visitor.used / parkingStatus.visitor.total) * 100}%` }"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-          <h2 class="text-lg font-medium mb-4">Hoạt động gần đây</h2>
-          <div class="space-y-3">
-            <div v-for="(activity, index) in recentActivities.slice(0, 4)" :key="index" class="flex items-start space-x-3">
-              <div :class="`h-8 w-8 rounded-full flex items-center justify-center ${activity.iconBg}`">
-                <component :is="activity.icon" class="h-4 w-4" :class="activity.iconColor" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium">{{ activity.title }}</p>
-                <p class="text-xs text-gray-500">{{ activity.time }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-            <button class="text-sm text-blue-600 hover:underline">Xem tất cả hoạt động</button>
-          </div>
-        </div>
-  
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-          <h2 class="text-lg font-medium mb-4">Thống kê hôm nay</h2>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-              <p class="text-sm text-gray-500">Lượt vào</p>
-              <p class="text-2xl font-bold">{{ todayStats.entries }}</p>
-              <p class="text-xs text-green-600">+{{ todayStats.entriesChange }}% so với hôm qua</p>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-              <p class="text-sm text-gray-500">Lượt ra</p>
-              <p class="text-2xl font-bold">{{ todayStats.exits }}</p>
-              <p class="text-xs text-green-600">+{{ todayStats.exitsChange }}% so với hôm qua</p>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-              <p class="text-sm text-gray-500">Thời gian trung bình</p>
-              <p class="text-2xl font-bold">{{ todayStats.avgTime }}</p>
-              <p class="text-xs text-gray-500">phút/lượt</p>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-              <p class="text-sm text-gray-500">Tỷ lệ lấp đầy</p>
-              <p class="text-2xl font-bold">{{ todayStats.occupancyRate }}%</p>
-              <p class="text-xs text-red-600">-{{ todayStats.occupancyChange }}% so với hôm qua</p>
-            </div>
-          </div>
-        </div>
-      </div>
   
       <!-- Parking Map -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -121,9 +33,9 @@
               class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
             >
               <option value="all">Tất cả khu vực</option>
-              <option value="A">Khu vực A</option>
-              <option value="B">Khu vực B</option>
-              <option value="C">Khu vực C</option>
+              <option v-for="area in parkingAreas" :key="area" :value="area">
+                {{ area }}
+              </option>
             </select>
             <select 
               v-model="selectedVehicleType" 
@@ -137,89 +49,33 @@
         </div>
         <div class="p-4">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Khu vực A -->
-            <div v-if="selectedArea === 'all' || selectedArea === 'A'" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-              <h3 class="text-md font-medium mb-3">Khu vực A - Ô tô</h3>
+            <!-- Dynamic Parking Areas -->
+            <div v-for="area in parkingAreas" :key="area" 
+                 v-if="selectedArea === 'all' || selectedArea === area" 
+                 class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+              <h3 class="text-md font-medium mb-3">{{ area }} - Ô tô</h3>
               <div class="grid grid-cols-5 gap-2">
                 <div 
-                  v-for="spot in parkingSpots.A?.car || []" 
-                  :key="`A-car-${spot.id}`"
+                  v-for="spot in parkingSpots[area]?.car || []" 
+                  :key="`${area}-car-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
                   @click="selectSpot(spot)"
                 >
-                  {{ spot.id }}
+                  {{ spot.thu_tu }}
                 </div>
               </div>
               
-              <h3 class="text-md font-medium mb-3 mt-4">Khu vực A - Xe máy</h3>
+              <h3 class="text-md font-medium mb-3 mt-4">{{ area }} - Xe máy</h3>
               <div class="grid grid-cols-8 gap-1">
                 <div 
-                  v-for="spot in parkingSpots.A?.motorbike || []" 
-                  :key="`A-motorbike-${spot.id}`"
+                  v-for="spot in parkingSpots[area]?.motorbike || []" 
+                  :key="`${area}-motorbike-${spot.id}`"
                   class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
                   :class="getSpotClass(spot)"
                   @click="selectSpot(spot)"
                 >
-                  {{ spot.id }}
-                </div>
-              </div>
-            </div>
-            
-            <!-- Khu vực B -->
-            <div v-if="selectedArea === 'all' || selectedArea === 'B'" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-              <h3 class="text-md font-medium mb-3">Khu vực B - Ô tô</h3>
-              <div class="grid grid-cols-5 gap-2">
-                <div 
-                  v-for="spot in parkingSpots.B?.car || []" 
-                  :key="`B-car-${spot.id}`"
-                  class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
-                  :class="getSpotClass(spot)"
-                  @click="selectSpot(spot)"
-                >
-                  {{ spot.id }}
-                </div>
-              </div>
-              
-              <h3 class="text-md font-medium mb-3 mt-4">Khu vực B - Xe máy</h3>
-              <div class="grid grid-cols-8 gap-1">
-                <div 
-                  v-for="spot in parkingSpots.B?.motorbike || []" 
-                  :key="`B-motorbike-${spot.id}`"
-                  class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
-                  :class="getSpotClass(spot)"
-                  @click="selectSpot(spot)"
-                >
-                  {{ spot.id }}
-                </div>
-              </div>
-            </div>
-            
-            <!-- Khu vực C -->
-            <div v-if="selectedArea === 'all' || selectedArea === 'C'" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-              <h3 class="text-md font-medium mb-3">Khu vực C - Ô tô</h3>
-              <div class="grid grid-cols-5 gap-2">
-                <div 
-                  v-for="spot in parkingSpots.C?.car || []" 
-                  :key="`C-car-${spot.id}`"
-                  class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
-                  :class="getSpotClass(spot)"
-                  @click="selectSpot(spot)"
-                >
-                  {{ spot.id }}
-                </div>
-              </div>
-              
-              <h3 class="text-md font-medium mb-3 mt-4">Khu vực C - Xe máy</h3>
-              <div class="grid grid-cols-8 gap-1">
-                <div 
-                  v-for="spot in parkingSpots.C?.motorbike || []" 
-                  :key="`C-motorbike-${spot.id}`"
-                  class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
-                  :class="getSpotClass(spot)"
-                  @click="selectSpot(spot)"
-                >
-                  {{ spot.id }}
+                  {{ spot.thu_tu }}
                 </div>
               </div>
             </div>
@@ -252,115 +108,172 @@
       </div>
   
       <!-- Selected Spot Details Modal -->
-      <div v-if="selectedSpot" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Chi tiết vị trí đỗ xe</h3>
-            <button @click="selectedSpot = null" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
+      <a-modal 
+        v-model:open="showSpotDetailModal" 
+        title="Chi tiết vị trí đỗ xe" 
+        centered 
+        width="500px"
+        @cancel="selectedSpot = null"
+      >
+        <div v-if="selectedSpot" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-500">Khu vực</p>
+              <p class="font-medium">{{ selectedSpot.area }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Vị trí</p>
+              <p class="font-medium">{{ selectedSpot.thu_tu }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Loại xe</p>
+              <p class="font-medium">{{ selectedSpot.type === 'car' ? 'Ô tô' : 'Xe máy' }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Trạng thái</p>
+              <p class="font-medium" :class="{
+                'text-green-600': selectedSpot.status === 'available',
+                'text-blue-600': selectedSpot.status === 'occupied',
+                'text-orange-600': selectedSpot.status === 'reserved'
+              }">
+                {{ getStatusText(selectedSpot.status) }}
+              </p>
+            </div>
           </div>
-          <div class="p-4">
-            <div class="space-y-4">
+          
+          <div v-if="selectedSpot.status === 'occupied'">
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+              <h4 class="font-medium mb-2">Thông tin xe</h4>
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <p class="text-sm text-gray-500">Khu vực</p>
-                  <p class="font-medium">{{ selectedSpot.area }}</p>
+                  <p class="text-sm text-gray-500">Biển số xe</p>
+                  <p class="font-medium">{{ selectedSpot.license_plate || 'N/A' }}</p>
                 </div>
                 <div>
-                  <p class="text-sm text-gray-500">Vị trí</p>
-                  <p class="font-medium">{{ selectedSpot.id }}</p>
+                  <p class="text-sm text-gray-500">Loại</p>
+                  <p class="font-medium">{{ selectedSpot.vehicle?.model || 'N/A' }}</p>
                 </div>
                 <div>
-                  <p class="text-sm text-gray-500">Loại xe</p>
-                  <p class="font-medium">{{ selectedSpot.type === 'car' ? 'Ô tô' : 'Xe máy' }}</p>
+                  <p class="text-sm text-gray-500">Chủ xe</p>
+                  <p class="font-medium">{{ selectedSpot.vehicle?.owner || 'N/A' }}</p>
                 </div>
                 <div>
-                  <p class="text-sm text-gray-500">Trạng thái</p>
-                  <p class="font-medium" :class="{
-                    'text-green-600': selectedSpot.status === 'available',
-                    'text-blue-600': selectedSpot.status === 'occupied' && selectedSpot.isResident,
-                    'text-orange-600': selectedSpot.status === 'occupied' && !selectedSpot.isResident,
-                    'text-red-600': selectedSpot.status === 'unavailable',
-                    'text-purple-600': selectedSpot.status === 'reserved'
-                  }">
-                    {{ getStatusText(selectedSpot.status) }}
-                  </p>
-                </div>
-              </div>
-              
-              <div v-if="selectedSpot.status === 'occupied'">
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-                  <h4 class="font-medium mb-2">Thông tin xe</h4>
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <p class="text-sm text-gray-500">Biển số xe</p>
-                      <p class="font-medium">{{ selectedSpot.vehicle?.licensePlate || 'N/A' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-sm text-gray-500">Loại</p>
-                      <p class="font-medium">{{ selectedSpot.vehicle?.model || 'N/A' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-sm text-gray-500">Chủ xe</p>
-                      <p class="font-medium">{{ selectedSpot.vehicle?.owner || 'N/A' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-sm text-gray-500">Thời gian vào</p>
-                      <p class="font-medium">{{ selectedSpot.vehicle?.entryTime || 'N/A' }}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="flex space-x-2 mt-4">
-                  <button class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                    Xem chi tiết
-                  </button>
-                  <button class="flex-1 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">
-                    Ghi nhận xe ra
-                  </button>
-                </div>
-              </div>
-              
-              <div v-else-if="selectedSpot.status === 'available'">
-                <div class="flex space-x-2 mt-4">
-                  <button class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                    Ghi nhận xe vào
-                  </button>
-                  <button class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-sm">
-                    Đặt trước
-                  </button>
-                </div>
-              </div>
-              
-              <div v-else-if="selectedSpot.status === 'reserved'">
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-                  <h4 class="font-medium mb-2">Thông tin đặt trước</h4>
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <p class="text-sm text-gray-500">Người đặt</p>
-                      <p class="font-medium">{{ selectedSpot.reservation?.name || 'N/A' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-sm text-gray-500">Thời gian đặt</p>
-                      <p class="font-medium">{{ selectedSpot.reservation?.time || 'N/A' }}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="flex space-x-2 mt-4">
-                  <button class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                    Xem chi tiết
-                  </button>
-                  <button class="flex-1 px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm">
-                    Hủy đặt trước
-                  </button>
+                  <p class="text-sm text-gray-500">Thời gian vào</p>
+                  <p class="font-medium">{{ selectedSpot.vehicle?.entryTime || 'N/A' }}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        <template #footer>
+          <div class="flex justify-end space-x-2">
+            <a-button v-if="selectedSpot?.status === 'occupied'" type="primary" @click="openCheckOutModal">
+              Ghi nhận xe ra
+            </a-button>
+            <a-button v-if="selectedSpot?.status === 'available'" type="primary" @click="openCheckInModal">
+              Ghi nhận xe vào
+            </a-button>
+            <a-button v-if="selectedSpot?.status === 'available'" @click="openReserveModal">
+              Đặt trước
+            </a-button>
+            <!-- <a-button @click="selectedSpot = null">Đóng</a-button> -->
+          </div>
+        </template>
+      </a-modal>
+  
+      <!-- Check In Modal -->
+      <a-modal 
+        v-model:open="showCheckInModal" 
+        title="Ghi nhận xe vào" 
+        centered 
+        width="500px"
+        @ok="handleCheckInSubmit"
+      >
+        <template #footer>
+          <a-button key="back" @click="showCheckInModal = false">Hủy</a-button>
+          <a-button key="submit" type="primary" :loading="isSubmitting" @click="handleCheckInSubmit">
+            {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận' }}
+          </a-button>
+        </template>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Họ tên *</label>
+            <input 
+              type="text" 
+              v-model="checkInForm.owner"
+              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+              placeholder="Nhập họ tên"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Số điện thoại *</label>
+            <input 
+              type="text" 
+              v-model="checkInForm.phone"
+              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+              placeholder="Nhập số điện thoại"
+            />
+          </div>
+        </div>
+      </a-modal>
+  
+      <!-- Check Out Modal -->
+      <a-modal 
+        v-model:open="showCheckOutModal" 
+        title="Xác nhận ghi nhận xe ra" 
+        centered 
+        width="400px"
+        @ok="handleCheckOutSubmit"
+      >
+        <template #footer>
+          <a-button key="back" @click="showCheckOutModal = false">Hủy</a-button>
+          <a-button key="submit" type="primary" :loading="isSubmitting" @click="handleCheckOutSubmit">
+            {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận' }}
+          </a-button>
+        </template>
+        <div class="text-center">
+          <p class="text-lg">Bạn có chắc chắn muốn ghi nhận xe ra khỏi vị trí này?</p>
+          <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p><strong>Vị trí:</strong> {{ selectedSpot?.area }} - {{ selectedSpot?.thu_tu }}</p>
+            <p><strong>Biển số:</strong> {{ selectedSpot?.license_plate || 'N/A' }}</p>
+          </div>
+        </div>
+      </a-modal>
+  
+      <!-- Reserve Modal -->
+      <a-modal 
+        v-model:open="showReserveModal" 
+        title="Đặt trước vị trí" 
+        centered 
+        width="500px"
+        @ok="handleReserveSubmit"
+      >
+        <template #footer>
+          <a-button key="back" @click="showReserveModal = false">Hủy</a-button>
+          <a-button key="submit" type="primary" :loading="isSubmitting" @click="handleReserveSubmit">
+            {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận' }}
+          </a-button>
+        </template>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên người đặt *</label>
+            <input 
+              type="text" 
+              v-model="reserveForm.name"
+              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+              placeholder="Nhập tên người đặt"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thời gian đặt *</label>
+            <input 
+              type="datetime-local" 
+              v-model="reserveForm.time"
+              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+            />
+          </div>
+        </div>
+      </a-modal>
   
       <!-- Recent Entries and Exits -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -388,7 +301,7 @@
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-              <tr v-for="entry in recentEntries" :key="entry.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <tr v-for="entry in filteredRecentEntries" :key="entry.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   {{ entry.id }}
                 </td>
@@ -432,45 +345,46 @@
         </div>
       </div>
   
-      <!-- Modal chi tiết lịch sử gần đây -->
-      <div v-if="showHistoryDetailModal && selectedHistoryEntry" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Chi tiết lượt {{ selectedHistoryEntry.type === 'in' ? 'vào' : 'ra' }}</h3>
-            <button @click="closeHistoryDetailModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
-          </div>
-          <div class="p-4 space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <p class="text-sm text-gray-500">Biển số xe</p>
-                <p class="font-medium">{{ selectedHistoryEntry.licensePlate }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">Loại</p>
-                <p class="font-medium">{{ selectedHistoryEntry.type === 'in' ? 'Vào' : 'Ra' }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">Vị trí</p>
-                <p class="font-medium">{{ selectedHistoryEntry.spot }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">Thời gian</p>
-                <p class="font-medium">{{ selectedHistoryEntry.time }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">Thời gian đỗ</p>
-                <p class="font-medium">{{ selectedHistoryEntry.duration || '-' }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">Phí</p>
-                <p class="font-medium">{{ selectedHistoryEntry.fee ? formatCurrency(selectedHistoryEntry.fee) : '-' }}</p>
-              </div>
+      <!-- History Detail Modal -->
+      <a-modal 
+        v-model:open="showHistoryDetailModal" 
+        title="Chi tiết lượt ra/vào" 
+        centered 
+        width="500px"
+        @cancel="closeHistoryDetailModal"
+      >
+        <div v-if="selectedHistoryEntry" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-gray-500">Biển số xe</p>
+              <p class="font-medium">{{ selectedHistoryEntry.licensePlate }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Loại</p>
+              <p class="font-medium">{{ selectedHistoryEntry.type === 'in' ? 'Vào' : 'Ra' }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Vị trí</p>
+              <p class="font-medium">{{ selectedHistoryEntry.spot }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Thời gian</p>
+              <p class="font-medium">{{ selectedHistoryEntry.time }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Thời gian đỗ</p>
+              <p class="font-medium">{{ selectedHistoryEntry.duration || '-' }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Phí</p>
+              <p class="font-medium">{{ selectedHistoryEntry.fee ? formatCurrency(selectedHistoryEntry.fee) : '-' }}</p>
             </div>
           </div>
         </div>
-      </div>
+        <template #footer>
+          <a-button @click="closeHistoryDetailModal">Đóng</a-button>
+        </template>
+      </a-modal>
     </div>
   </template>
   
@@ -485,7 +399,9 @@
     Eye, 
     Printer 
   } from 'lucide-vue-next'
-  
+  import { Modal, Button } from 'ant-design-vue'
+  import baseRequest from '../../core/baseRequest'
+  import { useNotificationStore } from '../../stores/notication'
   export default {
     name: 'ParkingManagement',
     components: {
@@ -496,7 +412,9 @@
       Car,
       X,
       Eye,
-      Printer
+      Printer,
+      [Modal.name]: Modal,
+      [Button.name]: Button
     },
     data() {
       return {
@@ -504,36 +422,26 @@
         selectedArea: 'all',
         selectedVehicleType: 'all',
         selectedSpot: null,
-        // Modal states
+        showSpotDetailModal: false,
         showCheckInModal: false,
         showCheckOutModal: false,
         showReserveModal: false,
-        showCancelReserveModal: false,
-        showVehicleDetailModal: false,
         showHistoryDetailModal: false,
-        selectedHistoryEntry: null,
-        // Form data for modals
+        isSubmitting: false,
         checkInForm: {
-          licensePlate: '',
           owner: '',
-          model: '',
-          entryTime: ''
-        },
-        checkOutForm: {
-          licensePlate: '',
-          exitTime: ''
+          phone: '',
+          id_trong_bai: ''
         },
         reserveForm: {
           name: '',
           time: ''
         },
-        // Parking status data
         parkingStatus: {
           car: { total: 0, used: 0 },
           motorbike: { total: 0, used: 0 },
           visitor: { total: 0, used: 0 }
         },
-        // Today's statistics
         todayStats: {
           entries: 85,
           entriesChange: 12,
@@ -543,7 +451,6 @@
           occupancyRate: 75,
           occupancyChange: 5
         },
-        // Recent activities
         recentActivities: [
           { title: 'Xe vào: 30A-12345', time: '10:25', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
           { title: 'Xe ra: 30F-54321', time: '10:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
@@ -551,9 +458,7 @@
           { title: 'Xe ra: 30K1-65432', time: '09:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
           { title: 'Xe vào: 30A-56789', time: '08:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' }
         ],
-        // Parking spots data
         parkingSpots: {},
-        // Recent entries and exits
         recentEntries: [
           { id: 'ENT-001', time: '10:25', type: 'in', licensePlate: '30A-12345', spot: 'A-C05', duration: null, fee: null },
           { id: 'ENT-002', time: '10:15', type: 'out', licensePlate: '30F-54321', spot: 'B-C12', duration: '2h 30m', fee: 20000 },
@@ -563,132 +468,154 @@
           { id: 'ENT-006', time: '08:45', type: 'in', licensePlate: '30A-56789', spot: 'B-C08', duration: null, fee: null },
           { id: 'ENT-007', time: '08:30', type: 'out', licensePlate: '30H-98765', spot: 'C-C15', duration: '12h 15m', fee: 50000 },
           { id: 'ENT-008', time: '08:15', type: 'in', licensePlate: '29Y2-54321', spot: 'A-M15', duration: null, fee: null }
-        ]
+        ],
+        parkingAreas: [],
+        chitietBaiXe: []
       }
     },
     mounted() {
-      this.generateAllParkingSpots()
+      this.getParkingSpots();
+      this.getChitietBaiXe();
+    },
+    computed: {
+      filteredParkingSpots() {
+        if (this.selectedArea === 'all') {
+          return this.parkingSpots;
+        }
+        const filtered = {};
+        if (this.parkingSpots[this.selectedArea]) {
+          filtered[this.selectedArea] = this.parkingSpots[this.selectedArea];
+        }
+        return filtered;
+      },
+      filteredRecentEntries() {
+        if (!this.searchQuery) {
+          return this.recentEntries;
+        }
+        const query = this.searchQuery.toLowerCase();
+        return this.recentEntries.filter(entry => 
+          entry.licensePlate.toLowerCase().includes(query)
+        );
+      }
     },
     methods: {
-      generateAllParkingSpots() {
-        this.parkingSpots = {
-          A: {
-            car: this.generateParkingSpots('A', 'car', 20),
-            motorbike: this.generateParkingSpots('A', 'motorbike', 40)
-          },
-          B: {
-            car: this.generateParkingSpots('B', 'car', 20),
-            motorbike: this.generateParkingSpots('B', 'motorbike', 40)
-          },
-          C: {
-            car: this.generateParkingSpots('C', 'car', 20),
-            motorbike: this.generateParkingSpots('C', 'motorbike', 40)
-          }
-        }
-      },
-      generateParkingSpots(area, type, count) {
-        const spots = []
-        const prefix = type === 'car' ? 'C' : 'M'
-        for (let i = 1; i <= count; i++) {
-          const id = `${prefix}${i.toString().padStart(2, '0')}`
-          const randomStatus = Math.random()
-          let status, isResident, vehicle, reservation
-          if (randomStatus < 0.6) {
-            status = 'occupied'
-            isResident = Math.random() > 0.3
-            if (isResident) {
-              vehicle = {
-                licensePlate: `30${String.fromCharCode(65 + Math.floor(Math.random() * 26))}-${Math.floor(10000 + Math.random() * 90000)}`,
-                model: type === 'car' ? 'Ô tô' : 'Xe máy',
-                owner: `Nguyễn Văn ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
-                entryTime: `${Math.floor(7 + Math.random() * 12)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
-              }
-            } else {
-              vehicle = {
-                licensePlate: `30${String.fromCharCode(65 + Math.floor(Math.random() * 26))}-${Math.floor(10000 + Math.random() * 90000)}`,
-                model: type === 'car' ? 'Ô tô' : 'Xe máy',
-                owner: 'Khách vãng lai',
-                entryTime: `${Math.floor(7 + Math.random() * 12)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
-              }
-            }
-          } else if (randomStatus < 0.7) {
-            status = 'reserved'
-            reservation = {
-              name: `Trần Thị ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
-              time: `${Math.floor(13 + Math.random() * 8)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`
-            }
-          } else if (randomStatus < 0.8) {
-            status = 'unavailable'
-          } else {
-            status = 'available'
-          }
-          spots.push({
-            id,
-            area,
-            type,
-            status,
-            isResident,
-            vehicle,
-            reservation
+      getChitietBaiXe() {
+        const notificationStore = useNotificationStore();
+        baseRequest.get('admin/chi-tiet-bai-xe/lay-du-lieu')
+          .then((res) => {
+            this.chitietBaiXe = res.data.data;
+            this.mapChitietBaiXeToParkingSpots();
           })
+          .catch((res) => {
+            var errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+          });
+      },
+      
+      getParkingSpots() {
+        const notificationStore = useNotificationStore();
+        baseRequest.get('admin/bai-xe/lay-du-lieu')
+          .then((res) => {
+            const data = res.data.data;
+            console.log(data);
+            this.parkingSpots = {};
+            this.parkingAreas = [];
+            
+            const grouped = {};
+            data.forEach(spot => {
+              const areaName = spot.ten_bai;
+              const type = spot.loai_xe === 'Ô-Tô' ? 'car' : 'motorbike';
+              if (!grouped[areaName]) grouped[areaName] = { car: [], motorbike: [] };
+              grouped[areaName][type].push(spot);
+            });
+            
+            Object.keys(grouped).forEach(areaName => {
+              grouped[areaName].car = this.generateParkingSpots(grouped[areaName].car, areaName, 'car');
+              grouped[areaName].motorbike = this.generateParkingSpots(grouped[areaName].motorbike, areaName, 'motorbike');
+            });
+            this.parkingSpots = grouped;
+          })
+          .catch((res) => {
+            var errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+          });
+      },
+      ghiNhanXeVao() {
+        const notificationStore = useNotificationStore();
+        var payload = {
+          'ho_va_ten': this.checkInForm.owner,
+          'so_dien_thoai': this.checkInForm.phone,
+          'id_vi_tri_trong_bai': this.checkInForm.id_trong_bai
         }
-        return spots
+        baseRequest.post("admin/ra-vao-bai/ghi-nhan-xe-vao", payload)
+          .then((res) => {
+            if (res.data.status) {
+              this.checkInForm = {
+                licensePlate: "",
+                owner: "",
+                phone: "",
+              }
+              this.getLoaiXe();
+              notificationStore.showSuccess(res.data.message);
+            }
+            else {
+              notificationStore.showError(res.data.message);
+            }
+            this.open = false;
+          })
+          .catch((res) => {
+            var errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+            this.isSubmitting = false
+          });
+      },
+      formatCurrency(value) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+      },
+      generateParkingSpots(spots, areaName, type) {
+        return spots.map(spot => ({
+          id: spot.thu_tu,
+          area: areaName,
+          type: type,
+          status: spot.trang_thai === 0 ? 'available' : (spot.trang_thai === 1 ? 'reserved' : 'occupied'),
+          ...spot
+        }));
       },
       getSpotClass(spot) {
         if (spot.status === 'available') {
           return 'bg-gray-100 border-gray-300 text-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300'
         } else if (spot.status === 'occupied') {
-          if (spot.isResident) {
-            return 'bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-300'
-          } else {
-            return 'bg-orange-100 border-orange-300 text-orange-800 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-300'
-          }
-        } else if (spot.status === 'unavailable') {
-          return 'bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-300'
+          return 'bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-300'
         } else if (spot.status === 'reserved') {
-          return 'bg-purple-100 border-purple-300 text-purple-800 dark:bg-purple-900 dark:border-purple-700 dark:text-purple-300'
+          return 'bg-orange-100 border-orange-300 text-orange-800 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-300'
         }
       },
       getStatusText(status) {
         switch (status) {
           case 'available': return 'Trống'
-          case 'occupied': return 'Đã đỗ'
-          case 'unavailable': return 'Không khả dụng'
+          case 'occupied': return 'Đã có xe đậu'
           case 'reserved': return 'Đã đặt trước'
           default: return status
         }
       },
       selectSpot(spot) {
         this.selectedSpot = { ...spot }
+        this.showSpotDetailModal = true
       },
-      // Modal open/close handlers
       openCheckInModal() {
-        this.checkInForm = { licensePlate: '', owner: '', model: '', entryTime: '' }
+        this.checkInForm = {
+          owner: '',
+          phone: '',
+          id_trong_bai: this.selectedSpot.id
+        }
         this.showCheckInModal = true
       },
       openCheckOutModal() {
-        this.checkOutForm = { licensePlate: this.selectedSpot?.vehicle?.licensePlate || '', exitTime: '' }
         this.showCheckOutModal = true
       },
       openReserveModal() {
         this.reserveForm = { name: '', time: '' }
         this.showReserveModal = true
-      },
-      openCancelReserveModal() {
-        this.showCancelReserveModal = true
-      },
-      openVehicleDetailModal() {
-        this.showVehicleDetailModal = true
-      },
-      closeAllModals() {
-        this.showCheckInModal = false
-        this.showCheckOutModal = false
-        this.showReserveModal = false
-        this.showCancelReserveModal = false
-        this.showVehicleDetailModal = false
-      },
-      formatCurrency(value) {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
       },
       openHistoryDetailModal(entry) {
         this.selectedHistoryEntry = entry
@@ -697,6 +624,107 @@
       closeHistoryDetailModal() {
         this.showHistoryDetailModal = false
         this.selectedHistoryEntry = null
+      },
+      async handleCheckInSubmit() {
+        if (!this.checkInForm.owner || !this.checkInForm.phone) {
+          const notificationStore = useNotificationStore()
+          notificationStore.showError('Vui lòng điền đầy đủ thông tin')
+          return
+        }
+        this.isSubmitting = true
+        const notificationStore = useNotificationStore()
+        try {
+          var payload = {
+            'ho_va_ten': this.checkInForm.owner,
+            'so_dien_thoai': this.checkInForm.phone,
+            'id_vi_tri_trong_bai': this.checkInForm.id_trong_bai
+          }
+          const res = await baseRequest.post('admin/ra-vao-bai/ghi-nhan-xe-vao', payload)
+          if (res.data.status) {
+            await this.getChitietBaiXe()
+            this.showCheckInModal = false
+            this.checkInForm = {
+              owner: '',
+              phone: '',
+              id_trong_bai: ''
+            }
+            notificationStore.showSuccess(res.data.message)
+          } else {
+            notificationStore.showError(res.data.message)
+          }
+        } catch (err) {
+          var errors = Object.values(err.response.data.errors)
+          notificationStore.showError(errors[0])
+        }
+        this.isSubmitting = false
+      },
+      async handleCheckOutSubmit() {
+        if (!this.selectedSpot) return
+        this.isSubmitting = true
+        const notificationStore = useNotificationStore()
+        try {
+          const res = await baseRequest.post('admin/ra-vao-bai/ghi-nhan-xe-ra', {
+            id_vi_tri_trong_bai: this.selectedSpot.id,
+            bien_so_xe: this.selectedSpot.license_plate
+          })
+          if (res.data.status) {
+            await this.getChitietBaiXe()
+            this.showCheckOutModal = false
+            this.showSpotDetailModal = false
+            notificationStore.showSuccess(res.data.message)
+          } else {
+            notificationStore.showError(res.data.message)
+          }
+        } catch (err) {
+          var errors = Object.values(err.response.data.errors)
+          notificationStore.showError(errors[0])
+        }
+        this.isSubmitting = false
+      },
+      async handleReserveSubmit() {
+        if (!this.reserveForm.name || !this.reserveForm.time) return
+        this.isSubmitting = true
+        const notificationStore = useNotificationStore()
+        try {
+          const res = await baseRequest.post('admin/ra-vao-bai/dat-truoc', {
+            name: this.reserveForm.name,
+            time: this.reserveForm.time,
+            spotId: this.selectedSpot.id
+          })
+          if (res.data.status) {
+            this.getParkingSpots()
+            this.showReserveModal = false
+            notificationStore.showSuccess(res.data.message)
+          } else {
+            notificationStore.showError(res.data.message)
+          }
+        } catch (err) {
+          var errors = Object.values(err.response.data.errors)
+          notificationStore.showError(errors[0])
+        }
+        this.isSubmitting = false
+      },
+      mapChitietBaiXeToParkingSpots() {
+        this.parkingSpots = {};
+        this.parkingAreas = [];
+
+        this.chitietBaiXe.forEach(spot => {
+          const areaName = spot.ten_bai;
+          const type = spot.loai_xe === 'O-To' ? 'car' : 'motorbike';
+
+          if (!this.parkingSpots[areaName]) {
+            this.parkingSpots[areaName] = { car: [], motorbike: [] };
+            this.parkingAreas.push(areaName);
+          }
+
+          this.parkingSpots[areaName][type].push({
+            id: spot.thu_tu,
+            area: areaName,
+            type: type,
+            status: spot.trang_thai === 0 ? 'available' : (spot.trang_thai === 1 ? 'reserved' : 'occupied'),
+            ...spot
+          });
+        });
       }
     }
   }

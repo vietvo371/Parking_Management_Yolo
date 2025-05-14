@@ -91,7 +91,8 @@ import {
   LogIn,
   Clock,
   UserRoundCheck,
-  Key
+  Key,
+  Bell
 } from "lucide-vue-next";
 
 export default {
@@ -129,6 +130,7 @@ export default {
       { name: "Khách vãng lai", href: "/admin/quan-ly-khach-vang-lai", icon: UserRoundCheck },
       { name: "Giao dịch", href: "/admin/quan-ly-giao-dich", icon: CreditCard },
       { name: "Báo cáo sự cố", href: "/admin/quan-li-bao-cao-su-co", icon: AlertCircle },
+      { name: "Thông báo", href: "/admin/quan-ly-thong-bao", icon: Bell },
       { name: "Camera & AI", href: "/admin/quan-ly-camera", icon: Camera },
       { name: "Ra vào bãi", href: "/admin/quan-li-bai-giu-xe", icon: LogIn },
       { name: "Báo cáo", href: "/admin/quan-ly-bao-cao", icon: BarChart2 },
@@ -167,6 +169,7 @@ export default {
       toggleSidebar,
       logout,
       user,
+      Bell
     };
   },
 };
