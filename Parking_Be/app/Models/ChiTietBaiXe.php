@@ -12,5 +12,11 @@ class ChiTietBaiXe extends Model
         'thu_tu',
         'loai_xe',
         'trang_thai',
+        'is_cu_dan',
+        'is_khach_hang'
     ];
+
+    const TRANG_THAI_TRONG = 0;
+    const TRANG_THAI_DA_DAT_TRUOC = 1;
+    const TRANG_THAI_DA_CO_XE = 2;
 }

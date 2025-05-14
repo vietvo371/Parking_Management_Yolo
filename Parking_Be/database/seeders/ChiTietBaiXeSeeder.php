@@ -24,7 +24,7 @@ class ChiTietBaiXeSeeder extends Seeder
                     'id_bai_xe' => $baiXe->id,
                     'thu_tu' => $lastChar . $i,
                     'loai_xe' => 'O-To',
-                    'trang_thai' => 1
+                    'trang_thai' => 0
                 ]);
             }
 
@@ -34,7 +34,7 @@ class ChiTietBaiXeSeeder extends Seeder
                     'id_bai_xe' => $baiXe->id,
                     'thu_tu' => $lastChar . $i,
                     'loai_xe' => 'Khác',
-                    'trang_thai' => 1
+                    'trang_thai' => 0
                 ]);
             }
         }
