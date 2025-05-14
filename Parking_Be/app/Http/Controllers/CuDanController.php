@@ -248,4 +248,27 @@ class CuDanController extends Controller
             'message' => 'Cư dân đã được duyệt'
         ]);
     }
+    public function getProfile()
+    {
+        $user = $this->isCuDan();
+        $cudan = CuDan::join('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
+            ->join('xes', 'xes.id_cu_dan', '=', 'cu_dans.id')
+            ->join('loai_xes', 'loai_xes.id', '=', 'xes.id_loai_xe')
+            ->where('cu_dans.id', $user->id)
+            ->select('cu_dans.*', 'can_hos.ten_toa_nha','can_hos.so_can_ho', 'xes.bien_so_xe', 'loai_xes.ten_loai_xe')
+            ->first();
+        $lich_su_login = DB::table('personal_access_tokens')->where('name', "cu_dan_token")->select('id', 'created_at', 'updated_at')->get();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy dữ liệu',
+            ]);
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy thông tin cư dân thành công',
+            'data' => $cudan,
+            'lich_su_login' => $lich_su_login
+        ]);
+    }
 }
