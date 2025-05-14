@@ -173,7 +173,7 @@
   
       const getCurrentPageTitle = () => {
         const currentRoute = navigationItems.find(item => isActive(item.path))
-        return currentRoute ? currentRoute.name : 'Trang chủ'
+        return currentRoute ? currentRoute.name : ''
       }
   
       const toggleDarkMode = () => {

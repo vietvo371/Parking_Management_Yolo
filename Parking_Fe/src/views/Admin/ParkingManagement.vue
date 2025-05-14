@@ -643,6 +643,7 @@
           if (res.data.status) {
             await this.getChitietBaiXe()
             this.showCheckInModal = false
+            this.showSpotDetailModal = false
             this.checkInForm = {
               owner: '',
               phone: '',
@@ -665,7 +666,9 @@
         try {
           const res = await baseRequest.post('admin/ra-vao-bai/ghi-nhan-xe-ra', {
             id_vi_tri_trong_bai: this.selectedSpot.id,
-            bien_so_xe: this.selectedSpot.license_plate
+            bien_so_xe: this.selectedSpot.license_plate,
+            id_khach_hang: this.selectedSpot.is_khach_hang,
+            is_cu_dan: this.selectedSpot.is_cu_dan
           })
           if (res.data.status) {
             await this.getChitietBaiXe()
@@ -676,8 +679,8 @@
             notificationStore.showError(res.data.message)
           }
         } catch (err) {
-          var errors = Object.values(err.response.data.errors)
-          notificationStore.showError(errors[0])
+            var errors = Object.values(err.response.data.errors);
+            notificationStore.showError(errors[0]);
         }
         this.isSubmitting = false
       },

@@ -158,7 +158,7 @@
   <script>
   import { Search, Filter, Download } from 'lucide-vue-next'
   import { useHistoryStore } from '../../stores/history'
-  
+  import baseRequest from '../../core/baseRequest'
   export default {
     name: 'History',
     components: {
@@ -175,12 +175,12 @@
         selectedHistoryEntry: null
       }
     },
+    mounted() {
+      this.getHistory()
+    },
     computed: {
       historyEntries() {
-        // Nếu dùng Pinia:
-        // return useHistoryStore().historyEntries
-        // Nếu dùng Vuex:
-        return this.$store?.state?.historyEntries || []
+        return useHistoryStore().historyEntries || []
       },
       filteredHistory() {
         let result = [...this.historyEntries]
@@ -212,6 +212,66 @@
       closeHistoryDetailModal() {
         this.showHistoryDetailModal = false
         this.selectedHistoryEntry = null
+      },
+      async getHistory() {
+        try {
+          const res = await baseRequest.get('admin/lich-su-ra-vao-bai/lay-du-lieu')
+          const historyData = res.data.data
+          
+          // Transform dữ liệu từ API
+          const transformedData = []
+          
+          historyData.forEach(item => {
+            // Entry cho thời gian vào
+            if (item.thoi_gian_vao) {
+              transformedData.push({
+                id: `${item.id}_in`,
+                licensePlate: item.bien_so_xe,
+                resident: item.ho_va_ten,
+                apartment: `Vị trí ${item.id_vi_tri_trong_bai}`,
+                type: 'Vào bãi',
+                time: this.formatDateTime(item.thoi_gian_vao),
+                camera: `Camera ${item.id_camera_quet}`,
+                confidence: 95
+              })
+            }
+            
+            // Entry cho thời gian ra
+            if (item.thoi_gian_ra) {
+              transformedData.push({
+                id: `${item.id}_out`,
+                licensePlate: item.bien_so_xe,
+                resident: item.ho_va_ten,
+                apartment: `Vị trí ${item.id_vi_tri_trong_bai}`,
+                type: 'Ra khỏi bãi',
+                time: this.formatDateTime(item.thoi_gian_ra),
+                camera: `Camera ${item.id_camera_quet}`,
+                confidence: 95
+              })
+            }
+          })
+          
+          // Sắp xếp theo thời gian mới nhất
+          transformedData.sort((a, b) => new Date(b.time) - new Date(a.time))
+          
+          // Lưu vào store
+          const historyStore = useHistoryStore()
+          historyStore.historyEntries = transformedData
+          
+        } catch (error) {
+          console.error('Lỗi khi lấy dữ liệu lịch sử:', error)
+        }
+      },
+      
+      formatDateTime(dateTime) {
+        const date = new Date(dateTime)
+        return date.toLocaleString('vi-VN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
       }
     }
   }

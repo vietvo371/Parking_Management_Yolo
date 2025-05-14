@@ -25,21 +25,34 @@
             </div>
             <h2 class="mt-4 text-xl font-bold">{{ userProfile.fullName }}</h2>
             <p class="text-sm text-gray-500">{{ userProfile.email }}</p>
-            <div class="mt-2 px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs rounded-full">
-              {{ getStatusText(userProfile.status) }}
-            </div>
-            <div class="mt-4 w-full border-t border-gray-200 dark:border-gray-700 pt-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-500">Mã cư dân</span>
-                <span class="font-medium">{{ userProfile.residentId }}</span>
+            
+            <div class="mt-2 space-y-1">
+              <div class="px-3 py-1 text-xs rounded-full"
+                   :class="userProfile.approved === 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                {{ getApprovalText(userProfile.approved) }}
               </div>
+              <div class="px-3 py-1 text-xs rounded-full"
+                   :class="userProfile.status === 1 ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'">
+                {{ getStatusText(userProfile.status) }}
+              </div>
+            </div>
+            
+            <div class="mt-4 w-full border-t border-gray-200 dark:border-gray-700 pt-4">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-500">Căn hộ</span>
                 <span class="font-medium">{{ userProfile.apartment }}</span>
               </div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-500">Số dư</span>
+                <span class="font-medium">{{ formatCurrency(userProfile.balance) }}</span>
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-500">Biển số xe</span>
+                <span class="font-medium">{{ userProfile.vehiclePlate || 'Chưa có' }}</span>
+              </div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-500">Ngày đăng ký</span>
-                <span class="font-medium">{{ userProfile.registrationDate }}</span>
+                <span class="text-sm text-gray-500">Loại xe</span>
+                <span class="font-medium">{{ userProfile.vehicleType || 'Chưa có' }}</span>
               </div>
             </div>
           </div>
@@ -257,7 +270,7 @@
     Key, 
     AlertTriangle 
   } from 'lucide-vue-next'
-  
+  import baseRequestUser from '../../core/baseRequestUser'
   export default {
     name: 'ResidentProfile',
     components: {
@@ -299,59 +312,57 @@
           new: false,
           confirm: false
         },
-        accountActivities: [
-          {
-            title: 'Đăng nhập thành công',
-            time: '24/04/2023 - 10:25',
-            icon: LogIn,
-            iconBg: 'bg-green-100',
-            iconColor: 'text-green-600'
-          },
-          {
-            title: 'Thay đổi mật khẩu',
-            time: '20/04/2023 - 15:30',
-            icon: Key,
-            iconBg: 'bg-blue-100',
-            iconColor: 'text-blue-600'
-          },
-          {
-            title: 'Cập nhật thông tin cá nhân',
-            time: '15/04/2023 - 09:45',
-            icon: Settings,
-            iconBg: 'bg-purple-100',
-            iconColor: 'text-purple-600'
-          },
-          {
-            title: 'Đăng nhập thất bại',
-            time: '10/04/2023 - 18:20',
-            icon: AlertTriangle,
-            iconBg: 'bg-red-100',
-            iconColor: 'text-red-600'
-          },
-          {
-            title: 'Đăng nhập thành công',
-            time: '10/04/2023 - 18:25',
-            icon: LogIn,
-            iconBg: 'bg-green-100',
-            iconColor: 'text-green-600'
-          }
-        ]
+        accountActivities: []
       }
     },
     mounted() {
       this.editedProfile = { ...this.userProfile }
+      this.getUserProfile()
     },
     methods: {
       getStatusText(status) {
-        switch (status) {
-          case 'pending':
-            return 'Chờ phê duyệt'
-          case 'approved':
-            return 'Đã phê duyệt'
-          case 'rejected':
-            return 'Bị từ chối'
-          default:
-            return status
+        if (status === 1) return 'Hoạt động'
+        if (status === 0) return 'Tạm khóa'
+        return 'Không xác định'
+      },
+      getApprovalText(approved) {
+        if (approved === 1) return 'Đã phê duyệt'
+        if (approved === 0) return 'Chờ phê duyệt'
+        return 'Không xác định'
+      },
+      async getUserProfile() {
+        const res = await baseRequestUser.get('user/profile')
+        const data = res.data.data
+        this.userProfile = {
+          fullName: data.ho_va_ten || '',
+          email: data.email || '',
+          phone: data.so_dien_thoai || '',
+          idNumber: data.so_cccd || '',
+          address: `${data.ten_toa_nha || ''} - Căn ${data.so_can_ho || ''}`,
+          apartment: `${data.ten_toa_nha || ''} - Căn ${data.so_can_ho || ''}`,
+          balance: data.so_du ?? 0,
+          status: data.trang_thai,
+          approved: data.phe_duyet,
+          avatar: null,
+          registeredVehicles: data.bien_so_xe ? 1 : 0,
+          residentType: data.ten_loai_xe || 'Chưa xác định',
+          vehiclePlate: data.bien_so_xe || '',
+          vehicleType: data.ten_loai_xe || '',
+          registrationDate: data.created_at ? new Date(data.created_at).toLocaleDateString('vi-VN') : '',
+        }
+        this.editedProfile = { ...this.userProfile }
+
+        // Map lịch sử đăng nhập
+        if (res.data.lich_su_login && Array.isArray(res.data.lich_su_login)) {
+          this.accountActivities = res.data.lich_su_login.map(item => ({
+            title: 'Đăng nhập thành công',
+            time: item.created_at ? new Date(item.created_at).toLocaleString('vi-VN') : '',
+            icon: this.$options.components.LogIn,
+            iconBg: 'bg-green-100',
+            iconColor: 'text-green-600'
+          }))
+        } else {
+          this.accountActivities = []
         }
       },
       togglePasswordVisibility(field) {
@@ -376,6 +387,12 @@
           this.passwordChange = { current: '', new: '', confirm: '' }
         }
         this.isEditing = false
+      },
+      formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND'
+        }).format(amount)
       }
     }
   }
