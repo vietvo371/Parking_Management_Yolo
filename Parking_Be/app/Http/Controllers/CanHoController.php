@@ -17,6 +17,16 @@ class CanHoController extends Controller
             'data' => $canho
         ]);
     }
+    public function getDataClient()
+    {
+        $canho = CanHo::all();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $canho
+        ]);
+    }
+
     public function themCanHo(themCanHoRequest $request)
     {
         CanHo::create([

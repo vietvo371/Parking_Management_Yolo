@@ -32,7 +32,8 @@ class CuDanController extends Controller
                 'can_hos.ten_toa_nha',
                 'can_hos.tang',
                 'can_hos.so_can_ho',
-                DB::raw('MIN(xes.bien_so_xe) as bien_so_xe')
+                'cu_dans.created_at',
+                DB::raw('MIN(xes.bien_so_xe) as bien_so_xe'),
             )
             ->groupBy(
                 'cu_dans.id',
@@ -47,8 +48,10 @@ class CuDanController extends Controller
                 'cu_dans.trang_thai',
                 'can_hos.ten_toa_nha',
                 'can_hos.tang',
-                'can_hos.so_can_ho'
+                'can_hos.so_can_ho',
+                'cu_dans.created_at'
             )
+            ->orderBy('cu_dans.created_at', 'desc')
             ->get();
         return response()->json([
             'status' => true,
@@ -251,11 +254,12 @@ class CuDanController extends Controller
     public function getProfile()
     {
         $user = $this->isCuDan();
-        $cudan = CuDan::join('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
-            ->join('xes', 'xes.id_cu_dan', '=', 'cu_dans.id')
-            ->join('loai_xes', 'loai_xes.id', '=', 'xes.id_loai_xe')
+        $cudan = CuDan::leftJoin('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
+            ->leftJoin('xes', 'xes.id_cu_dan', '=', 'cu_dans.id')
+            ->leftJoin('loai_xes', 'loai_xes.id', '=', 'xes.id_loai_xe')
+            ->leftJoin('giao_diches', 'giao_diches.id_xe', '=', 'xes.id')
             ->where('cu_dans.id', $user->id)
-            ->select('cu_dans.*', 'can_hos.ten_toa_nha','can_hos.so_can_ho', 'xes.bien_so_xe', 'loai_xes.ten_loai_xe')
+            ->select('cu_dans.*', 'can_hos.ten_toa_nha','can_hos.so_can_ho', 'xes.bien_so_xe', 'loai_xes.ten_loai_xe', 'giao_diches.ngay_het_han')
             ->first();
         $lich_su_login = DB::table('personal_access_tokens')->where('name', "cu_dan_token")->select('id', 'created_at', 'updated_at')->get();
         if (!$user) {

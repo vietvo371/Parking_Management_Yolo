@@ -71,4 +71,13 @@ class LoaiXeController extends Controller
             ]);
         }
     }
+    public function getDataLoaiXeClient()
+    {
+        $loaiXe = LoaiXe::where('trang_thai', 1)->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $loaiXe
+        ]);
+    }
 }

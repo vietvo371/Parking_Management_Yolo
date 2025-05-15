@@ -17,6 +17,7 @@ use App\Http\Controllers\GiaoDichController;
 use App\Http\Controllers\LichSuRaVaoBaiXeController;
 use App\Http\Controllers\LoaiXeController;
 use App\Http\Controllers\RaVaoBaicontroller;
+use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\ViTriDatController;
 use App\Http\Controllers\XeController;
 use Database\Seeders\BaoCaoKhachVangLaiSeeder;
@@ -189,5 +190,15 @@ Route::post('/user/logout', [CuDanController::class, 'logout']);
 
 Route::group(['prefix'  =>  '/user'], function () {
     Route::get('/profile', [CuDanController::class, 'getProfile']);
+    Route::get('/lay-du-lieu-can-ho', [CanHoController::class, 'getDataClient']);
+    Route::get('/lay-du-lieu-xe', [XeController::class, 'getDataClient']);
+    Route::get('/lay-du-lieu-loai-xe', [LoaiXeController::class, 'getDataLoaiXeClient']);
+    Route::post('/dang-ky-xe', [XeController::class, 'dangKyXe']);
+    Route::post('/cap-nhat-xe', [XeController::class, 'capNhatXeClient']);
+
+    Route::post('/thanh-toan-xe', [ThanhToanController::class, 'getQrPayMent']);
+    Route::post('/set-transiton', [ThanhToanController::class, 'setTransiton']);
+    Route::get('/thanh-toan/index', [ThanhToanController::class, 'index']);
+
 });
 
