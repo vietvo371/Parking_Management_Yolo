@@ -48,11 +48,18 @@
               </div>
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-500">Biển số xe</span>
-                <span class="font-medium">{{ userProfile.vehiclePlate || 'Chưa có' }}</span>
+                <span class="font-medium">{{ userProfile.vehiclePlate || 'Chưa đăng ký xe' }}</span>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-500">Loại xe</span>
-                <span class="font-medium">{{ userProfile.vehicleType || 'Chưa có' }}</span>
+                <span class="font-medium">{{ userProfile.vehicleType || 'Chưa đăng ký xe' }}</span>
+              </div>
+              <div v-if="!isExpired" class="mt-3 flex justify-center">
+                <router-link class="w-1/2" to="/user/thanh-toan-online">
+                  <button  class="w-full px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                    Nạp tiền
+                  </button>
+                </router-link>
               </div>
             </div>
           </div>
@@ -299,7 +306,8 @@
           status: 'approved',
           avatar: null,
           registeredVehicles: 2,
-          residentType: 'Chủ hộ'
+          residentType: 'Chủ hộ',
+          ngay_het_han: null
         },
         editedProfile: {},
         passwordChange: {
@@ -313,6 +321,14 @@
           confirm: false
         },
         accountActivities: []
+      }
+    },
+    computed: {
+      isExpired() {
+        if (!this.userProfile.ngay_het_han || this.userProfile.ngay_het_han === null) return false;
+        const expiryDate = new Date(this.userProfile.ngay_het_han);
+        const now = new Date();
+        return expiryDate < now;
       }
     },
     mounted() {
@@ -349,6 +365,7 @@
           vehiclePlate: data.bien_so_xe || '',
           vehicleType: data.ten_loai_xe || '',
           registrationDate: data.created_at ? new Date(data.created_at).toLocaleDateString('vi-VN') : '',
+          ngay_het_han: data.ngay_het_han || null
         }
         this.editedProfile = { ...this.userProfile }
 

@@ -404,7 +404,7 @@ export default {
             comparison = new Date(a.created_at) - new Date(b.created_at)
             break
         }
-        return this.sortOrder === 'asc' ? comparison : -comparison
+        return this.sortOrder === '' ? comparison : -comparison
       })
 
       return result
@@ -451,8 +451,12 @@ export default {
       }
     },
     convertDate(date) {
-      return new Date(date).toLocaleDateString('vi-VN')
-    },
+        try {
+          return new Date(date).toLocaleDateString('vi-VN');
+        } catch (error) {
+          return "";
+        }
+      },
     getCuDan() {
       baseRequest.get("admin/cu-dan/lay-du-lieu").then((response) => {
         this.residents = response.data.data

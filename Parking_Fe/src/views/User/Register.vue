@@ -69,14 +69,12 @@
                   Số CCCD
                 </label>
               </div>
-              <div class="relative">
-                <input v-model="form.id_can_ho" required id="apartment" type="text"
-                  class="peer w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-700 outline-none transition-all"
-                  placeholder=" " />
-                <label for="apartment"
-                  class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-blue-600 dark:peer-focus:text-blue-400 bg-white dark:bg-gray-800 px-1 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500 dark:peer-placeholder-shown:text-gray-400">
-                  ID căn hộ
-                </label>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
+                <div class="space-y-2">
+                  <label for="brand" class="block text-sm font-medium ">Căn hộ</label>
+                  <a-select class="w-100" v-model:value="form.id_can_ho" show-search placeholder="Chọn căn hộ"
+                    style="width: 100%" :options="options" :filter-option="filterOption" />
+                </div>
               </div>
               <button type="submit"
                 class="w-full h-12 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-lg transition-all duration-200 flex items-center justify-center"
@@ -102,64 +100,79 @@
   </template>
   
   <script>
-  import { ref, computed } from "vue";
-  import { useRouter } from "vue-router";
   import baseRequest from "../../core/baseRequest";
   import { useNotificationStore } from "@/stores/notication";
+
   export default {
     name: "Register",
-    setup() {
-      const router = useRouter();
-      const notificationStore = useNotificationStore();
-      const isLoading = ref(false);
-      const form = ref({
-        ho_va_ten: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        so_dien_thoai: "",
-        so_cccd: "",
-        id_can_ho: ""
-      });
-  
-      const passwordError = computed(() => {
-        if (!form.value.confirmPassword) return "";
-        if (form.value.password !== form.value.confirmPassword) return "Mật khẩu xác nhận không khớp!";
-        if (form.value.password.length < 6) return "Mật khẩu phải từ 6 ký tự!";
+    data() {
+      return {
+        isLoading: false,
+        form: {
+          ho_va_ten: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          so_dien_thoai: "",
+          so_cccd: "",
+          id_can_ho: ""
+        },
+        danh_sach_can_ho: []
+      };
+    },
+    mounted() {
+      this.getApartments();
+    },
+    computed: {
+      passwordError() {
+        if (!this.form.confirmPassword) return "";
+        if (this.form.password !== this.form.confirmPassword) return "Mật khẩu xác nhận không khớp!";
+        if (this.form.password.length < 6) return "Mật khẩu phải từ 6 ký tự!";
         return "";
-      });
-  
-      const handleRegister = () => {
-        if (passwordError.value) {
-          notificationStore.showError(passwordError.value);
+      },
+      options() {
+        return this.danh_sach_can_ho.map(canHo => ({
+          label: canHo.so_can_ho + " - Toà " + canHo.ten_toa_nha,
+          value: canHo.id,
+        }));
+      }
+    },
+    methods: {
+      filterOption(input, option) {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      },
+      getApartments() {
+        baseRequest.get("user/lay-du-lieu-can-ho").then((res) => {
+          if (res.data.status) {
+            this.danh_sach_can_ho = res.data.data;
+          }
+        });
+      },
+      handleRegister() {
+        const notificationStore = useNotificationStore();
+        if (this.passwordError) {
+          notificationStore.showError(this.passwordError);
           return;
         }
-        isLoading.value = true;
-        baseRequest.post("user/register", form.value)
+        this.isLoading = true;
+        baseRequest.post("user/register", this.form)
           .then((response) => {
             if (response.data.status) {
               notificationStore.showSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
-              router.push("/user/login");
+              this.$router.push("/user/login");
             } else {
               notificationStore.showError(response.data.message || "Đăng ký thất bại!");
             }
           })
           .catch((res) => {
-          var errors = Object.values(res.response.data.errors);
-          notificationStore.showError(errors[0]);
-          this.isLoading = false;
-        })
+            var errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+            this.isLoading = false;
+          })
           .finally(() => {
-            isLoading.value = false;
+            this.isLoading = false;
           });
-      };
-  
-      return {
-        form,
-        isLoading,
-        handleRegister,
-        passwordError
-      };
+      }
     }
   };
   </script>

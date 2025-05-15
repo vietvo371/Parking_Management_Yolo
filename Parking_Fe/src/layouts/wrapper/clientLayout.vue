@@ -188,7 +188,7 @@
       }
   
       const handleLogout = () => {
-        authStore.logout();
+        authStore.logoutUser();
         notificationStore.showSuccess('Đăng xuất thành công');
         router.push('/user/login');
       }
