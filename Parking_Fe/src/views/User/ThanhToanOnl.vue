@@ -119,15 +119,30 @@
                       <p class="text-sm text-gray-500 dark:text-gray-400">Loại xe</p>
                       <p class="font-medium">{{ vehicle.ten_loai_xe }}</p>
                     </div>
+                    <div>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">Trạng thái</p>
+                      <p class="font-medium" :class="{
+                        'text-green-600': vehicle.trang_thai_duyet === 1,
+                        'text-yellow-600': vehicle.trang_thai_duyet === 0
+                      }">
+                        {{ vehicle.trang_thai_duyet === 1 ? 'Đã duyệt' : 'Chờ duyệt' }}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <div class="flex-shrink-0 ml-4">
                   <label class="flex items-center space-x-2"
-                    :class="{ 'cursor-pointer': isExpired(vehicle.ngay_het_han), 'cursor-not-allowed opacity-60': !isExpired(vehicle.ngay_het_han) }">
-                    <input type="radio" :value="vehicle" v-model="selectedVehicle"
+                    :class="{ 
+                      'cursor-pointer': isExpired(vehicle.ngay_het_han) && vehicle.trang_thai_duyet === 1, 
+                      'cursor-not-allowed opacity-60': !isExpired(vehicle.ngay_het_han) || vehicle.trang_thai_duyet !== 1 
+                    }">
+                    <input type="radio" 
+                      :value="vehicle" 
+                      v-model="selectedVehicle"
                       class="rounded-full border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                      @change="calculateTotal" :disabled="!isExpired(vehicle.ngay_het_han)" />
+                      @change="calculateTotal" 
+                      :disabled="!isExpired(vehicle.ngay_het_han) || vehicle.trang_thai_duyet !== 1" />
                     <span class="text-sm font-medium">Chọn</span>
                   </label>
                 </div>
@@ -143,7 +158,10 @@
                   <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Ngày hết hạn</p>
                     <p class="font-medium"
-                      :class="{ 'text-red-600': isExpired(vehicle.ngay_het_han), 'text-green-600': !isExpired(vehicle.ngay_het_han) }">
+                      :class="{ 
+                        'text-red-600': isExpired(vehicle.ngay_het_han), 
+                        'text-green-600': !isExpired(vehicle.ngay_het_han) 
+                      }">
                       {{ formatDate(vehicle.ngay_het_han) }}
                       <span v-if="isExpired(vehicle.ngay_het_han)" class="ml-1 text-xs text-red-600">(Đã hết hạn)</span>
                       <span v-else class="ml-1 text-xs text-green-600">(Còn hạn)</span>
@@ -155,6 +173,14 @@
                     <p class="font-medium text-blue-600">{{ formatCurrency(monthlyFee) }}</p>
                   </div>
                 </div>
+              </div>
+
+              <!-- Thông báo trạng thái -->
+              <div v-if="vehicle.trang_thai_duyet !== 1" class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-md">
+                <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                  <AlertTriangle class="inline-block h-4 w-4 mr-1" />
+                  Xe đang chờ duyệt. Vui lòng đợi quản trị viên phê duyệt trước khi thanh toán.
+                </p>
               </div>
             </div>
           </div>
@@ -460,7 +486,8 @@ import {
   Wallet,
   Smartphone,
   CreditCard as CreditCardIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  AlertTriangle
 } from 'lucide-vue-next'
 
 export default {
@@ -482,7 +509,8 @@ export default {
     Wallet,
     Smartphone,
     CreditCardIcon,
-    InfoIcon
+    InfoIcon,
+    AlertTriangle
   },
   data() {
     return {
@@ -603,7 +631,7 @@ export default {
         })
     },
     setTrangThaiThanhToan() {
-      baseRequestUser.post('user/cap-nhat-trang-thai-thanh-toan', {
+      baseRequestUser.post('user/set-transiton', {
         id: this.obj_checkout.id,
       })
         .then(response => {
@@ -628,6 +656,7 @@ export default {
         })
         .catch(error => {
           this.setTrangThaiThanhToan()
+          this.showSuccessModal = true
 
         })
         .finally(() => {

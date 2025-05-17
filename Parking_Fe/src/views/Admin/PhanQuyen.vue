@@ -287,6 +287,114 @@
         </div>
       </div>
   
+      <!-- Nhân sự Tab -->
+      <div v-if="activeTab === 'personnel'" class="space-y-6">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <div class="relative">
+              <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm nhân sự..." 
+                class="pl-9 h-10 w-full sm:w-[250px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                v-model="personnelSearch"
+              />
+            </div>
+            <select 
+              v-model="personnelStatusFilter" 
+              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+            >
+              <option value="all">Tất cả trạng thái</option>
+              <option value="active">Đang làm việc</option>
+              <option value="inactive">Đã nghỉ việc</option>
+            </select>
+            <select 
+              v-model="personnelRoleFilter" 
+              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+            >
+              <option value="all">Tất cả chức vụ</option>
+              <option v-for="role in roles" :key="role.id" :value="role.id">
+                {{ role.ten_chuc_vu }}
+              </option>
+            </select>
+          </div>
+          <button 
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+            @click="showAddPersonnelModal = true"
+          >
+            <Plus class="mr-2 h-4 w-4" />
+            Thêm nhân sự
+          </button>
+        </div>
+
+        <!-- Danh sách nhân sự -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div class="p-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Họ và tên</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Chức vụ</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Số điện thoại</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Trạng thái</th>
+                  <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                <tr v-for="person in filteredPersonnel" :key="person.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {{ person.id }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {{ person.ho_ten }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {{ getRoleName(person.id_chuc_vu) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {{ person.email }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {{ person.so_dien_thoai }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span 
+                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      :class="person.tinh_trang ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
+                    >
+                      {{ person.tinh_trang ? 'Đang làm việc' : 'Đã nghỉ việc' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end space-x-2">
+                      <button 
+                        class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
+                        @click="editPersonnel(person)"
+                      >
+                        <Edit class="h-4 w-4" />
+                      </button>
+                      <button 
+                        class="text-red-600 hover:text-red-900 dark:hover:text-red-400"
+                        @click="deletePersonnel(person)"
+                      >
+                        <Trash2 class="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="filteredPersonnel.length === 0">
+                  <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                    Không tìm thấy nhân sự nào
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
       <!-- Modal thêm chức vụ -->
       <div v-if="showAddRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
@@ -427,6 +535,101 @@
           </div>
         </div>
       </div>
+  
+      <!-- Modal thêm/sửa nhân sự -->
+      <div v-if="showAddPersonnelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h3 class="text-lg font-medium">{{ editingPersonnel ? 'Chỉnh sửa nhân sự' : 'Thêm nhân sự mới' }}</h3>
+            <button @click="closePersonnelModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+              <X class="h-5 w-5" />
+            </button>
+          </div>
+          <div class="p-4">
+            <form @submit.prevent="savePersonnel">
+              <div class="space-y-4">
+                <div>
+                  <label for="personnelName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Họ và tên *</label>
+                  <input 
+                    id="personnelName" 
+                    type="text" 
+                    v-model="personnelForm.ho_ten"
+                    required
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                    placeholder="Nhập họ và tên"
+                  />
+                </div>
+                
+                <div>
+                  <label for="personnelEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+                  <input 
+                    id="personnelEmail" 
+                    type="email" 
+                    v-model="personnelForm.email"
+                    required
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                    placeholder="Nhập email"
+                  />
+                </div>
+
+                <div>
+                  <label for="personnelPhone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Số điện thoại *</label>
+                  <input 
+                    id="personnelPhone" 
+                    type="tel" 
+                    v-model="personnelForm.so_dien_thoai"
+                    required
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                    placeholder="Nhập số điện thoại"
+                  />
+                </div>
+
+                <div>
+                  <label for="personnelRole" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Chức vụ *</label>
+                  <select 
+                    id="personnelRole"
+                    v-model="personnelForm.id_chuc_vu"
+                    required
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                  >
+                    <option value="">Chọn chức vụ</option>
+                    <option v-for="role in roles" :key="role.id" :value="role.id">
+                      {{ role.ten_chuc_vu }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <input 
+                      type="checkbox" 
+                      v-model="personnelForm.tinh_trang"
+                      class="rounded border-gray-300 dark:border-gray-600 text-blue-600"
+                    />
+                    <span>Đang làm việc</span>
+                  </label>
+                </div>
+                
+                <div class="pt-4 flex justify-end space-x-2">
+                  <button 
+                    type="button" 
+                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                    @click="closePersonnelModal"
+                  >
+                    Hủy
+                  </button>
+                  <button 
+                    type="submit" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    {{ editingPersonnel ? 'Cập nhật' : 'Thêm' }}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
   
@@ -458,7 +661,8 @@
       const tabs = [
         { id: 'roles', name: 'Chức vụ' },
         { id: 'permissions', name: 'Chức năng' },
-        { id: 'role-permissions', name: 'Phân quyền' }
+        { id: 'role-permissions', name: 'Phân quyền' },
+        { id: 'personnel', name: 'Nhân sự' }
       ]
       const activeTab = ref('roles')
   
@@ -496,6 +700,21 @@
       // Phân quyền
       const selectedRoleId = ref('')
       const selectedPermissions = ref([])
+  
+      // Dữ liệu nhân sự
+      const personnel = ref([])
+      const personnelSearch = ref('')
+      const personnelStatusFilter = ref('all')
+      const personnelRoleFilter = ref('all')
+      const showAddPersonnelModal = ref(false)
+      const editingPersonnel = ref(null)
+      const personnelForm = ref({
+        ho_ten: '',
+        email: '',
+        so_dien_thoai: '',
+        id_chuc_vu: '',
+        tinh_trang: true
+      })
   
       // Lấy dữ liệu khi component được tạo
       onMounted(() => {
@@ -545,6 +764,33 @@
             { id: 16, id_chuc_vu: 3, id_chuc_nang: 3, tinh_trang: true },
             { id: 17, id_chuc_vu: 3, id_chuc_nang: 4, tinh_trang: true },
             { id: 18, id_chuc_vu: 3, id_chuc_nang: 8, tinh_trang: true }
+          ]
+          
+          personnel.value = [
+            { 
+              id: 1, 
+              ho_ten: 'Nguyễn Văn A', 
+              email: 'nguyenvana@example.com',
+              so_dien_thoai: '0123456789',
+              id_chuc_vu: 1,
+              tinh_trang: true 
+            },
+            { 
+              id: 2, 
+              ho_ten: 'Trần Thị B', 
+              email: 'tranthib@example.com',
+              so_dien_thoai: '0987654321',
+              id_chuc_vu: 2,
+              tinh_trang: true 
+            },
+            { 
+              id: 3, 
+              ho_ten: 'Lê Văn C', 
+              email: 'levanc@example.com',
+              so_dien_thoai: '0369852147',
+              id_chuc_vu: 3,
+              tinh_trang: false 
+            }
           ]
         } catch (error) {
           console.error('Lỗi khi lấy dữ liệu:', error)
@@ -789,6 +1035,96 @@
         }
       }
   
+      // Lọc nhân sự
+      const filteredPersonnel = computed(() => {
+        let result = [...personnel.value]
+        
+        // Lọc theo tìm kiếm
+        if (personnelSearch.value) {
+          const searchLower = personnelSearch.value.toLowerCase()
+          result = result.filter(person => 
+            person.ho_ten.toLowerCase().includes(searchLower) ||
+            person.email.toLowerCase().includes(searchLower) ||
+            person.so_dien_thoai.includes(searchLower)
+          )
+        }
+        
+        // Lọc theo trạng thái
+        if (personnelStatusFilter.value !== 'all') {
+          const isActive = personnelStatusFilter.value === 'active'
+          result = result.filter(person => person.tinh_trang === isActive)
+        }
+
+        // Lọc theo chức vụ
+        if (personnelRoleFilter.value !== 'all') {
+          result = result.filter(person => person.id_chuc_vu === personnelRoleFilter.value)
+        }
+        
+        return result
+      })
+  
+      // Lấy tên chức vụ
+      const getRoleName = (roleId) => {
+        const role = roles.value.find(r => r.id === roleId)
+        return role ? role.ten_chuc_vu : ''
+      }
+  
+      // Thêm/Sửa nhân sự
+      const editPersonnel = (person) => {
+        editingPersonnel.value = person
+        personnelForm.value = {
+          ho_ten: person.ho_ten,
+          email: person.email,
+          so_dien_thoai: person.so_dien_thoai,
+          id_chuc_vu: person.id_chuc_vu,
+          tinh_trang: person.tinh_trang
+        }
+        showAddPersonnelModal.value = true
+      }
+  
+      const closePersonnelModal = () => {
+        showAddPersonnelModal.value = false
+        editingPersonnel.value = null
+        personnelForm.value = {
+          ho_ten: '',
+          email: '',
+          so_dien_thoai: '',
+          id_chuc_vu: '',
+          tinh_trang: true
+        }
+      }
+  
+      const savePersonnel = () => {
+        if (editingPersonnel.value) {
+          // Cập nhật nhân sự
+          const index = personnel.value.findIndex(p => p.id === editingPersonnel.value.id)
+          if (index !== -1) {
+            personnel.value[index] = {
+              ...personnel.value[index],
+              ...personnelForm.value
+            }
+          }
+        } else {
+          // Thêm nhân sự mới
+          const newId = Math.max(0, ...personnel.value.map(p => p.id)) + 1
+          personnel.value.push({
+            id: newId,
+            ...personnelForm.value
+          })
+        }
+        
+        closePersonnelModal()
+      }
+  
+      // Xóa nhân sự
+      const deletePersonnel = (person) => {
+        deleteMessage.value = `Bạn có chắc chắn muốn xóa nhân sự "${person.ho_ten}" không?`
+        deleteCallback.value = () => {
+          personnel.value = personnel.value.filter(p => p.id !== person.id)
+        }
+        showDeleteModal.value = true
+      }
+  
       return {
         tabs,
         activeTab,
@@ -828,7 +1164,20 @@
         selectAllPermissions,
         deselectAllPermissions,
         saveRolePermissions,
-        watchSelectedRoleId
+        watchSelectedRoleId,
+        personnel,
+        personnelSearch,
+        personnelStatusFilter,
+        personnelRoleFilter,
+        showAddPersonnelModal,
+        editingPersonnel,
+        personnelForm,
+        filteredPersonnel,
+        getRoleName,
+        editPersonnel,
+        closePersonnelModal,
+        savePersonnel,
+        deletePersonnel
       }
     }
   }

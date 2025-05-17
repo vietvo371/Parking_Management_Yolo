@@ -54,12 +54,28 @@
                 <span class="text-sm text-gray-500">Loại xe</span>
                 <span class="font-medium">{{ userProfile.vehicleType || 'Chưa đăng ký xe' }}</span>
               </div>
-              <div v-if="!isExpired" class="mt-3 flex justify-center">
-                <router-link class="w-1/2" to="/user/thanh-toan-online">
-                  <button  class="w-full px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                    Nạp tiền
-                  </button>
-                </router-link>
+              <div class="mt-3 flex justify-center">
+                <template v-if="!userProfile.ngay_het_han">
+                  <router-link class="w-1/2" to="/user/thanh-toan-online">
+                    <button class="w-full px-3 py-1.5 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 text-sm">
+                      Chưa đăng ký tháng
+                    </button>
+                  </router-link>
+                </template>
+                <template v-else-if="isExpired">
+                  <router-link class="w-1/2" to="/user/thanh-toan-online">
+                    <button class="w-full px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm">
+                      Đã hết hạn - Đăng ký tháng
+                    </button>
+                  </router-link>
+                </template>
+                <template v-else>
+                  <router-link class="w-1/2" to="/user/thanh-toan-online">
+                    <button class="w-full px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                      Nạp tiền
+                    </button>
+                  </router-link>
+                </template>
               </div>
             </div>
           </div>
@@ -262,6 +278,41 @@
           </div>
         </div>
       </div>
+
+      <!-- Transaction History -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-medium flex items-center">
+            <Receipt class="h-5 w-5 mr-2 text-blue-600" />
+            Lịch sử giao dịch
+          </h3>
+        </div>
+        <div class="p-4">
+          <div v-if="historyTransaction && historyTransaction.length > 0" class="space-y-4">
+            <div v-for="(transaction, index) in historyTransaction" :key="index" 
+                 class="border rounded-lg p-4 border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Biển số xe</p>
+                  <p class="font-medium">{{ transaction.bien_so_xe }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Ngày hết hạn</p>
+                  <p class="font-medium">{{ transaction.ngay_het_han ? formatDate(transaction.ngay_het_han) : 'Chưa cập nhật' }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Mã giao dịch</p>
+                  <p class="font-medium">#{{ transaction.ma_giao_dich }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-8">
+            <Receipt class="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <p class="text-gray-500">Chưa có giao dịch nào</p>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
   
@@ -275,7 +326,8 @@
     LogIn, 
     Settings, 
     Key, 
-    AlertTriangle 
+    AlertTriangle,
+    Receipt
   } from 'lucide-vue-next'
   import baseRequestUser from '../../core/baseRequestUser'
   export default {
@@ -289,7 +341,8 @@
       LogIn,
       Settings,
       Key,
-      AlertTriangle
+      AlertTriangle,
+      Receipt
     },
     data() {
       return {
@@ -320,15 +373,29 @@
           new: false,
           confirm: false
         },
-        accountActivities: []
+        accountActivities: [],
+        historyTransaction: []
       }
     },
     computed: {
       isExpired() {
         if (!this.userProfile.ngay_het_han || this.userProfile.ngay_het_han === null) return false;
+        
+        // Chuyển đổi ngày hết hạn sang định dạng YYYY-MM-DD để so sánh
         const expiryDate = new Date(this.userProfile.ngay_het_han);
         const now = new Date();
-        return expiryDate < now;
+        
+        // Reset thời gian về 00:00:00 để chỉ so sánh ngày
+        expiryDate.setHours(0, 0, 0, 0);
+        now.setHours(0, 0, 0, 0);
+        
+        // Thêm console.log để debug
+        console.log('Expiry Date:', expiryDate);
+        console.log('Current Date:', now);
+        console.log('Is Expired:', now > expiryDate);
+        
+        // Trả về true nếu ngày hiện tại LỚN HƠN ngày hết hạn
+        return now > expiryDate;
       }
     },
     mounted() {
@@ -349,6 +416,7 @@
       async getUserProfile() {
         const res = await baseRequestUser.get('user/profile')
         const data = res.data.data
+        this.historyTransaction = res.data.lich_su_thanh_toan
         this.userProfile = {
           fullName: data.ho_va_ten || '',
           email: data.email || '',
@@ -410,6 +478,10 @@
           style: 'currency',
           currency: 'VND'
         }).format(amount)
+      },
+      formatDate(date) {
+        const formattedDate = new Date(date).toLocaleDateString('vi-VN')
+        return formattedDate
       }
     }
   }

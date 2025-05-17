@@ -146,7 +146,7 @@ const routes = [
       {
         path: "thanh-toan-online",
         component: () => import("../views/User/ThanhToanOnl.vue"),
-        // beforeEnter: checkLoginUser,
+        beforeEnter: checkLoginUser,
       },
       
     ],
