@@ -18,6 +18,7 @@ class XeController extends Controller
         ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
         ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
         ->select('xes.*', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha')
+        ->orderBy('xes.created_at', 'desc')
         ->get();
         return response()->json([
             'status' => true,
@@ -54,7 +55,7 @@ class XeController extends Controller
             'id_cu_dan' => $user->id,
             'bien_so_xe' => $request->bien_so_xe,
             'id_loai_xe' => $request->id_loai_xe,
-            'trang_thai_duyet' => 1,
+            'trang_thai_duyet' => 0,
         ]);
         return response()->json([
             'status' => true,

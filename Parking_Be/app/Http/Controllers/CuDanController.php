@@ -6,6 +6,7 @@ use App\Http\Requests\capNhatCuDanRequest;
 use App\Http\Requests\DoiPassAdminReuqest;
 use App\Http\Requests\ThemCuDanRequest;
 use App\Models\CuDan;
+use App\Models\Xe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -260,7 +261,15 @@ class CuDanController extends Controller
             ->leftJoin('giao_diches', 'giao_diches.id_xe', '=', 'xes.id')
             ->where('cu_dans.id', $user->id)
             ->select('cu_dans.*', 'can_hos.ten_toa_nha','can_hos.so_can_ho', 'xes.bien_so_xe', 'loai_xes.ten_loai_xe', 'giao_diches.ngay_het_han')
+            ->orderBy('giao_diches.ngay_het_han', 'desc')
             ->first();
+        // $lich_su_thanh_toan = DB::table('giao_diches')->where('id_xe', $user->id)->orderBy('created_at', 'desc')->get();
+        $xe = Xe::join('giao_diches', 'giao_diches.id_xe', '=', 'xes.id')
+            ->where('xes.id_cu_dan', $user->id)
+            ->whereNotNull('giao_diches.ngay_het_han')
+            ->select('xes.bien_so_xe', 'giao_diches.ngay_het_han','giao_diches.ma_giao_dich')
+            ->orderBy('xes.created_at', 'desc')
+            ->get();
         $lich_su_login = DB::table('personal_access_tokens')->where('name', "cu_dan_token")->select('id', 'created_at', 'updated_at')->get();
         if (!$user) {
             return response()->json([
@@ -272,7 +281,8 @@ class CuDanController extends Controller
             'status' => true,
             'message' => 'Lấy thông tin cư dân thành công',
             'data' => $cudan,
-            'lich_su_login' => $lich_su_login
+            'lich_su_login' => $lich_su_login,
+            'lich_su_thanh_toan' => $xe
         ]);
     }
 }

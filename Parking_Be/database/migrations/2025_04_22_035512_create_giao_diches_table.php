@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('id_xe');
             $table->integer('phuong_thuc_thanh_toan');
             $table->integer('trang_thai_giao_dich');
-            $table->dateTime('ngay_het_han');
+            $table->dateTime('ngay_het_han')->nullable();
             $table->string('ma_giao_dich');
             $table->timestamps();
         });
