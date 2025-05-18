@@ -692,6 +692,7 @@ export default {
     },
     closeSuccessModal() {
       this.showSuccessModal = false
+      this.$router.push('/user/profile')
     },
     goToRegisterVehicle() {
       alert('Chuyển đến trang đăng ký xe')

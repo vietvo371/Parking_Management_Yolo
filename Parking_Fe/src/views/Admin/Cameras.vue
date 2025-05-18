@@ -3,10 +3,12 @@
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold tracking-tight">Quản lý camera</h1>
       <div class="flex items-center space-x-2">
-        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center" @click="addCamera">
-          <Plus class="mr-2 h-4 w-4" />
-          Thêm camera
-        </button>
+        <router-link to="/admin/quan-ly-camera/them-camera">
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+            <Plus class="mr-2 h-4 w-4" />
+            Thêm camera
+          </button>
+        </router-link>
       </div>
     </div>
 
@@ -76,19 +78,18 @@
             class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
           >
             <option value="">Tất cả trạng thái</option>
-            <option value="active">Đang hoạt động</option>
-            <option value="error">Đang lỗi</option>
-            <option value="offline">Ngoại tuyến</option>
+            <option value="1">Đang hoạt động</option>
+            <option value="0">Đang lỗi</option>
           </select>
           <select 
             v-model="filters.type" 
             class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
           >
             <option value="">Tất cả loại</option>
-            <option value="entrance">Camera cổng vào</option>
-            <option value="exit">Camera cổng ra</option>
-            <option value="parking">Camera bãi đỗ</option>
-            <option value="security">Camera an ninh</option>
+            <option value="Camera cổng vào">Camera cổng vào</option>
+            <option value="Camera cổng ra">Camera cổng ra</option>
+            <option value="Camera bãi đỗ">Camera bãi đỗ</option>
+            <option value="Camera an ninh">Camera an ninh</option>
           </select>
         </div>
         <button 
@@ -122,29 +123,25 @@
                     <Video class="h-5 w-5 text-gray-500 dark:text-gray-400" />
                   </div>
                   <div class="ml-4">
-                    <div class="text-sm font-medium">{{ camera.name }}</div>
+                    <div class="text-sm font-medium">{{ camera.vi_tri_dat }}</div>
                     <div class="text-sm text-gray-500">ID: {{ camera.id }}</div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                {{ camera.type }}
+                {{ camera.ten_bai }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                {{ camera.location }}
+                {{ camera.vi_tri_dat }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                  :class="{
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': camera.status === 'active',
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300': camera.status === 'error',
-                    'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300': camera.status === 'offline'
-                  }">
-                  {{ getStatusText(camera.status) }}
+                  :class="getStatusClass(camera.trang_thai)">
+                  {{ getStatusText(camera.trang_thai) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ camera.lastUpdate }}
+                {{ formatDateTime(camera.updated_at) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
@@ -166,7 +163,7 @@
                     title="Bạn có chắc chắn muốn xóa camera này không?"
                     ok-text="Có"
                     cancel-text="Không"
-                    @confirm="confirmDelete"
+                    @confirm="confirmDelete(camera)"
                   >
                     <a-button 
                       type="primary"
@@ -198,19 +195,19 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <p class="text-sm text-gray-500">Tên camera</p>
-            <p class="text-sm font-medium">{{ selectedCamera.name }}</p>
+            <p class="text-sm font-medium">{{ selectedCamera.vi_tri_dat }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Loại camera</p>
-            <p class="text-sm font-medium">{{ selectedCamera.type }}</p>
+            <p class="text-sm font-medium">{{ selectedCamera.ten_bai }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Vị trí</p>
-            <p class="text-sm font-medium">{{ selectedCamera.location }}</p>
+            <p class="text-sm font-medium">{{ selectedCamera.vi_tri_dat }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Trạng thái</p>
-            <p class="text-sm font-medium">{{ getStatusText(selectedCamera.status) }}</p>
+            <p class="text-sm font-medium">{{ getStatusText(selectedCamera.trang_thai) }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">IP Address</p>
@@ -218,7 +215,7 @@
           </div>
           <div>
             <p class="text-sm text-gray-500">Lần cuối cập nhật</p>
-            <p class="text-sm font-medium">{{ selectedCamera.lastUpdate }}</p>
+            <p class="text-sm font-medium">{{ formatDateTime(selectedCamera.updated_at) }}</p>
           </div>
         </div>
       </div>
@@ -234,67 +231,39 @@
       </template>
       <div class="space-y-4">
         <div>
-          <label for="cameraName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên camera *</label>
-          <input 
-            id="cameraName" 
-            type="text" 
-            v-model="editingCamera.name"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-            placeholder="Nhập tên camera"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bãi xe *</label>
+          <a-select
+            v-model:value="editingCamera.id_bai_xe"
+            show-search
+            placeholder="Chọn bãi xe"
+            style="width: 100%"
+            :options="optionsBaiXe"
+            :filter-option="filterOptionBaiXe()"
           />
         </div>
         
         <div>
-          <label for="cameraType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loại camera *</label>
-          <select 
-            id="cameraType"
-            v-model="editingCamera.type"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-          >
-            <option value="Camera cổng vào">Camera cổng vào</option>
-            <option value="Camera cổng ra">Camera cổng ra</option>
-            <option value="Camera bãi đỗ">Camera bãi đỗ</option>
-            <option value="Camera an ninh">Camera an ninh</option>
-          </select>
-        </div>
-        
-        <div>
-          <label for="cameraLocation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vị trí *</label>
-          <input 
-            id="cameraLocation" 
-            type="text" 
-            v-model="editingCamera.location"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-            placeholder="Nhập vị trí camera"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vị trí *</label>
+          <a-select
+            v-model:value="editingCamera.id_vi_tri"
+            show-search
+            placeholder="Chọn vị trí"
+            style="width: 100%"
+            :options="optionsViTri"
+            :filter-option="filterOptionViTri()"
           />
         </div>
         
         <div>
-          <label for="cameraIp" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">IP Address *</label>
-          <input 
-            id="cameraIp" 
-            type="text" 
-            v-model="editingCamera.ipAddress"
-            required
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-            placeholder="Nhập IP address"
-          />
-        </div>
-        
-        <div>
-          <label for="cameraStatus" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trạng thái *</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trạng thái *</label>
           <select 
             id="cameraStatus"
-            v-model="editingCamera.status"
+            v-model="editingCamera.trang_thai"
             required
             class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
           >
-            <option value="active">Đang hoạt động</option>
-            <option value="error">Đang lỗi</option>
-            <option value="offline">Ngoại tuyến</option>
+            <option :value="1">Đang hoạt động</option>
+            <option :value="0">Đang lỗi</option>
           </select>
         </div>
       </div>
@@ -315,6 +284,8 @@ import {
   X
 } from 'lucide-vue-next'
 import { Modal, Button, Popconfirm } from 'ant-design-vue'
+import baseRequest from '../../core/baseRequest'
+import { useNotificationStore } from '../../stores/notication'
 
 export default {
   name: 'Cameras',
@@ -336,10 +307,10 @@ export default {
     return {
       // Thống kê
       stats: {
-        totalCameras: 12,
-        activeCameras: 10,
-        errorCameras: 1,
-        todayEvents: 156
+        totalCameras: 0,
+        activeCameras: 0,
+        errorCameras: 0,
+        todayEvents: 0
       },
       // Bộ lọc
       filters: {
@@ -348,58 +319,7 @@ export default {
         type: ''
       },
       // Danh sách camera
-      cameras: [
-        { 
-          id: 'CAM001',
-          name: 'Camera cổng vào',
-          type: 'Camera cổng vào',
-          location: 'Cổng chính',
-          status: 'active',
-          lastUpdate: '24/04/2023 - 18:30',
-          ipAddress: '192.168.1.101',
-          image: '../assets/images/camera.png'
-        },
-        { 
-          id: 'CAM002',
-          name: 'Camera cổng ra',
-          type: 'Camera cổng ra',
-          location: 'Cổng phụ',
-          status: 'active',
-          lastUpdate: '24/04/2023 - 18:25',
-          ipAddress: '192.168.1.102',
-          image: '../assets/images/camera.png'
-        },
-        { 
-          id: 'CAM003',
-          name: 'Camera bãi đỗ A',
-          type: 'Camera bãi đỗ',
-          location: 'Tầng hầm A',
-          status: 'error',
-          lastUpdate: '24/04/2023 - 17:45',
-          ipAddress: '192.168.1.103',
-          image: '../assets/images/camera.png'
-        },
-        { 
-          id: 'CAM004',
-          name: 'Camera bãi đỗ B',
-          type: 'Camera bãi đỗ',
-          location: 'Tầng hầm B',
-          status: 'active',
-          lastUpdate: '24/04/2023 - 18:15',
-          ipAddress: '192.168.1.104',
-          image: '../assets/images/camera.png'
-        },
-        { 
-          id: 'CAM005',
-          name: 'Camera an ninh 1',
-          type: 'Camera an ninh',
-          location: 'Sảnh chính',
-          status: 'active',
-          lastUpdate: '24/04/2023 - 18:00',
-          ipAddress: '192.168.1.105',
-          image: '../assets/images/camera.png'
-        }
-      ],
+      cameras: [],
       // Modal
       showViewModal: false,
       showEditModal: false,
@@ -407,36 +327,73 @@ export default {
       isSubmitting: false,
       selectedCamera: null,
       editingCamera: {
-        name: '',
-        type: '',
-        location: '',
-        status: 'active',
-        ipAddress: ''
-      }
+        id_vi_tri: '',
+        id_bai_xe: '',
+        trang_thai: 1,
+        ten_bai: '',
+        vi_tri_dat: ''
+      },
+      bai_xes: [],
+      vi_tris: [],
     }
   },
   computed: {
     filteredCameras() {
       return this.cameras.filter(camera => {
-        const matchesSearch = camera.name.toLowerCase().includes(this.filters.search.toLowerCase()) ||
-                            camera.id.toLowerCase().includes(this.filters.search.toLowerCase())
-        const matchesStatus = !this.filters.status || camera.status === this.filters.status
-        const matchesType = !this.filters.type || camera.type.toLowerCase().includes(this.filters.type.toLowerCase())
-        return matchesSearch && matchesStatus && matchesType
+        const matchesSearch = camera.vi_tri_dat.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+                            camera.ten_bai.toLowerCase().includes(this.filters.search.toLowerCase())
+        const matchesStatus = !this.filters.status || camera.trang_thai === parseInt(this.filters.status)
+        return matchesSearch && matchesStatus
       })
+    },
+    optionsBaiXe() {
+      return this.bai_xes.map(bai_xe => ({
+        label: bai_xe.ten_bai,
+        value: bai_xe.id,
+      }));
+    },
+    optionsViTri() {
+      return this.vi_tris.map(vi_tri => ({
+        label: vi_tri.vi_tri_dat,
+        value: vi_tri.id,
+      }));
     }
   },
+  mounted() {
+    this.getCamera();
+    this.getBaiXe();
+    this.getViTri();
+  },  
   methods: {
+    getCamera() {
+      baseRequest.get("admin/cam-giam-soat/lay-du-lieu").then((res) => {
+        this.cameras = res.data.data;
+        this.updateStats();
+      });
+    },
+    updateStats() {
+      this.stats.totalCameras = this.cameras.length;
+      this.stats.activeCameras = this.cameras.filter(c => c.trang_thai === 1).length;
+      this.stats.errorCameras = this.cameras.filter(c => c.trang_thai === 0).length;
+    },
     getStatusText(status) {
       switch (status) {
-        case 'active':
+        case 1:
           return 'Đang hoạt động'
-        case 'error':
+        case 0:
           return 'Đang lỗi'
-        case 'offline':
-          return 'Ngoại tuyến'
         default:
           return 'Không xác định'
+      }
+    },
+    getStatusClass(status) {
+      switch (status) {
+        case 1:
+          return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+        case 0:
+          return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+        default:
+          return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
       }
     },
     resetFilters() {
@@ -446,54 +403,108 @@ export default {
         type: ''
       }
     },
-    addCamera() {
-      this.isEditing = false
-      this.editingCamera = {
-        name: '',
-        type: '',
-        location: '',
-        status: 'active',
-        ipAddress: ''
-      }
-      this.showEditModal = true
-    },
     viewCamera(camera) {
       this.selectedCamera = camera
       this.showViewModal = true
     },
     editCamera(camera) {
       this.isEditing = true
-      this.editingCamera = { ...camera }
+      this.editingCamera = { 
+        id: camera.id,
+        id_vi_tri: camera.id_vi_tri,
+        id_bai_xe: camera.id_bai_xe,
+        trang_thai: camera.trang_thai,
+        ten_bai: camera.ten_bai,
+        vi_tri_dat: camera.vi_tri_dat
+      }
       this.showEditModal = true
     },
     handleEditSubmit() {
       this.isSubmitting = true
+      const notificationStore = useNotificationStore();
       
-      // Trong thực tế, bạn sẽ gọi API để thêm/sửa camera
-      setTimeout(() => {
-        if (this.isEditing) {
-          const index = this.cameras.findIndex(c => c.id === this.editingCamera.id)
-          if (index !== -1) {
-            this.cameras[index] = { ...this.editingCamera }
-          }
-        } else {
-          const newId = `CAM${String(this.cameras.length + 1).padStart(3, '0')}`
-          this.cameras.push({
-            id: newId,
-            ...this.editingCamera,
-            lastUpdate: new Date().toLocaleString('vi-VN')
+      if (this.isEditing) {
+        baseRequest.post("admin/cam-giam-soat/thong-tin-cap-nhat", {
+          id: this.editingCamera.id,
+          id_bai_xe: this.editingCamera.id_bai_xe,
+          id_vi_tri: this.editingCamera.id_vi_tri,
+          trang_thai: this.editingCamera.trang_thai,
+         
+        })
+          .then((response) => {
+            if (response.data.status) {
+              this.getCamera();
+              this.showEditModal = false;
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError('Cập nhật camera thất bại');
+            }
+            this.isSubmitting = false;
           })
-        }
-        
-        this.isSubmitting = false
-        this.showEditModal = false
-      }, 1000)
+          .catch((res) => {
+            var errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+            this.isSubmitting = false;
+          });
+      } else {
+        baseRequest.post("admin/cam-giam-soat/them-du-lieu", this.editingCamera)
+          .then((response) => {
+            if (response.data.status) {
+              this.getCamera();
+              this.showEditModal = false;
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError('Thêm camera thất bại');
+            }
+            this.isSubmitting = false;
+          })
+          .catch((res) => {
+            var errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+            this.isSubmitting = false;
+          });
+      }
     },
-    confirmDelete() {
-      // Trong thực tế, bạn sẽ gọi API để xóa camera
-      this.cameras = this.cameras.filter(c => c.id !== this.selectedCamera.id)
-      this.selectedCamera = null
-    }
+    confirmDelete(camera) {
+      const notificationStore = useNotificationStore();
+      baseRequest.delete("admin/cam-giam-soat/thong-tin-xoa/" + camera.id)
+        .then((response) => {
+          if (response.data.status) {
+            this.getCamera();
+            notificationStore.showSuccess(response.data.message);
+          } else {
+            notificationStore.showError('Xóa camera thất bại');
+          }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
+    },
+    formatDateTime(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleString('vi-VN');
+    },
+    getBaiXe() {
+      baseRequest.get("admin/bai-xe/lay-du-lieu").then((response) => {
+        this.bai_xes = response.data.data;
+      });
+    },
+    getViTri() {
+      baseRequest.get("admin/vi-tri-dat/lay-du-lieu").then((response) => {
+        this.vi_tris = response.data.data;
+      });
+    },
+    filterOptionBaiXe() {
+      return (input, option) => {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      };
+    },
+    filterOptionViTri() {
+      return (input, option) => {
+        return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      };
+    },
   }
 }
 </script>

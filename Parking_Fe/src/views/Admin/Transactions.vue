@@ -468,7 +468,8 @@ export default {
         const searchLower = this.filters.search.toLowerCase()
         result = result.filter(transaction => 
           transaction.id.toString().toLowerCase().includes(searchLower) || 
-          (transaction.bien_so_xe && transaction.bien_so_xe.toLowerCase().includes(searchLower))
+          (transaction.bien_so_xe && transaction.bien_so_xe.toLowerCase().includes(searchLower)) ||
+          (transaction.ma_giao_dich && transaction.ma_giao_dich.toLowerCase().includes(searchLower))
         )
       }
       
@@ -477,25 +478,32 @@ export default {
         result = result.filter(transaction => transaction.trang_thai_giao_dich == this.filters.status)
       }
       
-      // Lọc theo loại
-      if (this.filters.type) {
-        result = result.filter(transaction => transaction.type === this.filters.type)
-      }
-      
       // Lọc theo ngày
       if (this.filters.dateFrom) {
         const fromDate = new Date(this.filters.dateFrom)
-        result = result.filter(transaction => new Date(transaction.ngay_het_han) >= fromDate)
+        fromDate.setHours(0, 0, 0, 0)
+        result = result.filter(transaction => {
+          const transactionDate = new Date(transaction.created_at)
+          transactionDate.setHours(0, 0, 0, 0)
+          return transactionDate >= fromDate
+        })
       }
       
       if (this.filters.dateTo) {
         const toDate = new Date(this.filters.dateTo)
-        toDate.setHours(23, 59, 59)
-        result = result.filter(transaction => new Date(transaction.ngay_het_han) <= toDate)
+        toDate.setHours(23, 59, 59, 999)
+        result = result.filter(transaction => {
+          const transactionDate = new Date(transaction.created_at)
+          return transactionDate <= toDate
+        })
       }
       
       // Sắp xếp theo thời gian mới nhất
-      result.sort((a, b) => new Date(b.ngay_het_han) - new Date(a.ngay_het_han))
+      result.sort((a, b) => {
+        const dateA = new Date(a.created_at)
+        const dateB = new Date(b.created_at)
+        return dateB - dateA
+      })
       
       // Cập nhật tổng số trang
       this.pagination.totalPages = Math.ceil(result.length / this.pagination.itemsPerPage)
@@ -536,11 +544,18 @@ export default {
         });
     },
     async fetchData() {
-        // const notificationStore = useNotificationStore();
-        const res = await baseRequest.get("admin/giao-dich/lay-du-lieu");
-        this.transactions = res.data.data;
-        this.updateStats();
-     
+      try {
+        const res = await baseRequest.get("admin/giao-dich/lay-du-lieu")
+        // Sắp xếp dữ liệu ngay khi nhận được từ API
+        this.transactions = res.data.data.sort((a, b) => {
+          const dateA = new Date(a.created_at)
+          const dateB = new Date(b.created_at)
+          return dateB - dateA
+        })
+        this.updateStats()
+      } catch (error) {
+        console.error('Error fetching transactions:', error)
+      }
     },
     updateStats() {
       const today = new Date().toISOString().split('T')[0]

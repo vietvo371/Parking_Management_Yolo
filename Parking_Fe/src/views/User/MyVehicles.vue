@@ -717,24 +717,26 @@ export default {
 
     // Delete vehicle
     async deleteVehicle() {
-      try {
-        this.isSubmitting = true
-        const res = await baseRequestUser.delete(`user/xe/${this.deleteVehicleData.id}`)
-        if (res.data.status) {
-          this.successMsg = 'Xóa xe thành công'
-          const index = this.vehicles.findIndex(v => v.id === this.deleteVehicleData.id)
-          if (index !== -1) {
-            this.vehicles.splice(index, 1)
+      this.isSubmitting = true
+      baseRequestUser.delete("user/xoa-xe/" + this.deleteVehicleData.id)
+        .then((response) => {
+          const notificationStore = useNotificationStore();
+          if (response.data.status) {
+            this.getXe()
+            notificationStore.showSuccess(response.data.message)
+            this.isSubmitting = false
+            this.showDeleteConfirmModal = false
+          } else {
+            notificationStore.showError(response.data.message)
+            this.isSubmitting = false
+            this.showDeleteConfirmModal = false
           }
-          this.showDeleteConfirmModal = false
-        } else {
-          this.errorMsg = res.data.message || 'Có lỗi xảy ra khi xóa xe'
-        }
-      } catch (e) {
-        this.errorMsg = 'Có lỗi xảy ra khi xóa xe'
-      } finally {
-        this.isSubmitting = false
-      }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+          this.isSubmitting = false
+        });
     },
 
     // Format currency
