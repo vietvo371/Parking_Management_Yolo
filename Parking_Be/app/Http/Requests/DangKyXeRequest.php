@@ -22,7 +22,7 @@ class DangKyXeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bien_so_xe' => 'required|string|max:255|unique:xes,bien_so_xe',
+            'bien_so_xe' => 'required|string|max:255|unique:xes,bien_so_xe|regex:/^[0-9]{2}[A-Z]{1,2}-[0-9]{4,5}$/',
             'id_loai_xe' => 'required|exists:loai_xes,id',
         ];
     }
@@ -30,6 +30,7 @@ class DangKyXeRequest extends FormRequest
     {
         return [
             'bien_so_xe.required' => 'Biển số xe là bắt buộc',
+            'bien_so_xe.regex' => 'Biển số xe phải có định dạng: 30X-00000',
             'id_loai_xe.required' => 'Loại xe là bắt buộc',
             'id_loai_xe.exists' => 'Loại xe không tồn tại',
             'bien_so_xe.max' => 'Biển số xe không được vượt quá 255 ký tự',

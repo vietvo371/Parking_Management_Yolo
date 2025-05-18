@@ -23,7 +23,7 @@ class CapNhatXeRequest extends FormRequest
     {
         return [
             'id' => 'required|exists:xes,id',
-            'bien_so_xe' => 'required|string|max:255|unique:xes,bien_so_xe,' . $this->id,
+            'bien_so_xe' => 'required|string|max:255|regex:/^[0-9]{2}[A-Z]{1,2}-[0-9]{4,5}$/ |unique:xes,bien_so_xe,' . $this->id . ',id',
             'id_loai_xe' => 'required|exists:loai_xes,id',
         ];
     }
@@ -35,6 +35,7 @@ class CapNhatXeRequest extends FormRequest
             'id_loai_xe.exists' => 'Loại xe không tồn tại',
             'bien_so_xe.max' => 'Biển số xe không được vượt quá 255 ký tự',
             'bien_so_xe.unique' => 'Biển số xe đã tồn tại',
+            'bien_so_xe.regex' => 'Biển số xe phải có định dạng: 30X-00000',
         ];
     }
 }

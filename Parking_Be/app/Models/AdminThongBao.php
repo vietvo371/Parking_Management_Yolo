@@ -14,4 +14,6 @@ class AdminThongBao extends Model
         'ngay_tao',
         'trang_thai'
     ];
+
+    
 }

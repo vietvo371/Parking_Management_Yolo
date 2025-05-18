@@ -25,6 +25,7 @@ class capnhatCamGiamSoatRequest extends FormRequest
             'id' => 'required|integer|exists:cam_giam_soats,id',
             'id_vi_tri' => 'required|integer|exists:vi_tri_dats,id',
             'id_bai_xe' => 'required|integer|exists:bai_xes,id',
+            'trang_thai' => 'required|integer|in:0,1',
         ];
     }
     public function messages(): array
@@ -39,6 +40,9 @@ class capnhatCamGiamSoatRequest extends FormRequest
             'id_bai_xe.required' => 'Bãi xe là bắt buộc',
             'id_bai_xe.integer' => 'Bãi xe phải là số',
             'id_bai_xe.exists' => 'Bãi xe không tồn tại',
+            'trang_thai.required' => 'Trạng thái là bắt buộc',
+            'trang_thai.integer' => 'Trạng thái phải là số',
+            'trang_thai.in' => 'Trạng thái phải là 0 hoặc 1',
         ];
     }
 }

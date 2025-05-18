@@ -47,6 +47,23 @@ class XeController extends Controller
             'data' => $xe
         ]);
     }
+    public function xoaXeClient($id)
+    {
+        $user = $this->isCuDan();
+        $xe = Xe::where('id_cu_dan', $user->id)->where('id', $id)->first();
+        if (!$xe->is_con_han) {
+            $xe->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Bạn đã xóa xe thành công',
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Xe vẫn còn hạn sử dụng không thể xoá',
+            ]);
+        }
+    }
 
     public function dangKyXe(DangKyXeRequest $request)
     {

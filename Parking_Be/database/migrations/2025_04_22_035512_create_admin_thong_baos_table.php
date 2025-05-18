@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('admin_thong_baos', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_admin');
-            $table->integer('id_cu_dan');
+            $table->integer('id_admin')->nullable();
+            $table->integer('id_cu_dan')->nullable();
             $table->longText('noi_dung_thong_bao');
             $table->dateTime('ngay_tao');
             $table->integer('trang_thai')->default(1);

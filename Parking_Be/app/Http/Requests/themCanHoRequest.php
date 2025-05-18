@@ -24,7 +24,12 @@ class themCanHoRequest extends FormRequest
         return [
             'ten_toa_nha' => 'required|string|max:255',
             'tang'    => 'required|integer',
-            'so_can_ho'  => 'required|string|max:255',
+            'so_can_ho'  => [
+                'required',
+                'string',
+                'max:255',
+                'unique:can_hos,so_can_ho,NULL,id,ten_toa_nha,' . request('ten_toa_nha')
+            ],
             'chu_ho'     => 'required|string|max:255',
         ];
     }
@@ -39,6 +44,7 @@ class themCanHoRequest extends FormRequest
             'so_can_ho.required' => 'Số căn hộ không được để trống',
             'so_can_ho.string'   => 'Số căn hộ phải là chuỗi',
             'so_can_ho.max'      => 'Số căn hộ không được vượt quá 255 ký tự',
+            'so_can_ho.unique'    => 'Số căn hộ này đã tồn tại trong tòa nhà',
             'chu_ho.required'    => 'Chủ hộ không được để trống',
             'chu_ho.string'      => 'Chủ hộ phải là chuỗi',
             'chu_ho.max'         => 'Chủ hộ không được vượt quá 255 ký tự',

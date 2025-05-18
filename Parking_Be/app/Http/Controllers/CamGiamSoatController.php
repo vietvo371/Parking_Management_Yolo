@@ -40,6 +40,7 @@ class CamGiamSoatController extends Controller
             $camGiamSoat->update([
                 'id_bai_xe' => $request->id_bai_xe,
                 'id_vi_tri' => $request->id_vi_tri,
+                'trang_thai' => $request->trang_thai,
             ]);
             return response()->json([
                 'status' => true,

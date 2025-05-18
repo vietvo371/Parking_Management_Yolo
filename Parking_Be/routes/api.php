@@ -156,6 +156,11 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::delete('/thong-tin-xoa/{id}', [BaoCaoSuCoController::class, 'xoaBaoCaoSuCo']);
         Route::post('/xu-ly-bao-cao', [BaoCaoSuCoController::class, 'xuLyBaoCaoSuCo']);
     });
+    Route::group(['prefix'  =>  '/thong-bao'], function () {
+        Route::get('/lay-du-lieu', [AdminThongBaoController::class, 'getData']);
+        Route::post('/them-du-lieu', [AdminThongBaoController::class, 'themThongBao']);
+        Route::delete('/thong-tin-xoa/{id}', [AdminThongBaoController::class, 'xoaThongBao']);
+    });
 
     Route::group(['prefix'  =>  '/chi-tiet-bai-xe'], function () {
         Route::get('/lay-du-lieu', [ChiTietBaiXeController::class, 'getData']);
@@ -193,8 +198,16 @@ Route::group(['prefix'  =>  '/user'], function () {
     Route::get('/lay-du-lieu-can-ho', [CanHoController::class, 'getDataClient']);
     Route::get('/lay-du-lieu-xe', [XeController::class, 'getDataClient']);
     Route::get('/lay-du-lieu-loai-xe', [LoaiXeController::class, 'getDataLoaiXeClient']);
+    // Đăng ký xe
     Route::post('/dang-ky-xe', [XeController::class, 'dangKyXe']);
+    Route::delete('/xoa-xe/{id}', [XeController::class, 'xoaXeClient']);
     Route::post('/cap-nhat-xe', [XeController::class, 'capNhatXeClient']);
+
+    //Client báo cáo
+    Route::get('/lay-du-lieu-bao-cao-su-co', [BaoCaoSuCoController::class, 'getDataBaoCaoSuCoClient']);
+    Route::post('/bao-cao-su-co', [BaoCaoSuCoController::class, 'themBaoCaoSuCoClient']);
+    Route::post('/cap-nhat-bao-cao-su-co', [BaoCaoSuCoController::class, 'capnhatBaoCaoSuCoClient']);
+
 
     Route::post('/thanh-toan-xe', [ThanhToanController::class, 'getQrPayMent']);
     Route::post('/set-transiton', [ThanhToanController::class, 'setTransiton']);
