@@ -17,9 +17,10 @@ class ChucVuSeeder extends Seeder
         DB::table('chuc_vus')->truncate();
         $chucVus = [
             ['ten_chuc_vu' => 'Admin', 'tinh_trang' => 1],
-            ['ten_chuc_vu' => 'Nhân viên bán hàng', 'tinh_trang' => 1],
-            ['ten_chuc_vu' => 'Quản lý kho', 'tinh_trang' => 1],
+            ['ten_chuc_vu' => 'Nhân viên bảo vệ', 'tinh_trang' => 1],
+            ['ten_chuc_vu' => 'Quản lý cư dân', 'tinh_trang' => 1],
             ['ten_chuc_vu' => 'Kế toán', 'tinh_trang' => 1],
+            ['ten_chuc_vu' => 'Kỹ thuật', 'tinh_trang' => 1],
         ];
 
         foreach ($chucVus as $chucVu) {

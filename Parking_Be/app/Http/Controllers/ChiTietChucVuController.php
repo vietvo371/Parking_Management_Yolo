@@ -2,33 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\ChiTietChucVu;
+use App\Models\ChucNang;
+use App\Models\ChucVu;
+use App\Models\NhanVien;
 use Illuminate\Http\Request;
 
 class ChiTietChucVuController extends Controller
 {
-    public function getData($id_chuc_vu)
+    public function getData()
     {
-        $data = ChiTietChucVu::where('id_chuc_vu', $id_chuc_vu)
-            ->join('chuc_nangs', 'phan_quyens.id_chuc_nang', 'chuc_nangs.id')
-            ->join('chuc_vus', 'phan_quyens.id_chuc_vu', 'chuc_vus.id')
-            ->select('phan_quyens.*', 'chuc_nangs.ten_chuc_nang', 'chuc_vus.ten_chuc_vu')
+        $nhan_vien = Admin::join('chuc_vus', 'admins.id_chuc_vu', 'chuc_vus.id')
+            ->select('admins.*', 'chuc_vus.ten_chuc_vu')
             ->get();
+
+        $chuc_nang = ChucNang::all();
+
+        $chuc_vu = ChucVu::all();
+
+        $chi_tiet_chuc_vu = ChiTietChucVu::all();
         return response()->json([
-            'data' => $data,
+            'data' => $nhan_vien,
+            'chuc_nang' => $chuc_nang,
+            'chuc_vu' => $chuc_vu,
+            'chi_tiet_chuc_vu' => $chi_tiet_chuc_vu
         ]);
     }
 
     public function store(Request $request)
     {
-        $data = ChiTietChucVu::firstOrCreate([
-            'id_chuc_vu'  => $request->id_chuc_vu,
-            'id_chuc_nang'  => $request->id_chuc_nang,
-        ]);
+        $idChucVu = $request->id_chuc_vu;
+        $danhSachQuyenMoi = $request->danh_sach_quyen;
+
+        // Lấy danh sách quyền cũ
+        $quyenCu = ChiTietChucVu::where('id_chuc_vu', $idChucVu)->pluck('id_chuc_nang')->toArray();
+
+        // Xác định quyền cần xóa (có trong cũ nhưng không có trong mới)
+        $quyenCanXoa = array_diff($quyenCu, $danhSachQuyenMoi);
+        if (!empty($quyenCanXoa)) {
+            ChiTietChucVu::where('id_chuc_vu', $idChucVu)
+                ->whereIn('id_chuc_nang', $quyenCanXoa)
+                ->delete();
+        }
+
+        // Xác định quyền cần thêm (có trong mới nhưng không có trong cũ)
+        $quyenCanThem = array_diff($danhSachQuyenMoi, $quyenCu);
+        $data = [];
+        foreach ($quyenCanThem as $idChucNang) {
+            $data[] = ChiTietChucVu::create([
+                'id_chuc_vu'  => $idChucVu,
+                'id_chuc_nang'  => $idChucNang,
+            ]);
+        }
+
         return response()->json([
             'status'    => true,
-            'message'   => 'Đã thêm phân quyền thành công!',
-            'data'     => $data
+            'message'   => 'Cập nhật phân quyền thành công!',
+            'data'      => $data
         ]);
     }
 

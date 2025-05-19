@@ -55,7 +55,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
     });
 
     Route::group(['prefix'  =>  '/phan-quyen'], function () {
-        Route::get('/data/{id_chuc_vu}', [ChiTietChucVuController::class, 'getData']);
+        Route::get('/get-data', [ChiTietChucVuController::class, 'getData']);
         Route::post('/phan-quyen-chuc-vu/create', [ChiTietChucVuController::class, 'store']);
         Route::post('/phan-quyen-chuc-vu/delete', [ChiTietChucVuController::class, 'destroy']);
         Route::get('/chuc-nang/data', [ChucNangController::class, 'getData']);

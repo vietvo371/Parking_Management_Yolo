@@ -116,6 +116,14 @@ class AdminController extends Controller
     }
     public function themAdmin(themAdminRequest $request)
     {
+        $id_chuc_nang = 3;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         Admin::create([
             'email'         => $request->email,
             'ho_va_ten'     => $request->ho_va_ten,
@@ -163,10 +171,11 @@ class AdminController extends Controller
                 'ho_va_ten'     => $request->ho_va_ten,
                 'id_chuc_vu'    => $request->id_chuc_vu,
                 'so_dien_thoai' => $request->so_dien_thoai,
+                'is_block'      => $request->is_block,
             ]);
         return response()->json([
-            'status'     => false,
-            'message'    => 'Cập nhật trạng thái không thành công!!'
+            'status'     => true,
+            'message'    => 'Cập nhật thành công!!'
         ]);
     }
     public function doiTrangThaiAdmin(Request $request)

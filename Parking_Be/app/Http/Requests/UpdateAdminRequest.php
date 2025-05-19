@@ -26,6 +26,7 @@ class UpdateAdminRequest extends FormRequest
             'ho_va_ten'      => 'required|string|max:255',
             'so_dien_thoai'  => 'required|numeric|digits_between:10,15',
             'id_chuc_vu'     => 'required|integer|exists:chuc_vus,id',
+            'is_block'       => 'required|integer|in:0,1',
         ];
     }
     public function messages()
@@ -43,6 +44,9 @@ class UpdateAdminRequest extends FormRequest
             'id_chuc_vu.required' => 'Chức vụ không được để trống',
             'id_chuc_vu.integer' => 'Chức vụ phải là số nguyên',
             'id_chuc_vu.exists' => 'Chức vụ không tồn tại trong cơ sở dữ liệu',
+            'is_block.required' => 'Trạng thái không được để trống',
+            'is_block.integer' => 'Trạng thái phải là số nguyên',
+            'is_block.in' => 'Trạng thái không hợp lệ',
         ];
     }
 }

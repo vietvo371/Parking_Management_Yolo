@@ -16,11 +16,19 @@ class ChucNangSeeder extends Seeder
         DB::table('chuc_nangs')->delete();
         DB::table('chuc_nangs')->truncate();
         $chucNangs = [
-            ['ten_chuc_nang' => 'Quản lý người dùng', 'tinh_trang' => 1],
-            ['ten_chuc_nang' => 'Quản lý sản phẩm', 'tinh_trang' => 1],
-            ['ten_chuc_nang' => 'Quản lý đơn hàng', 'tinh_trang' => 1],
-            ['ten_chuc_nang' => 'Quản lý danh mục', 'tinh_trang' => 1],
-            ['ten_chuc_nang' => 'Quản lý khuyến mãi', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Trang chủ', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Quản lý xe', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Cư dân', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Khách vãng lai', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Giao dịch', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Báo cáo sự cố', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Thông báo', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Camera & AI', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Ra vào bãi', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Báo cáo', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Lịch sử ra vào', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Phân quyền', 'tinh_trang' => 1],
+            ['ten_chuc_nang' => 'Cài đặt', 'tinh_trang' => 1],
         ];
 
         foreach ($chucNangs as $chucNang) {
