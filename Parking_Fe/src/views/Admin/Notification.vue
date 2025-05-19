@@ -2,11 +2,11 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold tracking-tight">Quản lý thông báo gia hạn</h1>
-      <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+      <!-- <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
         @click="showCreateNotificationModal = true">
         <Plus class="mr-2 h-4 w-4" />
         Tạo thông báo mới
-      </button>
+      </button> -->
     </div>
 
     <!-- Thống kê -->
@@ -278,8 +278,14 @@
             </p>
           </div>
           <div>
-            <a-pagination v-model:current="pagination.currentPage" :total="pagination.totalItems"
-              :pageSize="pagination.itemsPerPage" show-size-changer @change="changePage" />
+            <a-pagination 
+              v-model:current="pagination.currentPage" 
+              :total="pagination.totalItems"
+              :pageSize="pagination.itemsPerPage" 
+              show-size-changer 
+              @change="changePage"
+              :show-total="(total, range) => `${range[0]}-${range[1]} của ${total} mục`"
+            />
           </div>
         </div>
       </div>
@@ -631,12 +637,9 @@ export default {
       // Cập nhật phân trang
       this.pagination.totalItems = result.length
       this.pagination.totalPages = Math.ceil(result.length / this.pagination.itemsPerPage)
+      this.updatePaginationInfo()
 
-      // Phân trang
-      const startIndex = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage
-      const endIndex = startIndex + this.pagination.itemsPerPage
-
-      return result.slice(startIndex, endIndex)
+      return result
     },
 
     selectedResidentsForNotification() {
@@ -697,6 +700,7 @@ export default {
 
   mounted() {
     this.fetchData()
+    this.updatePaginationInfo()
 
     // Thiết lập ngày mặc định cho lịch gửi thông báo
     const today = new Date()
@@ -713,8 +717,8 @@ export default {
         if (response.data.status) {
           // Chuyển đổi dữ liệu từ API sang định dạng phù hợp với component
           this.residents = response.data.data.map(item => ({
-            id: item.id || `temp_${Math.random().toString(36).substr(2, 9)}`, // Tạo ID tạm thời nếu null
-            id_cu_dan: item.id_cu_dan, // Thêm id_cu_dan vào object
+            id: item.id || `temp_${Math.random().toString(36).substr(2, 9)}`,
+            id_cu_dan: item.id_cu_dan,
             name: item.ten_cu_dan,
             phone: item.so_dien_thoai,
             email: item.email,
@@ -823,7 +827,7 @@ export default {
         this.selectedResidents = this.selectedResidents.filter(
           selected => !currentPageResidents.some(resident => 
             resident.id_cu_dan === selected.id_cu_dan && 
-            resident.vehicle.licensePlate === selected.bien_so_xe
+            resident.bien_so_xe === selected.bien_so_xe
           )
         )
       } else {
@@ -880,8 +884,10 @@ export default {
     },
 
     changePage(page) {
-      this.pagination.currentPage = page
-      this.updatePaginationInfo()
+      if (page >= 1 && page <= this.pagination.totalPages) {
+        this.pagination.currentPage = page
+        this.updatePaginationInfo()
+      }
     },
 
     exportData() {

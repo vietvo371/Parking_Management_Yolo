@@ -29,29 +29,29 @@
           <div class="flex items-center space-x-2">
             <div class="relative">
               <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <input 
+              <a-input 
                 type="text" 
                 placeholder="Tìm kiếm chức vụ..." 
-                class="pl-9 h-10 w-full sm:w-[250px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                v-model="roleSearch"
+                class="pl-9 h-10 w-full sm:w-[250px]"
+                v-model:value="roleSearch"
               />
             </div>
-            <select 
-              v-model="roleStatusFilter" 
-              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+            <a-select 
+              v-model:value="roleStatusFilter" 
+              class="h-10 w-[200px]"
             >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="active">Đang hoạt động</option>
-              <option value="inactive">Không hoạt động</option>
-            </select>
+              <a-select-option value="all">Tất cả trạng thái</a-select-option>
+              <a-select-option value="active">Đang hoạt động</a-select-option>
+              <a-select-option value="inactive">Không hoạt động</a-select-option>
+            </a-select>
           </div>
-          <button 
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+          <a-button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+            type="primary"
             @click="showAddRoleModal = true"
           >
             <Plus class="mr-2 h-4 w-4" />
             Thêm chức vụ
-          </button>
+          </a-button>
         </div>
   
         <!-- Danh sách chức vụ -->
@@ -84,24 +84,40 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex justify-end space-x-2">
-                      <button 
-                        class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
-                        @click="editRole(role)"
-                      >
-                        <Edit class="h-4 w-4" />
-                      </button>
-                      <button 
-                        class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
-                        @click="manageRolePermissions(role)"
-                      >
-                        <Shield class="h-4 w-4" />
-                      </button>
-                      <button 
-                        class="text-red-600 hover:text-red-900 dark:hover:text-red-400"
-                        @click="deleteRole(role)"
-                      >
-                        <Trash2 class="h-4 w-4" />
-                      </button>
+                      <a-tooltip title="Chỉnh sửa">
+                        <a-button 
+                          type="primary"
+                          size="small"
+                          @click="editRole(role)"
+                        >
+                          <Edit class="h-4 w-4" />
+                        </a-button>
+                      </a-tooltip>
+                      <a-tooltip title="Phân quyền">
+                        <a-button 
+                          type="primary"
+                          size="small"
+                          @click="manageRolePermissions(role)"
+                        >
+                          <Shield class="h-4 w-4" />
+                        </a-button>
+                      </a-tooltip>
+                      <a-tooltip title="Xóa">
+                        <a-popconfirm
+                          title="Bạn có chắc chắn muốn xóa chức vụ này không?"
+                          ok-text="Có"
+                          cancel-text="Không"
+                          @confirm="deleteRole(role)"
+                        >
+                          <a-button 
+                            type="primary"
+                            danger
+                            size="small"
+                          >
+                            <Trash2 class="h-4 w-4" />
+                          </a-button>
+                        </a-popconfirm>
+                      </a-tooltip>
                     </div>
                   </td>
                 </tr>
@@ -207,24 +223,31 @@
       <div v-if="activeTab === 'role-permissions'" class="space-y-6">
         <div class="flex justify-between items-center">
           <div class="flex items-center space-x-2">
-            <select 
-              v-model="selectedRoleId" 
-              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+            <a-select 
+              v-model:value="selectedRoleId" 
+              class="h-10 w-[200px]"
             >
-              <option value="">Chọn chức vụ</option>
-              <option v-for="role in roles" :key="role.id" :value="role.id">
+              <a-select-option value="">Chọn chức vụ</a-select-option>
+              <a-select-option v-for="role in roles" :key="role.id" :value="role.id">
                 {{ role.ten_chuc_vu }}
-              </option>
-            </select>
+              </a-select-option>
+            </a-select>
           </div>
-          <button 
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            :disabled="!selectedRoleId"
-            :class="{'opacity-50 cursor-not-allowed': !selectedRoleId}"
-            @click="saveRolePermissions"
+          <a-popconfirm
+            title="Xác nhận lưu phân quyền"
+            description="Bạn có chắc chắn muốn lưu phân quyền cho chức vụ này không?"
+            ok-text="Có"
+            cancel-text="Không"
+            @confirm="saveRolePermissions"
           >
-            Lưu phân quyền
-          </button>
+            <a-button 
+              type="primary"
+              :disabled="!selectedRoleId"
+              :class="{'opacity-50 cursor-not-allowed': !selectedRoleId}"
+            >
+              Lưu phân quyền
+            </a-button>
+          </a-popconfirm>
         </div>
   
         <!-- Bảng phân quyền -->
@@ -293,38 +316,38 @@
           <div class="flex items-center space-x-2">
             <div class="relative">
               <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <input 
+              <a-input 
                 type="text" 
                 placeholder="Tìm kiếm nhân sự..." 
-                class="pl-9 h-10 w-full sm:w-[250px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                v-model="personnelSearch"
+                class="pl-9 h-10 w-full sm:w-[250px]"
+                v-model:value="personnelSearch"
               />
             </div>
-            <select 
-              v-model="personnelStatusFilter" 
-              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+            <a-select 
+              v-model:value="personnelStatusFilter" 
+              class="h-10 w-[200px]"
             >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="active">Đang làm việc</option>
-              <option value="inactive">Đã nghỉ việc</option>
-            </select>
-            <select 
-              v-model="personnelRoleFilter" 
-              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+              <a-select-option value="all">Tất cả trạng thái</a-select-option>
+              <a-select-option value="active">Đang làm việc</a-select-option>
+              <a-select-option value="inactive">Đã nghỉ việc</a-select-option>
+            </a-select>
+            <a-select 
+              v-model:value="personnelRoleFilter" 
+              class="h-10 w-[200px]"
             >
-              <option value="all">Tất cả chức vụ</option>
-              <option v-for="role in roles" :key="role.id" :value="role.id">
+              <a-select-option value="all">Tất cả chức vụ</a-select-option>
+              <a-select-option v-for="role in roles" :key="role.id" :value="role.id">
                 {{ role.ten_chuc_vu }}
-              </option>
-            </select>
+              </a-select-option>
+            </a-select>
           </div>
-          <button 
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+          <a-button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+            type="primary"
             @click="showAddPersonnelModal = true"
           >
             <Plus class="mr-2 h-4 w-4" />
             Thêm nhân sự
-          </button>
+          </a-button>
         </div>
 
         <!-- Danh sách nhân sự -->
@@ -369,18 +392,32 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex justify-end space-x-2">
-                      <button 
-                        class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
-                        @click="editPersonnel(person)"
-                      >
-                        <Edit class="h-4 w-4" />
-                      </button>
-                      <button 
-                        class="text-red-600 hover:text-red-900 dark:hover:text-red-400"
-                        @click="deletePersonnel(person)"
-                      >
-                        <Trash2 class="h-4 w-4" />
-                      </button>
+                      <a-tooltip title="Chỉnh sửa">
+                        <a-button 
+                          type="primary"
+                          size="small"
+                          @click="editPersonnel(person)"
+                        >
+                          <Edit class="h-4 w-4" />
+                        </a-button>
+                      </a-tooltip>
+                      <a-tooltip title="Xóa">
+                        <a-popconfirm
+                          title="Xác nhận xóa"
+                          :description="`Bạn có chắc chắn muốn xóa nhân sự ${person.ho_ten} không?`"
+                          ok-text="Có"
+                          cancel-text="Không"
+                          @confirm="confirmDeletePersonnel(person)"
+                        >
+                          <a-button 
+                            type="primary"
+                            danger
+                            size="small"
+                          >
+                            <Trash2 class="h-4 w-4" />
+                          </a-button>
+                        </a-popconfirm>
+                      </a-tooltip>
                     </div>
                   </td>
                 </tr>
@@ -396,60 +433,34 @@
       </div>
   
       <!-- Modal thêm chức vụ -->
-      <div v-if="showAddRoleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">{{ editingRole ? 'Chỉnh sửa chức vụ' : 'Thêm chức vụ mới' }}</h3>
-            <button @click="closeRoleModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
-          </div>
-          <div class="p-4">
-            <form @submit.prevent="saveRole">
-              <div class="space-y-4">
-                <div>
-                  <label for="roleName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên chức vụ *</label>
-                  <input 
-                    id="roleName" 
-                    type="text" 
-                    v-model="roleForm.ten_chuc_vu"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    placeholder="Nhập tên chức vụ"
-                  />
-                </div>
-                
-                <div>
-                  <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    <input 
-                      type="checkbox" 
-                      v-model="roleForm.tinh_trang"
-                      class="rounded border-gray-300 dark:border-gray-600 text-blue-600"
-                    />
-                    <span>Đang hoạt động</span>
-                  </label>
-                </div>
-                
-                <div class="pt-4 flex justify-end space-x-2">
-                  <button 
-                    type="button" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    @click="closeRoleModal"
-                  >
-                    Hủy
-                  </button>
-                  <button 
-                    type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    {{ editingRole ? 'Cập nhật' : 'Thêm' }}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <a-modal 
+        v-model:open="showAddRoleModal" 
+        :title="editingRole ? 'Chỉnh sửa chức vụ' : 'Thêm chức vụ mới'"
+        @ok="handleSaveRole"
+      >
+        <a-form
+          :model="roleForm"
+          :rules="roleRules"
+          ref="roleFormRef"
+          layout="vertical"
+        >
+          <a-form-item 
+            label="Tên chức vụ" 
+            name="ten_chuc_vu"
+          >
+            <a-input 
+              v-model:value="roleForm.ten_chuc_vu"
+              placeholder="Nhập tên chức vụ"
+            />
+          </a-form-item>
+          
+          <a-form-item name="tinh_trang">
+            <a-checkbox v-model:checked="roleForm.tinh_trang">
+              Đang hoạt động
+            </a-checkbox>
+          </a-form-item>
+        </a-form>
+      </a-modal>
   
       <!-- Modal thêm chức năng -->
       <div v-if="showAddPermissionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -508,133 +519,83 @@
       </div>
   
       <!-- Modal xác nhận xóa -->
-      <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Xác nhận xóa</h3>
-            <button @click="showDeleteModal = false" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
-          </div>
-          <div class="p-4">
-            <p class="mb-4">{{ deleteMessage }}</p>
-            <div class="flex justify-end space-x-2">
-              <button 
-                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                @click="showDeleteModal = false"
-              >
-                Hủy
-              </button>
-              <button 
-                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                @click="confirmDelete"
-              >
-                Xóa
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <a-modal 
+        v-model:open="showDeleteModal" 
+        title="Xác nhận xóa"
+        @ok="confirmDelete"
+        :confirmLoading="isSubmitting"
+      >
+        <p>{{ deleteMessage }}</p>
+      </a-modal>
   
       <!-- Modal thêm/sửa nhân sự -->
-      <div v-if="showAddPersonnelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full">
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium">{{ editingPersonnel ? 'Chỉnh sửa nhân sự' : 'Thêm nhân sự mới' }}</h3>
-            <button @click="closePersonnelModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-              <X class="h-5 w-5" />
-            </button>
-          </div>
-          <div class="p-4">
-            <form @submit.prevent="savePersonnel">
-              <div class="space-y-4">
-                <div>
-                  <label for="personnelName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Họ và tên *</label>
-                  <input 
-                    id="personnelName" 
-                    type="text" 
-                    v-model="personnelForm.ho_ten"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    placeholder="Nhập họ và tên"
-                  />
-                </div>
-                
-                <div>
-                  <label for="personnelEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
-                  <input 
-                    id="personnelEmail" 
-                    type="email" 
-                    v-model="personnelForm.email"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    placeholder="Nhập email"
-                  />
-                </div>
+      <a-modal 
+        v-model:open="showAddPersonnelModal" 
+        :title="editingPersonnel ? 'Chỉnh sửa nhân sự' : 'Thêm nhân sự mới'"
+        @ok="handleSavePersonnel"
+        :confirmLoading="isSubmitting"
+      >
+        <a-form
+          :model="personnelForm"
+          :rules="personnelRules"
+          ref="personnelFormRef"
+          layout="vertical"
+        >
+          <a-form-item 
+            label="Họ và tên" 
+            name="ho_ten"
+          >
+            <a-input 
+              v-model:value="personnelForm.ho_ten"
+              placeholder="Nhập họ và tên"
+            />
+          </a-form-item>
+          
+          <a-form-item 
+            label="Email" 
+            name="email"
+          >
+            <a-input 
+              v-model:value="personnelForm.email"
+              placeholder="Nhập email"
+            />
+          </a-form-item>
 
-                <div>
-                  <label for="personnelPhone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Số điện thoại *</label>
-                  <input 
-                    id="personnelPhone" 
-                    type="tel" 
-                    v-model="personnelForm.so_dien_thoai"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                    placeholder="Nhập số điện thoại"
-                  />
-                </div>
+          <a-form-item 
+            label="Số điện thoại" 
+            name="so_dien_thoai"
+          >
+            <a-input 
+              v-model:value="personnelForm.so_dien_thoai"
+              placeholder="Nhập số điện thoại"
+            />
+          </a-form-item>
 
-                <div>
-                  <label for="personnelRole" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Chức vụ *</label>
-                  <select 
-                    id="personnelRole"
-                    v-model="personnelForm.id_chuc_vu"
-                    required
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  >
-                    <option value="">Chọn chức vụ</option>
-                    <option v-for="role in roles" :key="role.id" :value="role.id">
-                      {{ role.ten_chuc_vu }}
-                    </option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    <input 
-                      type="checkbox" 
-                      v-model="personnelForm.tinh_trang"
-                      class="rounded border-gray-300 dark:border-gray-600 text-blue-600"
-                    />
-                    <span>Đang làm việc</span>
-                  </label>
-                </div>
-                
-                <div class="pt-4 flex justify-end space-x-2">
-                  <button 
-                    type="button" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    @click="closePersonnelModal"
-                  >
-                    Hủy
-                  </button>
-                  <button 
-                    type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    {{ editingPersonnel ? 'Cập nhật' : 'Thêm' }}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+          <a-form-item 
+            label="Chức vụ" 
+            name="id_chuc_vu"
+          >
+            <a-select 
+              v-model:value="personnelForm.id_chuc_vu"
+              placeholder="Chọn chức vụ"
+            >
+              <a-select-option v-for="role in roles" :key="role.id" :value="role.id">
+                {{ role.ten_chuc_vu }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          
+          <a-form-item name="tinh_trang">
+            <a-checkbox v-model:checked="personnelForm.tinh_trang">
+              Đang làm việc
+            </a-checkbox>
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </div>
   </template>
   
   <script>
-  import { ref, computed, onMounted } from 'vue'
   import { 
     Plus, 
     Search, 
@@ -644,6 +605,18 @@
     X, 
     Check 
   } from 'lucide-vue-next'
+  import { 
+    Modal, 
+    Button, 
+    Select, 
+    Popconfirm, 
+    Tooltip, 
+    Form, 
+    Input, 
+    Checkbox 
+  } from 'ant-design-vue'
+  import baseRequest from '../../core/baseRequest'
+  import { useNotificationStore } from '../../stores/notication'
   
   export default {
     name: 'PhanQuyen',
@@ -654,86 +627,212 @@
       Trash2,
       Shield,
       X,
-      Check
+      Check,
+      AModal: Modal,
+      AButton: Button,
+      ASelect: Select,
+      ASelectOption: Select.Option,
+      APopconfirm: Popconfirm,
+      ATooltip: Tooltip,
+      AForm: Form,
+      AFormItem: Form.Item,
+      AInput: Input,
+      ACheckbox: Checkbox
     },
-    setup() {
-      // Tabs
-      const tabs = [
-        { id: 'roles', name: 'Chức vụ' },
-        { id: 'permissions', name: 'Chức năng' },
-        { id: 'role-permissions', name: 'Phân quyền' },
-        { id: 'personnel', name: 'Nhân sự' }
-      ]
-      const activeTab = ref('roles')
-  
-      // Dữ liệu
-      const roles = ref([])
-      const permissions = ref([])
-      const rolePermissions = ref([])
-  
-      // Tìm kiếm và lọc
-      const roleSearch = ref('')
-      const roleStatusFilter = ref('all')
-      const permissionSearch = ref('')
-      const permissionStatusFilter = ref('all')
-      const rolePermissionSearch = ref('')
-  
-      // Modals
-      const showAddRoleModal = ref(false)
-      const showAddPermissionModal = ref(false)
-      const showDeleteModal = ref(false)
-      const deleteMessage = ref('')
-      const deleteCallback = ref(null)
-  
-      // Forms
-      const roleForm = ref({
-        ten_chuc_vu: '',
-        tinh_trang: true
-      })
-      const permissionForm = ref({
-        ten_chuc_nang: '',
-        tinh_trang: true
-      })
-      const editingRole = ref(null)
-      const editingPermission = ref(null)
-  
-      // Phân quyền
-      const selectedRoleId = ref('')
-      const selectedPermissions = ref([])
-  
-      // Dữ liệu nhân sự
-      const personnel = ref([])
-      const personnelSearch = ref('')
-      const personnelStatusFilter = ref('all')
-      const personnelRoleFilter = ref('all')
-      const showAddPersonnelModal = ref(false)
-      const editingPersonnel = ref(null)
-      const personnelForm = ref({
-        ho_ten: '',
-        email: '',
-        so_dien_thoai: '',
-        id_chuc_vu: '',
-        tinh_trang: true
-      })
-  
-      // Lấy dữ liệu khi component được tạo
-      onMounted(() => {
-        fetchData()
-      })
-  
-      // Lấy dữ liệu từ server
-      const fetchData = async () => {
+    data() {
+      return {
+        // Tabs
+        tabs: [
+          { id: 'roles', name: 'Chức vụ' },
+          { id: 'permissions', name: 'Chức năng' },
+          { id: 'role-permissions', name: 'Phân quyền' },
+          { id: 'personnel', name: 'Nhân sự' }
+        ],
+        activeTab: 'roles',
+
+        // Dữ liệu
+        roles: [],
+        permissions: [],
+        rolePermissions: [],
+
+        // Tìm kiếm và lọc
+        roleSearch: '',
+        roleStatusFilter: 'all',
+        permissionSearch: '',
+        permissionStatusFilter: 'all',
+        rolePermissionSearch: '',
+
+        // Modals
+        showAddRoleModal: false,
+        showAddPermissionModal: false,
+        showDeleteModal: false,
+        deleteMessage: '',
+        deleteCallback: null,
+
+        // Forms
+        roleForm: {
+          ten_chuc_vu: '',
+          tinh_trang: true
+        },
+        permissionForm: {
+          ten_chuc_nang: '',
+          tinh_trang: true
+        },
+        editingRole: null,
+        editingPermission: null,
+
+        // Phân quyền
+        selectedRoleId: '',
+        selectedPermissions: [],
+
+        // Dữ liệu nhân sự
+        personnel: [],
+        personnelSearch: '',
+        personnelStatusFilter: 'all',
+        personnelRoleFilter: 'all',
+        showAddPersonnelModal: false,
+        editingPersonnel: null,
+        personnelForm: {
+          ho_ten: '',
+          email: '',
+          so_dien_thoai: '',
+          id_chuc_vu: '',
+          tinh_trang: true
+        },
+        roleRules: {
+          ten_chuc_vu: [
+            { required: true, message: 'Vui lòng nhập tên chức vụ', trigger: 'blur' },
+            { min: 2, max: 50, message: 'Tên chức vụ phải từ 2-50 ký tự', trigger: 'blur' }
+          ]
+        },
+        roleFormRef: null,
+        personnelRules: {
+          ho_ten: [
+            { required: true, message: 'Vui lòng nhập họ và tên', trigger: 'blur' },
+            { min: 2, max: 50, message: 'Họ và tên phải từ 2-50 ký tự', trigger: 'blur' }
+          ],
+          email: [
+            { required: true, message: 'Vui lòng nhập email', trigger: 'blur' },
+            { type: 'email', message: 'Email không hợp lệ', trigger: 'blur' }
+          ],
+          so_dien_thoai: [
+            { required: true, message: 'Vui lòng nhập số điện thoại', trigger: 'blur' },
+            { pattern: /^\d{10}$/, message: 'Số điện thoại phải có 10 chữ số', trigger: 'blur' }
+          ],
+          id_chuc_vu: [
+            { required: true, message: 'Vui lòng chọn chức vụ', trigger: 'change' }
+          ]
+        },
+        personnelFormRef: null,
+        isSubmitting: false
+      }
+    },
+
+    computed: {
+      filteredRoles() {
+        let result = [...this.roles]
+        
+        // Lọc theo tìm kiếm
+        if (this.roleSearch) {
+          const searchLower = this.roleSearch.toLowerCase()
+          result = result.filter(role => 
+            role.ten_chuc_vu.toLowerCase().includes(searchLower)
+          )
+        }
+        
+        // Lọc theo trạng thái
+        if (this.roleStatusFilter !== 'all') {
+          const isActive = this.roleStatusFilter === 'active'
+          result = result.filter(role => role.tinh_trang === isActive)
+        }
+        
+        return result
+      },
+
+      filteredPermissions() {
+        let result = [...this.permissions]
+        
+        // Lọc theo tìm kiếm
+        if (this.permissionSearch) {
+          const searchLower = this.permissionSearch.toLowerCase()
+          result = result.filter(permission => 
+            permission.ten_chuc_nang.toLowerCase().includes(searchLower)
+          )
+        }
+        
+        // Lọc theo trạng thái
+        if (this.permissionStatusFilter !== 'all') {
+          const isActive = this.permissionStatusFilter === 'active'
+          result = result.filter(permission => permission.tinh_trang === isActive)
+        }
+        
+        return result
+      },
+
+      filteredRolePermissions() {
+        let result = [...this.permissions]
+        
+        // Lọc theo tìm kiếm
+        if (this.rolePermissionSearch) {
+          const searchLower = this.rolePermissionSearch.toLowerCase()
+          result = result.filter(permission => 
+            permission.ten_chuc_nang.toLowerCase().includes(searchLower)
+          )
+        }
+        
+        return result
+      },
+
+      selectedRoleName() {
+        const role = this.roles.find(r => r.id === this.selectedRoleId)
+        return role ? role.ten_chuc_vu : ''
+      },
+
+      filteredPersonnel() {
+        let result = [...this.personnel]
+        
+        // Lọc theo tìm kiếm
+        if (this.personnelSearch) {
+          const searchLower = this.personnelSearch.toLowerCase()
+          result = result.filter(person => 
+            person.ho_ten.toLowerCase().includes(searchLower) ||
+            person.email.toLowerCase().includes(searchLower) ||
+            person.so_dien_thoai.includes(searchLower)
+          )
+        }
+        
+        // Lọc theo trạng thái
+        if (this.personnelStatusFilter !== 'all') {
+          const isActive = this.personnelStatusFilter === 'active'
+          result = result.filter(person => person.tinh_trang === isActive)
+        }
+
+        // Lọc theo chức vụ
+        if (this.personnelRoleFilter !== 'all') {
+          result = result.filter(person => person.id_chuc_vu === this.personnelRoleFilter)
+        }
+        
+        return result
+      }
+    },
+
+    mounted() {
+      this.fetchData()
+    },
+
+    methods: {
+      async fetchData() {
         try {
           // Trong thực tế, bạn sẽ gọi API để lấy dữ liệu
           // Ở đây chúng ta sẽ sử dụng dữ liệu mẫu
-          roles.value = [
+          this.roles = [
             { id: 1, ten_chuc_vu: 'Admin', tinh_trang: true },
             { id: 2, ten_chuc_vu: 'Quản lý', tinh_trang: true },
             { id: 3, ten_chuc_vu: 'Nhân viên', tinh_trang: true },
             { id: 4, ten_chuc_vu: 'Khách hàng', tinh_trang: false }
           ]
           
-          permissions.value = [
+          this.permissions = [
             { id: 1, ten_chuc_nang: 'Quản lý người dùng', tinh_trang: true },
             { id: 2, ten_chuc_nang: 'Quản lý bãi đỗ xe', tinh_trang: true },
             { id: 3, ten_chuc_nang: 'Quản lý khách vãng lai', tinh_trang: true },
@@ -745,7 +844,7 @@
             { id: 9, ten_chuc_nang: 'Xuất báo cáo', tinh_trang: false }
           ]
           
-          rolePermissions.value = [
+          this.rolePermissions = [
             { id: 1, id_chuc_vu: 1, id_chuc_nang: 1, tinh_trang: true },
             { id: 2, id_chuc_vu: 1, id_chuc_nang: 2, tinh_trang: true },
             { id: 3, id_chuc_vu: 1, id_chuc_nang: 3, tinh_trang: true },
@@ -766,7 +865,7 @@
             { id: 18, id_chuc_vu: 3, id_chuc_nang: 8, tinh_trang: true }
           ]
           
-          personnel.value = [
+          this.personnel = [
             { 
               id: 1, 
               ho_ten: 'Nguyễn Văn A', 
@@ -795,389 +894,302 @@
         } catch (error) {
           console.error('Lỗi khi lấy dữ liệu:', error)
         }
-      }
-  
-      // Lọc chức vụ
-      const filteredRoles = computed(() => {
-        let result = [...roles.value]
-        
-        // Lọc theo tìm kiếm
-        if (roleSearch.value) {
-          const searchLower = roleSearch.value.toLowerCase()
-          result = result.filter(role => 
-            role.ten_chuc_vu.toLowerCase().includes(searchLower)
-          )
-        }
-        
-        // Lọc theo trạng thái
-        if (roleStatusFilter.value !== 'all') {
-          const isActive = roleStatusFilter.value === 'active'
-          result = result.filter(role => role.tinh_trang === isActive)
-        }
-        
-        return result
-      })
-  
-      // Lọc chức năng
-      const filteredPermissions = computed(() => {
-        let result = [...permissions.value]
-        
-        // Lọc theo tìm kiếm
-        if (permissionSearch.value) {
-          const searchLower = permissionSearch.value.toLowerCase()
-          result = result.filter(permission => 
-            permission.ten_chuc_nang.toLowerCase().includes(searchLower)
-          )
-        }
-        
-        // Lọc theo trạng thái
-        if (permissionStatusFilter.value !== 'all') {
-          const isActive = permissionStatusFilter.value === 'active'
-          result = result.filter(permission => permission.tinh_trang === isActive)
-        }
-        
-        return result
-      })
-  
-      // Lọc chức năng cho phân quyền
-      const filteredRolePermissions = computed(() => {
-        let result = [...permissions.value]
-        
-        // Lọc theo tìm kiếm
-        if (rolePermissionSearch.value) {
-          const searchLower = rolePermissionSearch.value.toLowerCase()
-          result = result.filter(permission => 
-            permission.ten_chuc_nang.toLowerCase().includes(searchLower)
-          )
-        }
-        
-        return result
-      })
-  
-      // Lấy tên chức vụ đã chọn
-      const selectedRoleName = computed(() => {
-        const role = roles.value.find(r => r.id === selectedRoleId.value)
-        return role ? role.ten_chuc_vu : ''
-      })
-  
-      // Thêm/Sửa chức vụ
-      const editRole = (role) => {
-        editingRole.value = role
-        roleForm.value = {
+      },
+
+      editRole(role) {
+        this.editingRole = role
+        this.roleForm = {
           ten_chuc_vu: role.ten_chuc_vu,
           tinh_trang: role.tinh_trang
         }
-        showAddRoleModal.value = true
-      }
-  
-      const closeRoleModal = () => {
-        showAddRoleModal.value = false
-        editingRole.value = null
-        roleForm.value = {
+        this.showAddRoleModal = true
+      },
+
+      closeRoleModal() {
+        this.showAddRoleModal = false
+        this.editingRole = null
+        this.roleForm = {
           ten_chuc_vu: '',
           tinh_trang: true
         }
-      }
-  
-      const saveRole = () => {
-        if (editingRole.value) {
-          // Cập nhật chức vụ
-          const index = roles.value.findIndex(r => r.id === editingRole.value.id)
-          if (index !== -1) {
-            roles.value[index] = {
-              ...roles.value[index],
-              ten_chuc_vu: roleForm.value.ten_chuc_vu,
-              tinh_trang: roleForm.value.tinh_trang
+      },
+
+      handleSaveRole() {
+        this.roleFormRef.validate().then(() => {
+          this.saveRole();
+        }).catch(error => {
+          console.log('Validation failed:', error);
+        });
+      },
+
+      saveRole() {
+        const notificationStore = useNotificationStore();
+        this.isSubmitting = true;
+
+        const url = this.editingRole 
+          ? "admin/phan-quyen/cap-nhat-chuc-vu"
+          : "admin/phan-quyen/them-chuc-vu";
+
+        baseRequest.post(url, this.roleForm)
+          .then((response) => {
+            if (response.data.status) {
+              this.getRoles();
+              this.showAddRoleModal = false;
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError('Thao tác thất bại');
             }
-          }
-        } else {
-          // Thêm chức vụ mới
-          const newId = Math.max(0, ...roles.value.map(r => r.id)) + 1
-          roles.value.push({
-            id: newId,
-            ten_chuc_vu: roleForm.value.ten_chuc_vu,
-            tinh_trang: roleForm.value.tinh_trang
           })
+          .catch((res) => {
+            const errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
+      },
+
+      async getRoles() {
+        const notificationStore = useNotificationStore();
+        try {
+          const response = await baseRequest.get("admin/phan-quyen/lay-danh-sach-chuc-vu");
+          if (response.data.status) {
+            this.roles = response.data.data;
+          } else {
+            notificationStore.showError('Lấy danh sách chức vụ thất bại');
+          }
+        } catch (error) {
+          const errors = Object.values(error.response.data.errors);
+          notificationStore.showError(errors[0]);
         }
-        
-        closeRoleModal()
-      }
-  
-      // Thêm/Sửa chức năng
-      const editPermission = (permission) => {
-        editingPermission.value = permission
-        permissionForm.value = {
+      },
+
+      editPermission(permission) {
+        this.editingPermission = permission
+        this.permissionForm = {
           ten_chuc_nang: permission.ten_chuc_nang,
           tinh_trang: permission.tinh_trang
         }
-        showAddPermissionModal.value = true
-      }
-  
-      const closePermissionModal = () => {
-        showAddPermissionModal.value = false
-        editingPermission.value = null
-        permissionForm.value = {
+        this.showAddPermissionModal = true
+      },
+
+      closePermissionModal() {
+        this.showAddPermissionModal = false
+        this.editingPermission = null
+        this.permissionForm = {
           ten_chuc_nang: '',
           tinh_trang: true
         }
-      }
-  
-      const savePermission = () => {
-        if (editingPermission.value) {
+      },
+
+      savePermission() {
+        if (this.editingPermission) {
           // Cập nhật chức năng
-          const index = permissions.value.findIndex(p => p.id === editingPermission.value.id)
+          const index = this.permissions.findIndex(p => p.id === this.editingPermission.id)
           if (index !== -1) {
-            permissions.value[index] = {
-              ...permissions.value[index],
-              ten_chuc_nang: permissionForm.value.ten_chuc_nang,
-              tinh_trang: permissionForm.value.tinh_trang
+            this.permissions[index] = {
+              ...this.permissions[index],
+              ten_chuc_nang: this.permissionForm.ten_chuc_nang,
+              tinh_trang: this.permissionForm.tinh_trang
             }
           }
         } else {
           // Thêm chức năng mới
-          const newId = Math.max(0, ...permissions.value.map(p => p.id)) + 1
-          permissions.value.push({
+          const newId = Math.max(0, ...this.permissions.map(p => p.id)) + 1
+          this.permissions.push({
             id: newId,
-            ten_chuc_nang: permissionForm.value.ten_chuc_nang,
-            tinh_trang: permissionForm.value.tinh_trang
+            ten_chuc_nang: this.permissionForm.ten_chuc_nang,
+            tinh_trang: this.permissionForm.tinh_trang
           })
         }
         
-        closePermissionModal()
-      }
-  
-      // Xóa chức vụ
-      const deleteRole = (role) => {
-        deleteMessage.value = `Bạn có chắc chắn muốn xóa chức vụ "${role.ten_chuc_vu}" không?`
-        deleteCallback.value = () => {
-          roles.value = roles.value.filter(r => r.id !== role.id)
+        this.closePermissionModal()
+      },
+
+      deleteRole(role) {
+        this.deleteMessage = `Bạn có chắc chắn muốn xóa chức vụ "${role.ten_chuc_vu}" không?`
+        this.deleteCallback = () => {
+          this.roles = this.roles.filter(r => r.id !== role.id)
           // Xóa các phân quyền liên quan
-          rolePermissions.value = rolePermissions.value.filter(rp => rp.id_chuc_vu !== role.id)
+          this.rolePermissions = this.rolePermissions.filter(rp => rp.id_chuc_vu !== role.id)
         }
-        showDeleteModal.value = true
-      }
-  
-      // Xóa chức năng
-      const deletePermission = (permission) => {
-        deleteMessage.value = `Bạn có chắc chắn muốn xóa chức năng "${permission.ten_chuc_nang}" không?`
-        deleteCallback.value = () => {
-          permissions.value = permissions.value.filter(p => p.id !== permission.id)
+        this.showDeleteModal = true
+      },
+
+      deletePermission(permission) {
+        this.deleteMessage = `Bạn có chắc chắn muốn xóa chức năng "${permission.ten_chuc_nang}" không?`
+        this.deleteCallback = () => {
+          this.permissions = this.permissions.filter(p => p.id !== permission.id)
           // Xóa các phân quyền liên quan
-          rolePermissions.value = rolePermissions.value.filter(rp => rp.id_chuc_nang !== permission.id)
+          this.rolePermissions = this.rolePermissions.filter(rp => rp.id_chuc_nang !== permission.id)
         }
-        showDeleteModal.value = true
-      }
-  
-      // Xác nhận xóa
-      const confirmDelete = () => {
-        if (deleteCallback.value) {
-          deleteCallback.value()
+        this.showDeleteModal = true
+      },
+
+      confirmDelete() {
+        if (this.deleteCallback) {
+          this.deleteCallback()
         }
-        showDeleteModal.value = false
-        deleteCallback.value = null
-      }
-  
-      // Quản lý phân quyền cho chức vụ
-      const manageRolePermissions = (role) => {
-        selectedRoleId.value = role.id
-        loadRolePermissions()
-        activeTab.value = 'role-permissions'
-      }
-  
-      // Tải danh sách quyền của chức vụ
-      const loadRolePermissions = () => {
-        const rolePerms = rolePermissions.value.filter(rp => 
-          rp.id_chuc_vu === selectedRoleId.value && rp.tinh_trang
+        this.showDeleteModal = false
+        this.deleteCallback = null
+      },
+
+      manageRolePermissions(role) {
+        this.selectedRoleId = role.id
+        this.loadRolePermissions()
+        this.activeTab = 'role-permissions'
+      },
+
+      loadRolePermissions() {
+        const rolePerms = this.rolePermissions.filter(rp => 
+          rp.id_chuc_vu === this.selectedRoleId && rp.tinh_trang
         )
-        selectedPermissions.value = rolePerms.map(rp => rp.id_chuc_nang)
-      }
-  
-      // Chọn tất cả quyền
-      const selectAllPermissions = () => {
-        selectedPermissions.value = permissions.value
+        this.selectedPermissions = rolePerms.map(rp => rp.id_chuc_nang)
+      },
+
+      selectAllPermissions() {
+        this.selectedPermissions = this.permissions
           .filter(p => p.tinh_trang)
           .map(p => p.id)
-      }
-  
-      // Bỏ chọn tất cả quyền
-      const deselectAllPermissions = () => {
-        selectedPermissions.value = []
-      }
-  
-      // Lưu phân quyền
-      const saveRolePermissions = () => {
-        // Xóa tất cả quyền hiện tại của chức vụ
-        rolePermissions.value = rolePermissions.value.filter(rp => rp.id_chuc_vu !== selectedRoleId.value)
-        
-        // Thêm các quyền mới
-        let maxId = Math.max(0, ...rolePermissions.value.map(rp => rp.id))
-        
-        for (const permissionId of selectedPermissions.value) {
-          maxId++
-          rolePermissions.value.push({
-            id: maxId,
-            id_chuc_vu: selectedRoleId.value,
-            id_chuc_nang: permissionId,
-            tinh_trang: true
-          })
-        }
-        
-        // Hiển thị thông báo thành công (trong thực tế sẽ sử dụng toast hoặc alert)
-        alert('Lưu phân quyền thành công!')
-      }
-  
-      // Theo dõi thay đổi của selectedRoleId
-      const watchSelectedRoleId = (newValue) => {
-        if (newValue) {
-          loadRolePermissions()
-        } else {
-          selectedPermissions.value = []
-        }
-      }
-  
-      // Lọc nhân sự
-      const filteredPersonnel = computed(() => {
-        let result = [...personnel.value]
-        
-        // Lọc theo tìm kiếm
-        if (personnelSearch.value) {
-          const searchLower = personnelSearch.value.toLowerCase()
-          result = result.filter(person => 
-            person.ho_ten.toLowerCase().includes(searchLower) ||
-            person.email.toLowerCase().includes(searchLower) ||
-            person.so_dien_thoai.includes(searchLower)
-          )
-        }
-        
-        // Lọc theo trạng thái
-        if (personnelStatusFilter.value !== 'all') {
-          const isActive = personnelStatusFilter.value === 'active'
-          result = result.filter(person => person.tinh_trang === isActive)
-        }
+      },
 
-        // Lọc theo chức vụ
-        if (personnelRoleFilter.value !== 'all') {
-          result = result.filter(person => person.id_chuc_vu === personnelRoleFilter.value)
-        }
-        
-        return result
-      })
-  
-      // Lấy tên chức vụ
-      const getRoleName = (roleId) => {
-        const role = roles.value.find(r => r.id === roleId)
+      deselectAllPermissions() {
+        this.selectedPermissions = []
+      },
+
+      saveRolePermissions() {
+        const notificationStore = useNotificationStore();
+        this.isSubmitting = true;
+
+        baseRequest.post("admin/phan-quyen/luu-phan-quyen", {
+          id_chuc_vu: this.selectedRoleId,
+          danh_sach_quyen: this.selectedPermissions
+        })
+          .then((response) => {
+            if (response.data.status) {
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError('Lưu phân quyền thất bại');
+            }
+          })
+          .catch((res) => {
+            const errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
+      },
+
+      getRoleName(roleId) {
+        const role = this.roles.find(r => r.id === roleId)
         return role ? role.ten_chuc_vu : ''
-      }
-  
-      // Thêm/Sửa nhân sự
-      const editPersonnel = (person) => {
-        editingPersonnel.value = person
-        personnelForm.value = {
+      },
+
+      editPersonnel(person) {
+        this.editingPersonnel = person
+        this.personnelForm = {
           ho_ten: person.ho_ten,
           email: person.email,
           so_dien_thoai: person.so_dien_thoai,
           id_chuc_vu: person.id_chuc_vu,
           tinh_trang: person.tinh_trang
         }
-        showAddPersonnelModal.value = true
-      }
-  
-      const closePersonnelModal = () => {
-        showAddPersonnelModal.value = false
-        editingPersonnel.value = null
-        personnelForm.value = {
+        this.showAddPersonnelModal = true
+      },
+
+      closePersonnelModal() {
+        this.showAddPersonnelModal = false
+        this.editingPersonnel = null
+        this.personnelForm = {
           ho_ten: '',
           email: '',
           so_dien_thoai: '',
           id_chuc_vu: '',
           tinh_trang: true
         }
-      }
-  
-      const savePersonnel = () => {
-        if (editingPersonnel.value) {
-          // Cập nhật nhân sự
-          const index = personnel.value.findIndex(p => p.id === editingPersonnel.value.id)
-          if (index !== -1) {
-            personnel.value[index] = {
-              ...personnel.value[index],
-              ...personnelForm.value
+      },
+
+      handleSavePersonnel() {
+        this.personnelFormRef.validate().then(() => {
+          this.savePersonnel();
+        }).catch(error => {
+          console.log('Validation failed:', error);
+        });
+      },
+
+      savePersonnel() {
+        const notificationStore = useNotificationStore();
+        this.isSubmitting = true;
+
+        const url = this.editingPersonnel 
+          ? "admin/phan-quyen/cap-nhat-nhan-su"
+          : "admin/phan-quyen/them-nhan-su";
+
+        baseRequest.post(url, this.personnelForm)
+          .then((response) => {
+            if (response.data.status) {
+              this.getPersonnel();
+              this.showAddPersonnelModal = false;
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError('Thao tác thất bại');
             }
-          }
-        } else {
-          // Thêm nhân sự mới
-          const newId = Math.max(0, ...personnel.value.map(p => p.id)) + 1
-          personnel.value.push({
-            id: newId,
-            ...personnelForm.value
           })
+          .catch((res) => {
+            const errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
+      },
+
+      async getPersonnel() {
+        const notificationStore = useNotificationStore();
+        try {
+          const response = await baseRequest.get("admin/phan-quyen/lay-danh-sach-nhan-su");
+          if (response.data.status) {
+            this.personnel = response.data.data;
+          } else {
+            notificationStore.showError('Lấy danh sách nhân sự thất bại');
+          }
+        } catch (error) {
+          const errors = Object.values(error.response.data.errors);
+          notificationStore.showError(errors[0]);
         }
-        
-        closePersonnelModal()
+      },
+
+      confirmDeletePersonnel(person) {
+        const notificationStore = useNotificationStore();
+        this.isSubmitting = true;
+
+        baseRequest.post("admin/phan-quyen/xoa-nhan-su", { id: person.id })
+          .then((response) => {
+            if (response.data.status) {
+              this.getPersonnel();
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError('Xóa nhân sự thất bại');
+            }
+          })
+          .catch((res) => {
+            const errors = Object.values(res.response.data.errors);
+            notificationStore.showError(errors[0]);
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
       }
-  
-      // Xóa nhân sự
-      const deletePersonnel = (person) => {
-        deleteMessage.value = `Bạn có chắc chắn muốn xóa nhân sự "${person.ho_ten}" không?`
-        deleteCallback.value = () => {
-          personnel.value = personnel.value.filter(p => p.id !== person.id)
+    },
+
+    watch: {
+      selectedRoleId(newValue) {
+        if (newValue) {
+          this.loadRolePermissions()
+        } else {
+          this.selectedPermissions = []
         }
-        showDeleteModal.value = true
-      }
-  
-      return {
-        tabs,
-        activeTab,
-        roles,
-        permissions,
-        rolePermissions,
-        roleSearch,
-        roleStatusFilter,
-        permissionSearch,
-        permissionStatusFilter,
-        rolePermissionSearch,
-        showAddRoleModal,
-        showAddPermissionModal,
-        showDeleteModal,
-        deleteMessage,
-        roleForm,
-        permissionForm,
-        editingRole,
-        editingPermission,
-        selectedRoleId,
-        selectedPermissions,
-        filteredRoles,
-        filteredPermissions,
-        filteredRolePermissions,
-        selectedRoleName,
-        editRole,
-        closeRoleModal,
-        saveRole,
-        editPermission,
-        closePermissionModal,
-        savePermission,
-        deleteRole,
-        deletePermission,
-        confirmDelete,
-        manageRolePermissions,
-        loadRolePermissions,
-        selectAllPermissions,
-        deselectAllPermissions,
-        saveRolePermissions,
-        watchSelectedRoleId,
-        personnel,
-        personnelSearch,
-        personnelStatusFilter,
-        personnelRoleFilter,
-        showAddPersonnelModal,
-        editingPersonnel,
-        personnelForm,
-        filteredPersonnel,
-        getRoleName,
-        editPersonnel,
-        closePersonnelModal,
-        savePersonnel,
-        deletePersonnel
       }
     }
   }

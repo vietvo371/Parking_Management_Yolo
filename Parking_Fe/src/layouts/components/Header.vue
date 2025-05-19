@@ -23,15 +23,42 @@
         
         <div 
           v-if="showNotifications" 
-          class="notification-dropdown absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+          class="notification-dropdown absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-[500px] overflow-y-auto"
         >
-          <div class="p-2 font-medium border-b">Thông báo</div>
-          <div v-for="notification in notifications" :key="notification.id" class="p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-            <p class="text-sm">{{ notification.message }}</p>
-            <p class="text-xs text-gray-500 mt-1">{{ notification.time }}</p>
+          <div class="sticky top-0 bg-white dark:bg-gray-800 p-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="font-semibold text-gray-900 dark:text-white">Thông báo</h3>
+            <span class="text-sm text-gray-500">{{ notifications.length }} thông báo mới</span>
           </div>
-          <div class="p-2 text-center text-sm text-blue-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-            Xem tất cả
+          
+          <div class="divide-y divide-gray-200 dark:divide-gray-700">
+            <div 
+              v-for="notification in notifications" 
+              :key="notification.id" 
+              class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+            >
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                  <div class="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="whitespace-pre-line text-sm text-gray-900 dark:text-gray-100 leading-relaxed">
+                    {{ notification.message }}
+                  </div>
+                  <div class="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ notification.time }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sticky bottom-0 bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700">
+            <button class="w-full py-2 px-4 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+              Xem tất cả thông báo
+            </button>
           </div>
         </div>
       </div>
@@ -50,6 +77,8 @@
 <script>
 import { ref, onMounted, onUnmounted } from "vue";
 import { Bell, Moon, Sun, Search } from "lucide-vue-next";
+import baseRequest from "../../core/baseRequest";
+
 
 export default {
   name: "Header",
@@ -62,41 +91,41 @@ export default {
   setup() {
     const isDark = ref(false);
     const showNotifications = ref(false);
-    const notifications = ref([
-      {
-        id: 1,
-        message: "Xe mới đăng ký: 51F-12345",
-        time: "5 phút trước",
-      },
-      {
-        id: 2,
-        message: "Cảnh báo: Xe không xác định vào bãi",
-        time: "10 phút trước",
-      },
-      {
-        id: 3,
-        message: "Cư dân Nguyễn Văn A đã thanh toán phí gửi xe",
-        time: "30 phút trước",
-      },
-    ]);
-
+    const notifications = ref([]);
+   
     const toggleTheme = () => {
       isDark.value = !isDark.value;
       document.documentElement.classList.toggle("dark", isDark.value);
       localStorage.setItem("theme", isDark.value ? "dark" : "light");
     };
 
-    const toggleNotifications = () => {
+    const toggleNotifications = (e) => {
+      e.stopPropagation(); // Prevent event from bubbling up
       showNotifications.value = !showNotifications.value;
     };
 
     const closeNotifications = (e) => {
-      if (showNotifications.value && !e.target.closest(".notification-dropdown")) {
+      if (showNotifications.value && !e.target.closest('.notification-dropdown') && !e.target.closest('button')) {
         showNotifications.value = false;
       }
     };
 
+    const getThongBao = async () => {
+      try {
+        const res = await baseRequest.get("user/lay-du-lieu-thong-bao");
+        if (res.data && res.data.data) {
+          notifications.value = res.data.data;
+        } else {
+          notifications.value = []; // Set empty array if no data
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        notifications.value = []; // Set empty array on error
+      }
+    };
+
     onMounted(() => {
+      getThongBao();
       // Kiểm tra theme từ localStorage hoặc system preference
       const savedTheme = localStorage.getItem("theme");
       const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -104,6 +133,7 @@ export default {
       isDark.value = savedTheme === "dark" || (!savedTheme && systemPrefersDark);
       document.documentElement.classList.toggle("dark", isDark.value);
 
+      // Add click event listener to document
       document.addEventListener("click", closeNotifications);
     });
 

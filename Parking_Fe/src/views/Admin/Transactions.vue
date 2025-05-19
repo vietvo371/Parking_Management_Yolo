@@ -560,12 +560,19 @@ export default {
     updateStats() {
       const today = new Date().toISOString().split('T')[0]
       
+      // Calculate total transactions
       this.stats.total = this.transactions.length
+      
+      // Calculate successful transactions (trang_thai_giao_dich == 1)
       this.stats.successful = this.transactions.filter(t => t.trang_thai_giao_dich == 1).length
+      
+      // Calculate processing transactions (trang_thai_giao_dich == 2)
       this.stats.processing = this.transactions.filter(t => t.trang_thai_giao_dich == 2).length
+      
+      // Calculate today's revenue from successful transactions
       this.stats.todayRevenue = this.transactions
         .filter(t => {
-          const transactionDate = new Date(t.ngay_het_han).toISOString().split('T')[0]
+          const transactionDate = new Date(t.created_at).toISOString().split('T')[0]
           return transactionDate === today && t.trang_thai_giao_dich == 1
         })
         .reduce((sum, t) => sum + t.so_tien_giao_dich, 0)

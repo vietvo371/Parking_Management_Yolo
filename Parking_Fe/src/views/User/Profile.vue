@@ -84,7 +84,7 @@
         <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
           <h3 class="text-lg font-medium mb-4">{{ isEditing ? 'Chỉnh sửa thông tin' : 'Thông tin chi tiết' }}</h3>
           
-          <form v-if="isEditing" @submit.prevent="saveProfile">
+          <form v-if="isEditing" @submit.prevent="handleSave">
             <div class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -101,7 +101,7 @@
                   <input 
                     id="email" 
                     type="email" 
-                    v-model="editedProfile.email"
+                    v-model="editedProfile.email" disabled
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
                   />
                 </div>
@@ -119,7 +119,7 @@
                   <input 
                     id="idNumber" 
                     type="text" 
-                    v-model="editedProfile.idNumber"
+                    v-model="editedProfile.idNumber" disabled
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
                   />
                 </div>
@@ -197,6 +197,16 @@
                       </button>
                     </div>
                   </div>
+                  <div class="flex justify-end">
+                    <button 
+                      type="button" 
+                      class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                      @click="doiMatKhau"
+                      :disabled="!passwordChange.current || !passwordChange.new || !passwordChange.confirm"
+                    >
+                      Đổi mật khẩu
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -209,10 +219,11 @@
                   Hủy
                 </button>
                 <button 
-                  type="submit" 
+                  type="button" 
                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  @click="saveProfile"
                 >
-                  Lưu thay đổi
+                  Lưu thông tin
                 </button>
               </div>
             </div>
@@ -330,6 +341,8 @@
     Receipt
   } from 'lucide-vue-next'
   import baseRequestUser from '../../core/baseRequestUser'
+  import { useNotificationStore } from '../../stores/notication'
+  import { useAuthStore } from '../../stores/auth'
   export default {
     name: 'ResidentProfile',
     components: {
@@ -458,20 +471,47 @@
         this.passwordChange = { current: '', new: '', confirm: '' }
         this.isEditing = false
       },
-      saveProfile() {
-        this.userProfile = { ...this.editedProfile }
-        // Password change logic (if needed)
-        if (
-          this.passwordChange.current &&
-          this.passwordChange.new &&
-          this.passwordChange.confirm &&
-          this.passwordChange.new === this.passwordChange.confirm
-        ) {
-          // Password change logic would go here
-          // For demo: just clear fields
-          this.passwordChange = { current: '', new: '', confirm: '' }
+      doiMatKhau() {
+        const notificationStore = useNotificationStore();
+        var payload = {
+          current_password: this.passwordChange.current,
+          password: this.passwordChange.new,
+          re_password: this.passwordChange.confirm
         }
-        this.isEditing = false
+        baseRequestUser.post('user/profile/doi-mat-khau', payload).then((res) => {
+          if (res.data.status) {
+            notificationStore.showSuccess(res.data.message);
+            this.passwordChange = { current: '', new: '', confirm: '' }
+          } else {
+            notificationStore.showError(res.data.message);
+          }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
+      },
+      saveProfile() {
+        const notificationStore = useNotificationStore();
+        const authStore = useAuthStore();
+        var payload = {
+          ho_va_ten: this.editedProfile.fullName,
+          so_dien_thoai: this.editedProfile.phone,
+        }
+        
+        baseRequestUser.post('user/profile/cap-nhat', payload).then((res) => {
+          if (res.data.status) {
+            this.userProfile = { ...this.editedProfile }
+            this.isEditing = false
+            authStore.setUser(res.data.data)
+            notificationStore.showSuccess(res.data.message);
+            window.location.reload();
+          }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
       },
       formatCurrency(amount) {
         return new Intl.NumberFormat('vi-VN', {

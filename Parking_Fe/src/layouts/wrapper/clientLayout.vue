@@ -13,6 +13,60 @@
           <Menu class="h-6 w-6" />
         </button>
         <div class="flex items-center space-x-2">
+          <div class="relative">
+            <button 
+              @click="toggleNotifications" 
+              class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative"
+            >
+              <Bell class="h-5 w-5" />
+              <span v-if="unreadNotifications > 0" class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+            </button>
+            
+            <!-- Mobile notification dropdown -->
+            <div 
+              v-if="showNotifications" 
+              class="notification-dropdown fixed inset-x-4 top-20 bottom-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-y-auto"
+            >
+              <div class="sticky top-0 bg-white dark:bg-gray-800 p-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <h3 class="font-semibold text-gray-900 dark:text-white">Thông báo</h3>
+                <button @click="showNotifications = false" class="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <X class="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                <div 
+                  v-for="notification in notifications" 
+                  :key="notification.id" 
+                  class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+                  @click="markAsRead(notification.id)"
+                >
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                      <div class="w-2 h-2 mt-2 rounded-full" :class="notification.isRead ? 'bg-gray-400' : 'bg-blue-500'"></div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="whitespace-pre-line text-sm text-gray-900 dark:text-gray-100 leading-relaxed">
+                        {{ notification.message }}
+                      </div>
+                      <div class="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ notification.time }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sticky bottom-0 bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700">
+                <button class="w-full py-2 px-4 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                  Xem tất cả thông báo
+                </button>
+              </div>
+            </div>
+          </div>
           <h1 class="text-lg font-bold">Cư dân</h1>
         </div>
         <div class="relative">
@@ -70,10 +124,58 @@
             <h1 class="text-xl font-bold">{{ getCurrentPageTitle() }}</h1>
           </div>
           <div class="flex items-center space-x-4">
-            <button class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative">
-              <Bell class="h-5 w-5" />
-              <span v-if="unreadNotifications > 0" class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
+            <div class="relative">
+              <button 
+                @click="toggleNotifications" 
+                class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 relative"
+              >
+                <Bell class="h-5 w-5" />
+                <span v-if="unreadNotifications > 0" class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+              </button>
+              
+              <!-- Notification dropdown -->
+              <div 
+                v-if="showNotifications" 
+                class="notification-dropdown absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-[500px] overflow-y-auto"
+              >
+                <div class="sticky top-0 bg-white dark:bg-gray-800 p-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <h3 class="font-semibold text-gray-900 dark:text-white">Thông báo</h3>
+                  <span class="text-sm text-gray-500">{{ notifications.length }} thông báo mới</span>
+                </div>
+                
+                <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                  <div 
+                    v-for="notification in notifications" 
+                    :key="notification.id" 
+                    class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+                    @click="markAsRead(notification.id)"
+                  >
+                    <div class="flex items-start space-x-3">
+                      <div class="flex-shrink-0">
+                        <div class="w-2 h-2 mt-2 rounded-full" :class="notification.isRead ? 'bg-gray-400' : 'bg-blue-500'"></div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="whitespace-pre-line text-sm text-gray-900 dark:text-gray-100 leading-relaxed">
+                          {{ notification.message }}
+                        </div>
+                        <div class="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {{ notification.time }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sticky bottom-0 bg-white dark:bg-gray-800 p-3 border-t border-gray-200 dark:border-gray-700">
+                  <button class="w-full py-2 px-4 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                    Xem tất cả thông báo
+                  </button>
+                </div>
+              </div>
+            </div>
             <button @click="toggleDarkMode" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
               <Sun v-if="isDarkMode" class="h-5 w-5" />
               <Moon v-else class="h-5 w-5" />
@@ -111,6 +213,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { useAuthStore } from '../../stores/auth';
   import { useNotificationStore } from '../../stores/notication';
+  import baseRequestUser from '../../core/baseRequestUser';
   import { 
     Home, 
     Users, 
@@ -170,7 +273,47 @@
       const isActive = (path) => {
         return route.path === path || route.path.startsWith(`${path}/`)
       }
-  
+      const showNotifications = ref(false)
+      const notifications = ref([])
+
+      const formatTimeAgo = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) return 'Vừa xong';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} phút trước`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} giờ trước`;
+        if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} ngày trước`;
+        return date.toLocaleDateString('vi-VN');
+      }
+
+      const getThongBao = () => {
+        baseRequestUser.get("user/lay-du-lieu-thong-bao").then((res) => {
+          if (res.data.status) {
+            notifications.value = res.data.data.map(notification => ({
+              id: notification.id,
+              message: notification.noi_dung_thong_bao,
+              time: formatTimeAgo(notification.ngay_tao),
+              isRead: notification.trang_thai === 0
+            }));
+            unreadNotifications.value = notifications.value.filter(n => n.isRead).length;
+          }
+        });
+      };
+
+      const markAsRead = (notificationId) => {
+        baseRequestUser.put(`user/cap-nhat-trang-thai-thong-bao/${notificationId}`).then((res) => {
+          if (res.data.status) {
+            const notification = notifications.value.find(n => n.id === notificationId);
+            if (notification) {
+              notification.isRead = true;
+              unreadNotifications.value = notifications.value.filter(n => n.isRead).length;
+            }
+          }
+        });
+      };
+
       const getCurrentPageTitle = () => {
         const currentRoute = navigationItems.find(item => isActive(item.path))
         return currentRoute ? currentRoute.name : ''
@@ -208,6 +351,14 @@
         }
       }
   
+      const toggleNotifications = (e) => {
+        e.stopPropagation()
+        showNotifications.value = !showNotifications.value
+        if (showNotifications.value) {
+          getThongBao(); // Refresh notifications when opening
+        }
+      }
+  
       onMounted(() => {
         // Initialize dark mode
         const storedUser = authStore.getUserUser();
@@ -217,14 +368,18 @@
         if (isDarkMode.value) {
           document.documentElement.classList.add('dark')
         }
-        
+        getThongBao();
         document.addEventListener('click', handleClickOutside)
         window.addEventListener('resize', handleResize)
-      })
-  
-      onUnmounted(() => {
-        document.removeEventListener('click', handleClickOutside)
-        window.removeEventListener('resize', handleResize)
+        
+        // Set up polling for new notifications every minute
+        const notificationInterval = setInterval(getThongBao, 60000);
+        
+        onUnmounted(() => {
+          document.removeEventListener('click', handleClickOutside)
+          window.removeEventListener('resize', handleResize)
+          clearInterval(notificationInterval);
+        })
       })
   
       return {
@@ -237,7 +392,11 @@
         toggleDarkMode,
         handleLogout,
         userInfo,
-        unreadNotifications
+        unreadNotifications,
+        showNotifications,
+        notifications,
+        toggleNotifications,
+        markAsRead,
       }
     }
   }
