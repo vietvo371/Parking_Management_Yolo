@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\MailQueue;
 use App\Models\AdminThongBao;
 use App\Models\GiaoDich;
 use Illuminate\Http\Request;
@@ -61,6 +62,7 @@ class AdminThongBaoController extends Controller
                 'ngay_tao' => Carbon::now(),
                 'trang_thai' => 1,
             ]);
+            MailQueue::dispatch($item);
         }
 
         return response()->json([
@@ -69,5 +71,22 @@ class AdminThongBaoController extends Controller
             'data' => $thongbaos
         ]);
     }
+    public function getDataThongBaoClient()
+    {
+        $user = $this->isCuDan();
+        if(!$user){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không có quyền thực hiện hành động này'
+            ]);
+        }
+        $thongbaos = AdminThongBao::where('id_cu_dan', $user->id)->orderBy('ngay_tao', 'desc')->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $thongbaos
+        ]);
+    }
+
 
 }

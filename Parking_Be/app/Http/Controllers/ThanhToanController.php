@@ -201,4 +201,23 @@ class ThanhToanController extends Controller
             'message' => 'Cập nhật giao dịch thành công.'
         ], 200);
     }
+    public function getDataThanhToanClient(Request $request)
+    {
+        $user = $this->isCuDan();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy thông tin người dùng.'
+            ]);
+        }
+        $hoaDon = GiaoDich::join('xes', 'giao_diches.id_xe', '=', 'xes.id')
+            ->join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
+            ->where('xes.id_cu_dan', $user->id)
+            ->select('giao_diches.*', 'xes.bien_so_xe', 'cu_dans.ho_va_ten')
+            ->get();
+        return response()->json([
+            'status' => true,
+            'data' => $hoaDon,
+        ]);
+    }
 }

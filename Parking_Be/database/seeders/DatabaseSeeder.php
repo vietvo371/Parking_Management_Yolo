@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             CameraGiamSatSeeder::class,
             BaoCaoSuCoSeeder::class,
             BaoCaoKhachVangLaiSeeder::class,
-            AdminThongBaoSeeder::class,
+            // AdminThongBaoSeeder::class,
             XeSeeder::class,
             LoaiXeSeeder::class,
             GiaoDichSeeder::class,

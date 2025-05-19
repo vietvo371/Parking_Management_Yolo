@@ -50,7 +50,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 1,
+                'id_xe' => 4,
                 'phuong_thuc_thanh_toan' => 2,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-07-15'),
@@ -60,7 +60,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 4,
+                'id_xe' => 5,
                 'phuong_thuc_thanh_toan' => 1,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-01'),
@@ -80,7 +80,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 2,
+                'id_xe' => 6,
                 'phuong_thuc_thanh_toan' => 2,
                 'trang_thai_giao_dich' => 0,
                 'ngay_het_han' => Carbon::parse('2025-08-15'),
@@ -90,7 +90,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 3,
+                'id_xe' => 7,
                 'phuong_thuc_thanh_toan' => 1,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-20'),
@@ -100,7 +100,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 4,
+                'id_xe' => 8,
                 'phuong_thuc_thanh_toan' => 1,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-08-25'),
@@ -110,7 +110,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 5,
+                'id_xe' => 9,
                 'phuong_thuc_thanh_toan' => 2,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-09-01'),
@@ -120,7 +120,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 7,
+                'id_xe' => 10,
                 'phuong_thuc_thanh_toan' => 2,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-09-01'),
@@ -130,7 +130,7 @@ class GiaoDichSeeder extends Seeder
             ],
             [
                 'so_tien_giao_dich' => 100000,
-                'id_xe' => 6,
+                'id_xe' => 11,
                 'phuong_thuc_thanh_toan' => 2,
                 'trang_thai_giao_dich' => 1,
                 'ngay_het_han' => Carbon::parse('2025-09-01'),

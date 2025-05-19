@@ -195,6 +195,8 @@ Route::post('/user/logout', [CuDanController::class, 'logout']);
 
 Route::group(['prefix'  =>  '/user'], function () {
     Route::get('/profile', [CuDanController::class, 'getProfile']);
+    Route::post('/profile/cap-nhat', [CuDanController::class, 'capnhatProfile']);
+    Route::post('/profile/doi-mat-khau', [CuDanController::class, 'doiPass']);
     Route::get('/lay-du-lieu-can-ho', [CanHoController::class, 'getDataClient']);
     Route::get('/lay-du-lieu-xe', [XeController::class, 'getDataClient']);
     Route::get('/lay-du-lieu-loai-xe', [LoaiXeController::class, 'getDataLoaiXeClient']);
@@ -208,10 +210,14 @@ Route::group(['prefix'  =>  '/user'], function () {
     Route::post('/bao-cao-su-co', [BaoCaoSuCoController::class, 'themBaoCaoSuCoClient']);
     Route::post('/cap-nhat-bao-cao-su-co', [BaoCaoSuCoController::class, 'capnhatBaoCaoSuCoClient']);
 
-
+    // Thanh toán
+    Route::get('/lay-du-lieu-thanh-toan', [ThanhToanController::class, 'getDataThanhToanClient']);
     Route::post('/thanh-toan-xe', [ThanhToanController::class, 'getQrPayMent']);
     Route::post('/set-transiton', [ThanhToanController::class, 'setTransiton']);
     Route::get('/thanh-toan/index', [ThanhToanController::class, 'index']);
+
+    //Thông báo
+    Route::get('/lay-du-lieu-thong-bao', [AdminThongBaoController::class, 'getDataThongBaoClient']);
 
 });
 

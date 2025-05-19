@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\capNhatCuDanRequest;
+use App\Http\Requests\capNhatProfileRequest;
 use App\Http\Requests\DoiPassAdminReuqest;
 use App\Http\Requests\ThemCuDanRequest;
 use App\Models\CuDan;
@@ -133,14 +134,32 @@ class CuDanController extends Controller
     }
     public function doiPass(DoiPassAdminReuqest $request)
     {
-        $dangLogin = $this->isAdmin();
-
-        $cudan = CuDan::find($request->id);
-
-        CuDan::where('id', $request->id)
-            ->update([
-                'password'   => bcrypt($request->password),
+        $dangLogin = $this->isCuDan();
+        if (!$dangLogin) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn chưa đăng nhập tài khoản cư dân'
             ]);
+        }
+
+        $check = Auth::guard('cu_dan')->attempt(['email' => $dangLogin->email, 'password' => $request->current_password,]);
+        if (!$check) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mật khẩu hiện tại không đúng'
+            ]);
+        }
+
+        $cudan = CuDan::find($dangLogin->id);
+        if (!$cudan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Cư dân không tồn tại'
+            ]);
+        }
+        $cudan->update([
+            'password'   => bcrypt($request->password),
+        ]);
         return response()->json([
             'status'  =>  true,
             'message' =>  'Đổi mật khẩu thành công'
@@ -283,6 +302,20 @@ class CuDanController extends Controller
             'data' => $cudan,
             'lich_su_login' => $lich_su_login,
             'lich_su_thanh_toan' => $xe
+        ]);
+    }
+    public function capnhatProfile(capNhatProfileRequest $request)
+    {
+        $user = $this->isCuDan();
+        $user->update([
+            'ho_va_ten' => $request->ho_va_ten,
+            'so_dien_thoai' => $request->so_dien_thoai,
+            // 'id_can_ho' => $request->id_can_ho,
+        ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật thông tin cư dân thành công',
+            'data' => $user
         ]);
     }
 }
