@@ -41,8 +41,8 @@
               class="h-10 w-[200px]"
             >
               <a-select-option value="all">Tất cả trạng thái</a-select-option>
-              <a-select-option value="active">Đang hoạt động</a-select-option>
-              <a-select-option value="inactive">Không hoạt động</a-select-option>
+              <a-select-option value="1">Đang hoạt động</a-select-option>
+              <a-select-option value="0">Không hoạt động</a-select-option>
             </a-select>
           </div>
           <a-button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
@@ -77,9 +77,9 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span 
                       class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                      :class="role.tinh_trang ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
+                      :class="role.tinh_trang === 1 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
                     >
-                      {{ role.tinh_trang ? 'Đang hoạt động' : 'Không hoạt động' }}
+                      {{ role.tinh_trang === 1 ? 'Đang hoạt động' : 'Không hoạt động' }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -154,13 +154,13 @@
               <option value="inactive">Không hoạt động</option>
             </select>
           </div>
-          <button 
+          <!-- <button 
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
             @click="showAddPermissionModal = true"
           >
             <Plus class="mr-2 h-4 w-4" />
             Thêm chức năng
-          </button>
+          </button> -->
         </div>
   
         <!-- Danh sách chức năng -->
@@ -328,8 +328,8 @@
               class="h-10 w-[200px]"
             >
               <a-select-option value="all">Tất cả trạng thái</a-select-option>
-              <a-select-option value="active">Đang làm việc</a-select-option>
-              <a-select-option value="inactive">Đã nghỉ việc</a-select-option>
+              <a-select-option value="0">Đang làm việc</a-select-option>
+              <a-select-option value="1">Đã nghỉ việc</a-select-option>
             </a-select>
             <a-select 
               v-model:value="personnelRoleFilter" 
@@ -371,7 +371,7 @@
                     {{ person.id }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {{ person.ho_ten }}
+                    {{ person.ho_va_ten }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     {{ getRoleName(person.id_chuc_vu) }}
@@ -385,9 +385,9 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span 
                       class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                      :class="person.tinh_trang ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
+                      :class="person.is_block === 0 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
                     >
-                      {{ person.tinh_trang ? 'Đang làm việc' : 'Đã nghỉ việc' }}
+                      {{ person.is_block === 0 ? 'Đang làm việc' : 'Đã nghỉ việc' }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -404,7 +404,7 @@
                       <a-tooltip title="Xóa">
                         <a-popconfirm
                           title="Xác nhận xóa"
-                          :description="`Bạn có chắc chắn muốn xóa nhân sự ${person.ho_ten} không?`"
+                          :description="`Bạn có chắc chắn muốn xóa nhân sự ${person.ho_va_ten} không?`"
                           ok-text="Có"
                           cancel-text="Không"
                           @confirm="confirmDeletePersonnel(person)"
@@ -437,6 +437,8 @@
         v-model:open="showAddRoleModal" 
         :title="editingRole ? 'Chỉnh sửa chức vụ' : 'Thêm chức vụ mới'"
         @ok="handleSaveRole"
+        :confirmLoading="isSubmitting"
+        @cancel="closeRoleModal"
       >
         <a-form
           :model="roleForm"
@@ -455,7 +457,9 @@
           </a-form-item>
           
           <a-form-item name="tinh_trang">
-            <a-checkbox v-model:checked="roleForm.tinh_trang">
+            <a-checkbox 
+              v-model:checked="roleForm.tinh_trang"
+            >
               Đang hoạt động
             </a-checkbox>
           </a-form-item>
@@ -534,6 +538,7 @@
         :title="editingPersonnel ? 'Chỉnh sửa nhân sự' : 'Thêm nhân sự mới'"
         @ok="handleSavePersonnel"
         :confirmLoading="isSubmitting"
+        @cancel="closePersonnelModal"
       >
         <a-form
           :model="personnelForm"
@@ -543,10 +548,10 @@
         >
           <a-form-item 
             label="Họ và tên" 
-            name="ho_ten"
+            name="ho_va_ten"
           >
             <a-input 
-              v-model:value="personnelForm.ho_ten"
+              v-model:value="personnelForm.ho_va_ten"
               placeholder="Nhập họ và tên"
             />
           </a-form-item>
@@ -578,15 +583,18 @@
             <a-select 
               v-model:value="personnelForm.id_chuc_vu"
               placeholder="Chọn chức vụ"
-            >
-              <a-select-option v-for="role in roles" :key="role.id" :value="role.id">
-                {{ role.ten_chuc_vu }}
-              </a-select-option>
-            </a-select>
+              :options="roles.map(role => ({
+                value: role.id,
+                label: role.ten_chuc_vu
+              }))"
+            />
           </a-form-item>
           
-          <a-form-item name="tinh_trang">
-            <a-checkbox v-model:checked="personnelForm.tinh_trang">
+          <a-form-item name="is_block">
+            <a-checkbox 
+              :checked="personnelForm.is_block === 0"
+              @change="(checked) => personnelForm.is_block = checked ? 0 : 1"
+            >
               Đang làm việc
             </a-checkbox>
           </a-form-item>
@@ -670,6 +678,12 @@
         deleteCallback: null,
 
         // Forms
+        roleRules: {
+          ten_chuc_vu: [
+            { required: true, message: 'Vui lòng nhập tên chức vụ', trigger: 'blur' },
+            { min: 2, max: 50, message: 'Tên chức vụ phải từ 2-50 ký tự', trigger: 'blur' }
+          ]
+        },
         roleForm: {
           ten_chuc_vu: '',
           tinh_trang: true
@@ -692,22 +706,9 @@
         personnelRoleFilter: 'all',
         showAddPersonnelModal: false,
         editingPersonnel: null,
-        personnelForm: {
-          ho_ten: '',
-          email: '',
-          so_dien_thoai: '',
-          id_chuc_vu: '',
-          tinh_trang: true
-        },
-        roleRules: {
-          ten_chuc_vu: [
-            { required: true, message: 'Vui lòng nhập tên chức vụ', trigger: 'blur' },
-            { min: 2, max: 50, message: 'Tên chức vụ phải từ 2-50 ký tự', trigger: 'blur' }
-          ]
-        },
-        roleFormRef: null,
+        personnelFormRef: null,
         personnelRules: {
-          ho_ten: [
+          ho_va_ten: [
             { required: true, message: 'Vui lòng nhập họ và tên', trigger: 'blur' },
             { min: 2, max: 50, message: 'Họ và tên phải từ 2-50 ký tự', trigger: 'blur' }
           ],
@@ -723,7 +724,13 @@
             { required: true, message: 'Vui lòng chọn chức vụ', trigger: 'change' }
           ]
         },
-        personnelFormRef: null,
+        personnelForm: {
+          ho_va_ten: '',
+          email: '',
+          so_dien_thoai: '',
+          id_chuc_vu: undefined,
+          is_block: 0
+        },
         isSubmitting: false
       }
     },
@@ -742,8 +749,8 @@
         
         // Lọc theo trạng thái
         if (this.roleStatusFilter !== 'all') {
-          const isActive = this.roleStatusFilter === 'active'
-          result = result.filter(role => role.tinh_trang === isActive)
+          const statusValue = parseInt(this.roleStatusFilter)
+          result = result.filter(role => role.tinh_trang === statusValue)
         }
         
         return result
@@ -795,21 +802,22 @@
         if (this.personnelSearch) {
           const searchLower = this.personnelSearch.toLowerCase()
           result = result.filter(person => 
-            person.ho_ten.toLowerCase().includes(searchLower) ||
+            person.ho_va_ten.toLowerCase().includes(searchLower) ||
             person.email.toLowerCase().includes(searchLower) ||
-            person.so_dien_thoai.includes(searchLower)
+            person.so_dien_thoai.includes(searchLower) ||
+            person.ten_chuc_vu.toLowerCase().includes(searchLower)
           )
         }
         
         // Lọc theo trạng thái
         if (this.personnelStatusFilter !== 'all') {
-          const isActive = this.personnelStatusFilter === 'active'
-          result = result.filter(person => person.tinh_trang === isActive)
+          const statusValue = parseInt(this.personnelStatusFilter)
+          result = result.filter(person => person.is_block === statusValue)
         }
 
         // Lọc theo chức vụ
         if (this.personnelRoleFilter !== 'all') {
-          result = result.filter(person => person.id_chuc_vu === this.personnelRoleFilter)
+          result = result.filter(person => person.id_chuc_vu === parseInt(this.personnelRoleFilter))
         }
         
         return result
@@ -817,151 +825,131 @@
     },
 
     mounted() {
-      this.fetchData()
+      this.getdataAdmin()
     },
 
     methods: {
-      async fetchData() {
-        try {
-          // Trong thực tế, bạn sẽ gọi API để lấy dữ liệu
-          // Ở đây chúng ta sẽ sử dụng dữ liệu mẫu
-          this.roles = [
-            { id: 1, ten_chuc_vu: 'Admin', tinh_trang: true },
-            { id: 2, ten_chuc_vu: 'Quản lý', tinh_trang: true },
-            { id: 3, ten_chuc_vu: 'Nhân viên', tinh_trang: true },
-            { id: 4, ten_chuc_vu: 'Khách hàng', tinh_trang: false }
-          ]
-          
-          this.permissions = [
-            { id: 1, ten_chuc_nang: 'Quản lý người dùng', tinh_trang: true },
-            { id: 2, ten_chuc_nang: 'Quản lý bãi đỗ xe', tinh_trang: true },
-            { id: 3, ten_chuc_nang: 'Quản lý khách vãng lai', tinh_trang: true },
-            { id: 4, ten_chuc_nang: 'Quản lý cư dân', tinh_trang: true },
-            { id: 5, ten_chuc_nang: 'Quản lý thanh toán', tinh_trang: true },
-            { id: 6, ten_chuc_nang: 'Quản lý báo cáo', tinh_trang: true },
-            { id: 7, ten_chuc_nang: 'Quản lý phân quyền', tinh_trang: true },
-            { id: 8, ten_chuc_nang: 'Xem thống kê', tinh_trang: true },
-            { id: 9, ten_chuc_nang: 'Xuất báo cáo', tinh_trang: false }
-          ]
-          
-          this.rolePermissions = [
-            { id: 1, id_chuc_vu: 1, id_chuc_nang: 1, tinh_trang: true },
-            { id: 2, id_chuc_vu: 1, id_chuc_nang: 2, tinh_trang: true },
-            { id: 3, id_chuc_vu: 1, id_chuc_nang: 3, tinh_trang: true },
-            { id: 4, id_chuc_vu: 1, id_chuc_nang: 4, tinh_trang: true },
-            { id: 5, id_chuc_vu: 1, id_chuc_nang: 5, tinh_trang: true },
-            { id: 6, id_chuc_vu: 1, id_chuc_nang: 6, tinh_trang: true },
-            { id: 7, id_chuc_vu: 1, id_chuc_nang: 7, tinh_trang: true },
-            { id: 8, id_chuc_vu: 1, id_chuc_nang: 8, tinh_trang: true },
-            { id: 9, id_chuc_vu: 1, id_chuc_nang: 9, tinh_trang: true },
-            { id: 10, id_chuc_vu: 2, id_chuc_nang: 2, tinh_trang: true },
-            { id: 11, id_chuc_vu: 2, id_chuc_nang: 3, tinh_trang: true },
-            { id: 12, id_chuc_vu: 2, id_chuc_nang: 4, tinh_trang: true },
-            { id: 13, id_chuc_vu: 2, id_chuc_nang: 5, tinh_trang: true },
-            { id: 14, id_chuc_vu: 2, id_chuc_nang: 6, tinh_trang: true },
-            { id: 15, id_chuc_vu: 2, id_chuc_nang: 8, tinh_trang: true },
-            { id: 16, id_chuc_vu: 3, id_chuc_nang: 3, tinh_trang: true },
-            { id: 17, id_chuc_vu: 3, id_chuc_nang: 4, tinh_trang: true },
-            { id: 18, id_chuc_vu: 3, id_chuc_nang: 8, tinh_trang: true }
-          ]
-          
-          this.personnel = [
-            { 
-              id: 1, 
-              ho_ten: 'Nguyễn Văn A', 
-              email: 'nguyenvana@example.com',
-              so_dien_thoai: '0123456789',
-              id_chuc_vu: 1,
-              tinh_trang: true 
-            },
-            { 
-              id: 2, 
-              ho_ten: 'Trần Thị B', 
-              email: 'tranthib@example.com',
-              so_dien_thoai: '0987654321',
-              id_chuc_vu: 2,
-              tinh_trang: true 
-            },
-            { 
-              id: 3, 
-              ho_ten: 'Lê Văn C', 
-              email: 'levanc@example.com',
-              so_dien_thoai: '0369852147',
-              id_chuc_vu: 3,
-              tinh_trang: false 
-            }
-          ]
-        } catch (error) {
-          console.error('Lỗi khi lấy dữ liệu:', error)
-        }
+      getdataAdmin() {
+        baseRequest.get("admin/phan-quyen/get-data").then((res) => {
+          this.personnel = res.data.data;
+          this.roles = res.data.chuc_vu;
+          this.permissions = res.data.chuc_nang;
+          this.rolePermissions = res.data.chi_tiet_chuc_vu;
+        });
       },
 
       editRole(role) {
-        this.editingRole = role
+        this.editingRole = role;
         this.roleForm = {
           ten_chuc_vu: role.ten_chuc_vu,
-          tinh_trang: role.tinh_trang
-        }
-        this.showAddRoleModal = true
+          tinh_trang: role.tinh_trang === 1
+        };
+        this.showAddRoleModal = true;
       },
 
       closeRoleModal() {
-        this.showAddRoleModal = false
-        this.editingRole = null
+        this.showAddRoleModal = false;
+        this.editingRole = null;
         this.roleForm = {
           ten_chuc_vu: '',
           tinh_trang: true
+        };
+        if (this.$refs.roleFormRef) {
+          this.$refs.roleFormRef.resetFields();
         }
       },
 
       handleSaveRole() {
-        this.roleFormRef.validate().then(() => {
-          this.saveRole();
-        }).catch(error => {
-          console.log('Validation failed:', error);
-        });
+        if (this.$refs.roleFormRef) {
+          this.$refs.roleFormRef.validate().then(() => {
+            this.saveRole();
+          }).catch(error => {
+            console.log('Validation failed:', error);
+          });
+        }
       },
 
       saveRole() {
         const notificationStore = useNotificationStore();
         this.isSubmitting = true;
 
-        const url = this.editingRole 
-          ? "admin/phan-quyen/cap-nhat-chuc-vu"
-          : "admin/phan-quyen/them-chuc-vu";
+        const formData = {
+          ten_chuc_vu: this.roleForm.ten_chuc_vu,
+          tinh_trang: this.roleForm.tinh_trang ? 1 : 0,
+          slug_chuc_vu: this.slugify(this.roleForm.ten_chuc_vu)
+        };
 
-        baseRequest.post(url, this.roleForm)
+        if (this.editingRole) {
+          formData.id = this.editingRole.id;
+        }
+
+        const url = this.editingRole 
+          ? "admin/chuc-vu/thong-tin-cap-nhat"
+          : "admin/chuc-vu/them-du-lieu";
+
+        baseRequest.post(url, formData)
           .then((response) => {
             if (response.data.status) {
-              this.getRoles();
+              this.getdataAdmin(); // Refresh all data
               this.showAddRoleModal = false;
               notificationStore.showSuccess(response.data.message);
             } else {
-              notificationStore.showError('Thao tác thất bại');
+              notificationStore.showError(response.data.message || 'Thao tác thất bại');
             }
           })
-          .catch((res) => {
-            const errors = Object.values(res.response.data.errors);
-            notificationStore.showError(errors[0]);
+          .catch((error) => {
+            if (error.response?.data?.errors) {
+              const errors = Object.values(error.response.data.errors);
+              notificationStore.showError(errors[0]);
+            } else {
+              notificationStore.showError('Có lỗi xảy ra, vui lòng thử lại');
+            }
           })
           .finally(() => {
             this.isSubmitting = false;
           });
       },
 
-      async getRoles() {
+      deleteRole(role) {
         const notificationStore = useNotificationStore();
-        try {
-          const response = await baseRequest.get("admin/phan-quyen/lay-danh-sach-chuc-vu");
-          if (response.data.status) {
-            this.roles = response.data.data;
-          } else {
-            notificationStore.showError('Lấy danh sách chức vụ thất bại');
-          }
-        } catch (error) {
-          const errors = Object.values(error.response.data.errors);
-          notificationStore.showError(errors[0]);
-        }
+        this.deleteMessage = `Bạn có chắc chắn muốn xóa chức vụ "${role.ten_chuc_vu}" không?`;
+        this.deleteCallback = () => {
+          this.isSubmitting = true;
+          baseRequest.delete(`admin/chuc-vu/thong-tin-xoa/${role.id}`)
+            .then((response) => {
+              if (response.data.status) {
+                this.getdataAdmin(); // Refresh all data
+                notificationStore.showSuccess(response.data.message);
+              } else {
+                notificationStore.showError(response.data.message || 'Xóa chức vụ thất bại');
+              }
+            })
+            .catch((error) => {
+              if (error.response?.data?.message) {
+                notificationStore.showError(error.response.data.message);
+              } else {
+                notificationStore.showError('Có lỗi xảy ra khi xóa chức vụ');
+              }
+            })
+            .finally(() => {
+              this.isSubmitting = false;
+              this.showDeleteModal = false;
+            });
+        };
+        this.showDeleteModal = true;
+      },
+
+      // Helper function to create slug from text
+      slugify(text) {
+        return text
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'd')
+          .replace(/([^0-9a-z-\s])/g, '')
+          .replace(/(\s+)/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-+|-+$/g, '');
       },
 
       editPermission(permission) {
@@ -1006,34 +994,6 @@
         this.closePermissionModal()
       },
 
-      deleteRole(role) {
-        this.deleteMessage = `Bạn có chắc chắn muốn xóa chức vụ "${role.ten_chuc_vu}" không?`
-        this.deleteCallback = () => {
-          this.roles = this.roles.filter(r => r.id !== role.id)
-          // Xóa các phân quyền liên quan
-          this.rolePermissions = this.rolePermissions.filter(rp => rp.id_chuc_vu !== role.id)
-        }
-        this.showDeleteModal = true
-      },
-
-      deletePermission(permission) {
-        this.deleteMessage = `Bạn có chắc chắn muốn xóa chức năng "${permission.ten_chuc_nang}" không?`
-        this.deleteCallback = () => {
-          this.permissions = this.permissions.filter(p => p.id !== permission.id)
-          // Xóa các phân quyền liên quan
-          this.rolePermissions = this.rolePermissions.filter(rp => rp.id_chuc_nang !== permission.id)
-        }
-        this.showDeleteModal = true
-      },
-
-      confirmDelete() {
-        if (this.deleteCallback) {
-          this.deleteCallback()
-        }
-        this.showDeleteModal = false
-        this.deleteCallback = null
-      },
-
       manageRolePermissions(role) {
         this.selectedRoleId = role.id
         this.loadRolePermissions()
@@ -1042,7 +1002,7 @@
 
       loadRolePermissions() {
         const rolePerms = this.rolePermissions.filter(rp => 
-          rp.id_chuc_vu === this.selectedRoleId && rp.tinh_trang
+          rp.id_chuc_vu === parseInt(this.selectedRoleId) && rp.tinh_trang === 1
         )
         this.selectedPermissions = rolePerms.map(rp => rp.id_chuc_nang)
       },
@@ -1061,7 +1021,7 @@
         const notificationStore = useNotificationStore();
         this.isSubmitting = true;
 
-        baseRequest.post("admin/phan-quyen/luu-phan-quyen", {
+        baseRequest.post("admin/phan-quyen/phan-quyen-chuc-vu/create", {
           id_chuc_vu: this.selectedRoleId,
           danh_sach_quyen: this.selectedPermissions
         })
@@ -1082,105 +1042,144 @@
       },
 
       getRoleName(roleId) {
-        const role = this.roles.find(r => r.id === roleId)
+        const role = this.roles.find(r => r.id === parseInt(roleId))
         return role ? role.ten_chuc_vu : ''
       },
 
       editPersonnel(person) {
-        this.editingPersonnel = person
+        if (person.is_master && !this.isCurrentUser(person.id)) {
+          const notificationStore = useNotificationStore();
+          notificationStore.showError('Bạn không thể cập nhật Tài Khoản Có Quyền Hạn Cao');
+          return;
+        }
+
+        this.editingPersonnel = person;
         this.personnelForm = {
-          ho_ten: person.ho_ten,
+          ho_va_ten: person.ho_va_ten,
           email: person.email,
           so_dien_thoai: person.so_dien_thoai,
           id_chuc_vu: person.id_chuc_vu,
-          tinh_trang: person.tinh_trang
-        }
-        this.showAddPersonnelModal = true
+          is_block: person.is_block
+        };
+        this.showAddPersonnelModal = true;
       },
 
       closePersonnelModal() {
-        this.showAddPersonnelModal = false
-        this.editingPersonnel = null
+        this.showAddPersonnelModal = false;
+        this.editingPersonnel = null;
         this.personnelForm = {
-          ho_ten: '',
+          ho_va_ten: '',
           email: '',
           so_dien_thoai: '',
-          id_chuc_vu: '',
-          tinh_trang: true
+          id_chuc_vu: undefined,
+          is_block: 0
+        };
+        if (this.$refs.personnelFormRef) {
+          this.$refs.personnelFormRef.resetFields();
         }
       },
 
       handleSavePersonnel() {
-        this.personnelFormRef.validate().then(() => {
-          this.savePersonnel();
-        }).catch(error => {
-          console.log('Validation failed:', error);
-        });
+        if (this.$refs.personnelFormRef) {
+          this.$refs.personnelFormRef.validate().then(() => {
+            this.savePersonnel();
+          }).catch(error => {
+            console.log('Validation failed:', error);
+          });
+        }
       },
 
       savePersonnel() {
         const notificationStore = useNotificationStore();
         this.isSubmitting = true;
 
-        const url = this.editingPersonnel 
-          ? "admin/phan-quyen/cap-nhat-nhan-su"
-          : "admin/phan-quyen/them-nhan-su";
+        const formData = {
+          email: this.personnelForm.email,
+          ho_va_ten: this.personnelForm.ho_va_ten,
+          id_chuc_vu: this.personnelForm.id_chuc_vu,
+          so_dien_thoai: this.personnelForm.so_dien_thoai,
+          is_block: this.personnelForm.is_block
+        };
 
-        baseRequest.post(url, this.personnelForm)
+        if (!this.editingPersonnel) {
+          // Thêm mới - yêu cầu mật khẩu
+          formData.password = '123456'; // Mật khẩu mặc định, có thể thay đổi theo yêu cầu
+        }
+
+        const url = this.editingPersonnel 
+          ? "admin/thong-tin-cap-nhat"
+          : "admin/them-tai-khoan";
+
+        if (this.editingPersonnel) {
+          formData.id = this.editingPersonnel.id;
+        }
+
+        baseRequest.post(url, formData)
           .then((response) => {
             if (response.data.status) {
-              this.getPersonnel();
+              this.getdataAdmin(); // Refresh data
               this.showAddPersonnelModal = false;
               notificationStore.showSuccess(response.data.message);
             } else {
-              notificationStore.showError('Thao tác thất bại');
+              notificationStore.showError(response.data.message || 'Thao tác thất bại');
             }
           })
-          .catch((res) => {
-            const errors = Object.values(res.response.data.errors);
-            notificationStore.showError(errors[0]);
+          .catch((error) => {
+            if (error.response?.data?.errors) {
+              const errors = Object.values(error.response.data.errors);
+              notificationStore.showError(errors[0]);
+            } else {
+              notificationStore.showError('Có lỗi xảy ra, vui lòng thử lại');
+            }
           })
           .finally(() => {
             this.isSubmitting = false;
           });
-      },
-
-      async getPersonnel() {
-        const notificationStore = useNotificationStore();
-        try {
-          const response = await baseRequest.get("admin/phan-quyen/lay-danh-sach-nhan-su");
-          if (response.data.status) {
-            this.personnel = response.data.data;
-          } else {
-            notificationStore.showError('Lấy danh sách nhân sự thất bại');
-          }
-        } catch (error) {
-          const errors = Object.values(error.response.data.errors);
-          notificationStore.showError(errors[0]);
-        }
       },
 
       confirmDeletePersonnel(person) {
+        if (person.is_master) {
+          const notificationStore = useNotificationStore();
+          notificationStore.showError('Không thể xóa tài khoản có quyền hạn cao');
+          return;
+        }
+
         const notificationStore = useNotificationStore();
         this.isSubmitting = true;
 
-        baseRequest.post("admin/phan-quyen/xoa-nhan-su", { id: person.id })
+        baseRequest.delete(`admin/thong-tin-xoa/${person.id}`)
           .then((response) => {
             if (response.data.status) {
-              this.getPersonnel();
+              this.getdataAdmin(); // Refresh data
               notificationStore.showSuccess(response.data.message);
             } else {
-              notificationStore.showError('Xóa nhân sự thất bại');
+              notificationStore.showError(response.data.message || 'Xóa nhân sự thất bại');
             }
           })
-          .catch((res) => {
-            const errors = Object.values(res.response.data.errors);
-            notificationStore.showError(errors[0]);
+          .catch((error) => {
+            if (error.response?.data?.message) {
+              notificationStore.showError(error.response.data.message);
+            } else {
+              notificationStore.showError('Có lỗi xảy ra khi xóa nhân sự');
+            }
           })
           .finally(() => {
             this.isSubmitting = false;
           });
-      }
+      },
+
+      // Kiểm tra xem có phải user đang đăng nhập không
+      isCurrentUser(userId) {
+        // Thêm logic kiểm tra user đang đăng nhập
+        // Có thể lấy từ store hoặc localStorage
+        return false; // Tạm thời return false
+      },
+
+      confirmDelete() {
+        if (this.deleteCallback) {
+          this.deleteCallback();
+        }
+      },
     },
 
     watch: {
