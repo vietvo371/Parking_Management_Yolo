@@ -42,6 +42,7 @@
       </nav>
 
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+        <router-link to="/admin/profile">
         <div class="flex items-center">
           <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
             <Shield class="h-4 w-4 text-gray-500 dark:text-gray-400" />
@@ -51,6 +52,7 @@
             <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.ten_chuc_vu }}</p>
           </div>
         </div>
+        </router-link>
         <button 
           @click="logout"
           class="w-full mt-4 justify-start text-gray-600 dark:text-gray-300 flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"

@@ -19,27 +19,33 @@
                 <img v-if="userProfile.avatar" :src="userProfile.avatar" alt="Avatar" class="h-full w-full object-cover" />
                 <User v-else class="h-12 w-12 text-gray-500 dark:text-gray-400" />
               </div>
-              <button v-if="isEditing" class="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                <Camera class="h-4 w-4" />
-              </button>
             </div>
             <h2 class="mt-4 text-xl font-bold">{{ userProfile.fullName }}</h2>
             <p class="text-sm text-gray-500">{{ userProfile.email }}</p>
-            <div class="mt-2 px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs rounded-full">
-              {{ getStatusText(userProfile.status) }}
+            
+            <div class="mt-2 space-y-1">
+              <div class="px-3 py-1 text-xs rounded-full"
+                   :class="userProfile.is_master === 1 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'">
+                {{ userProfile.is_master === 1 ? 'Admin Master' : 'Admin' }}
+              </div>
+              <div class="px-3 py-1 text-xs rounded-full"
+                   :class="userProfile.is_block === 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{ getStatusText(userProfile.is_block) }}
+              </div>
             </div>
+            
             <div class="mt-4 w-full border-t border-gray-200 dark:border-gray-700 pt-4">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-500">Mã cư dân</span>
-                <span class="font-medium">{{ userProfile.residentId }}</span>
+                <span class="text-sm text-gray-500">ID</span>
+                <span class="font-medium">{{ userProfile.id }}</span>
               </div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-500">Căn hộ</span>
-                <span class="font-medium">{{ userProfile.apartment }}</span>
+                <span class="text-sm text-gray-500">Chức vụ ID</span>
+                <span class="font-medium">{{ userProfile.ten_chuc_vu }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-500">Ngày đăng ký</span>
-                <span class="font-medium">{{ userProfile.registrationDate }}</span>
+                <span class="text-sm text-gray-500">Ngày tạo</span>
+                <span class="font-medium">{{ formatDate(userProfile.created_at) }}</span>
               </div>
             </div>
           </div>
@@ -48,7 +54,7 @@
         <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
           <h3 class="text-lg font-medium mb-4">{{ isEditing ? 'Chỉnh sửa thông tin' : 'Thông tin chi tiết' }}</h3>
           
-          <form v-if="isEditing" @submit.prevent="saveProfile">
+          <form v-if="isEditing" @submit.prevent="handleSave">
             <div class="space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -65,8 +71,9 @@
                   <input 
                     id="email" 
                     type="email" 
-                    v-model="editedProfile.email"
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                    v-model="editedProfile.email" 
+                    disabled
+                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700"
                   />
                 </div>
                 <div>
@@ -78,25 +85,6 @@
                     class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
                   />
                 </div>
-                <div>
-                  <label for="idNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Số CMND/CCCD</label>
-                  <input 
-                    id="idNumber" 
-                    type="text" 
-                    v-model="editedProfile.idNumber"
-                    class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Địa chỉ</label>
-                <input 
-                  id="address" 
-                  type="text" 
-                  v-model="editedProfile.address"
-                  class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-                />
               </div>
               
               <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -161,6 +149,16 @@
                       </button>
                     </div>
                   </div>
+                  <div class="flex justify-end">
+                    <button 
+                      type="button" 
+                      class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                      @click="doiMatKhau"
+                      :disabled="!passwordChange.current || !passwordChange.new || !passwordChange.confirm"
+                    >
+                      Đổi mật khẩu
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -173,10 +171,11 @@
                   Hủy
                 </button>
                 <button 
-                  type="submit" 
+                  type="button" 
                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  @click="saveProfile"
                 >
-                  Lưu thay đổi
+                  Lưu thông tin
                 </button>
               </div>
             </div>
@@ -197,26 +196,8 @@
                 <p class="font-medium">{{ userProfile.phone }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-500">Số CMND/CCCD</p>
-                <p class="font-medium">{{ userProfile.idNumber }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">Địa chỉ</p>
-                <p class="font-medium">{{ userProfile.address }}</p>
-              </div>
-            </div>
-            
-            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h4 class="text-md font-medium mb-2">Thông tin bổ sung</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p class="text-sm text-gray-500">Số xe đã đăng ký</p>
-                  <p class="font-medium">{{ userProfile.registeredVehicles }}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Loại cư dân</p>
-                  <p class="font-medium">{{ userProfile.residentType }}</p>
-                </div>
+                <p class="text-sm text-gray-500">Ngày cập nhật</p>
+                <p class="font-medium">{{ formatDate(userProfile.updated_at) }}</p>
               </div>
             </div>
           </div>
@@ -242,11 +223,45 @@
           </div>
         </div>
       </div>
+
+      <!-- Transaction History -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-medium flex items-center">
+            <Receipt class="h-5 w-5 mr-2 text-blue-600" />
+            Lịch sử giao dịch
+          </h3>
+        </div>
+        <div class="p-4">
+          <div v-if="historyTransaction && historyTransaction.length > 0" class="space-y-4">
+            <div v-for="(transaction, index) in historyTransaction" :key="index" 
+                 class="border rounded-lg p-4 border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Biển số xe</p>
+                  <p class="font-medium">{{ transaction.bien_so_xe }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Ngày hết hạn</p>
+                  <p class="font-medium">{{ transaction.ngay_het_han ? formatDate(transaction.ngay_het_han) : 'Chưa cập nhật' }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Mã giao dịch</p>
+                  <p class="font-medium">#{{ transaction.ma_giao_dich }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-8">
+            <Receipt class="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <p class="text-gray-500">Chưa có giao dịch nào</p>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
   
   <script>
-  import { ref, reactive, computed } from 'vue'
   import { 
     User, 
     Edit, 
@@ -256,9 +271,12 @@
     LogIn, 
     Settings, 
     Key, 
-    AlertTriangle 
+    AlertTriangle,
+    Receipt
   } from 'lucide-vue-next'
-  
+  import baseRequestUser from '../../core/baseRequest'
+  import { useNotificationStore } from '../../stores/notication'
+  import { useAuthStore } from '../../stores/auth'
   export default {
     name: 'ResidentProfile',
     components: {
@@ -270,142 +288,180 @@
       LogIn,
       Settings,
       Key,
-      AlertTriangle
+      AlertTriangle,
+      Receipt
     },
-    setup() {
-      const isEditing = ref(false)
-      
-      // User profile data
-      const userProfile = ref({
-        residentId: 'RES-001',
-        fullName: 'Nguyễn Văn A',
-        email: 'nguyenvana@example.com',
-        phone: '0912345678',
-        idNumber: '012345678901',
-        address: 'Số 123, Đường ABC, Quận XYZ, Hà Nội',
-        apartment: 'A1201',
-        registrationDate: '15/01/2023',
-        status: 'approved',
-        avatar: null,
-        registeredVehicles: 2,
-        residentType: 'Chủ hộ'
-      })
-      
-      // Edited profile data
-      const editedProfile = ref({...userProfile.value})
-      
-      // Password change data
-      const passwordChange = ref({
-        current: '',
-        new: '',
-        confirm: ''
-      })
-      
-      // Show password toggles
-      const showPassword = reactive({
-        current: false,
-        new: false,
-        confirm: false
-      })
-      
-      // Account activities
-      const accountActivities = ref([
-        {
-          title: 'Đăng nhập thành công',
-          time: '24/04/2023 - 10:25',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
+    data() {
+      return {
+        isEditing: false,
+        userProfile: {
+          id: null,
+          fullName: '',
+          email: '',
+          phone: '',
+          id_chuc_vu: null,
+          is_block: 0,
+          is_master: 0,
+          created_at: null,
+          updated_at: null
         },
-        {
-          title: 'Thay đổi mật khẩu',
-          time: '20/04/2023 - 15:30',
-          icon: Key,
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600'
-        },
-        {
-          title: 'Cập nhật thông tin cá nhân',
-          time: '15/04/2023 - 09:45',
-          icon: Settings,
-          iconBg: 'bg-purple-100',
-          iconColor: 'text-purple-600'
-        },
-        {
-          title: 'Đăng nhập thất bại',
-          time: '10/04/2023 - 18:20',
-          icon: AlertTriangle,
-          iconBg: 'bg-red-100',
-          iconColor: 'text-red-600'
-        },
-        {
-          title: 'Đăng nhập thành công',
-          time: '10/04/2023 - 18:25',
-          icon: LogIn,
-          iconBg: 'bg-green-100',
-          iconColor: 'text-green-600'
-        }
-      ])
-      
-      // Get status text
-      function getStatusText(status) {
-        switch (status) {
-          case 'pending':
-            return 'Chờ phê duyệt'
-          case 'approved':
-            return 'Đã phê duyệt'
-          case 'rejected':
-            return 'Bị từ chối'
-          default:
-            return status
-        }
-      }
-      
-      // Toggle password visibility
-      function togglePasswordVisibility(field) {
-        showPassword[field] = !showPassword[field]
-      }
-      
-      // Cancel edit
-      function cancelEdit() {
-        editedProfile.value = {...userProfile.value}
-        passwordChange.value = {
+        editedProfile: {},
+        passwordChange: {
           current: '',
           new: '',
           confirm: ''
-        }
-        isEditing.value = false
+        },
+        showPassword: {
+          current: false,
+          new: false,
+          confirm: false
+        },
+        accountActivities: [],
+        historyTransaction: []
       }
-      
-      // Save profile
-      function saveProfile() {
-        // In a real app, you would send the data to the server here
-        // For demo purposes, we'll just update the local data
-        userProfile.value = {...editedProfile.value}
+    },
+    computed: {
+      isExpired() {
+        if (!this.userProfile.ngay_het_han || this.userProfile.ngay_het_han === null) return false;
         
-        // Handle password change if provided
-        if (passwordChange.value.current && 
-            passwordChange.value.new && 
-            passwordChange.value.confirm && 
-            passwordChange.value.new === passwordChange.value.confirm) {
-          // Password change logic would go here
-          console.log('Password changed')
+        // Chuyển đổi ngày hết hạn sang định dạng YYYY-MM-DD để so sánh
+        const expiryDate = new Date(this.userProfile.ngay_het_han);
+        const now = new Date();
+        
+        // Reset thời gian về 00:00:00 để chỉ so sánh ngày
+        expiryDate.setHours(0, 0, 0, 0);
+        now.setHours(0, 0, 0, 0);
+        
+        // Thêm console.log để debug
+        console.log('Expiry Date:', expiryDate);
+        console.log('Current Date:', now);
+        console.log('Is Expired:', now > expiryDate);
+        
+        // Trả về true nếu ngày hiện tại LỚN HƠN ngày hết hạn
+        return now > expiryDate;
+      }
+    },
+    mounted() {
+      this.editedProfile = { ...this.userProfile }
+      this.getUserProfile()
+    },
+    methods: {
+      getStatusText(status) {
+        if (status === 0) return 'Hoạt động'
+        if (status === 1) return 'Tạm khóa'
+        return 'Không xác định'
+      },
+      getApprovalText(approved) {
+        if (approved === 1) return 'Đã phê duyệt'
+        if (approved === 0) return 'Chờ phê duyệt'
+        return 'Không xác định'
+      },
+      async getUserProfile() {
+        try {
+          const res = await baseRequestUser.get('admin/profile')
+          const data = res.data.data
+          this.historyTransaction = res.data.lich_su_thanh_toan
+          this.userProfile = {
+            id: data.id,
+            fullName: data.ho_va_ten || '',
+            email: data.email || '',
+            phone: data.so_dien_thoai || '',
+            id_chuc_vu: data.id_chuc_vu,
+            is_block: data.is_block,
+            is_master: data.is_master,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+            apartment: `${data.ten_toa_nha || ''} - Căn ${data.so_can_ho || ''}`,
+            balance: data.so_du ?? 0,
+            status: data.trang_thai,
+            approved: data.phe_duyet,
+            avatar: null,
+            ten_chuc_vu: data.ten_chuc_vu,
+            registeredVehicles: data.bien_so_xe ? 1 : 0,
+            residentType: data.ten_loai_xe || 'Chưa xác định',
+            vehiclePlate: data.bien_so_xe || '',
+            vehicleType: data.ten_loai_xe || '',
+            registrationDate: data.created_at ? new Date(data.created_at).toLocaleDateString('vi-VN') : '',
+            ngay_het_han: data.ngay_het_han || null
+          }
+          this.editedProfile = { ...this.userProfile }
+
+          // Map lịch sử đăng nhập
+          if (res.data.lich_su_login && Array.isArray(res.data.lich_su_login)) {
+            this.accountActivities = res.data.lich_su_login.map(item => ({
+              title: 'Đăng nhập thành công',
+              time: item.created_at ? new Date(item.created_at).toLocaleString('vi-VN') : '',
+              icon: this.$options.components.LogIn,
+              iconBg: 'bg-green-100',
+              iconColor: 'text-green-600'
+            }))
+          } else {
+            this.accountActivities = []
+          }
+        } catch (error) {
+          const notificationStore = useNotificationStore();
+          notificationStore.showError('Có lỗi xảy ra khi tải thông tin');
+        }
+      },
+      togglePasswordVisibility(field) {
+        this.showPassword[field] = !this.showPassword[field]
+      },
+      cancelEdit() {
+        this.editedProfile = { ...this.userProfile }
+        this.passwordChange = { current: '', new: '', confirm: '' }
+        this.isEditing = false
+      },
+      doiMatKhau() {
+        const notificationStore = useNotificationStore();
+        var payload = {
+          current_password: this.passwordChange.current,
+          password: this.passwordChange.new,
+          re_password: this.passwordChange.confirm
+        }
+        baseRequestUser.post('admin/profile/doi-mat-khau', payload).then((res) => {
+          if (res.data.status) {
+            notificationStore.showSuccess(res.data.message);
+            this.passwordChange = { current: '', new: '', confirm: '' }
+          } else {
+            notificationStore.showError(res.data.message);
+          }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
+      },
+      saveProfile() {
+        const notificationStore = useNotificationStore();
+        const authStore = useAuthStore();
+        var payload = {
+          ho_va_ten: this.editedProfile.fullName,
+          so_dien_thoai: this.editedProfile.phone,
         }
         
-        isEditing.value = false
-      }
-      
-      return {
-        isEditing,
-        userProfile,
-        editedProfile,
-        passwordChange,
-        showPassword,
-        accountActivities,
-        getStatusText,
-        togglePasswordVisibility,
-        cancelEdit,
-        saveProfile
+        baseRequestUser.post('admin/profile/cap-nhat', payload).then((res) => {
+          if (res.data.status) {
+            this.userProfile = { ...this.editedProfile }
+            this.isEditing = false
+            authStore.setAdmin(res.data.data)
+            notificationStore.showSuccess(res.data.message);
+            window.location.reload();
+          }
+        })
+        .catch((res) => {
+          var errors = Object.values(res.response.data.errors);
+          notificationStore.showError(errors[0]);
+        });
+      },
+      formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND'
+        }).format(amount)
+      },
+      formatDate(date) {
+        const formattedDate = new Date(date).toLocaleDateString('vi-VN')
+        return formattedDate
       }
     }
   }

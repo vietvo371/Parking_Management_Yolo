@@ -112,7 +112,7 @@ export default {
 
     const getThongBao = async () => {
       try {
-        const res = await baseRequest.get("user/lay-du-lieu-thong-bao");
+        const res = await baseRequest.get("admin/lay-du-lieu-thong-bao");
         if (res.data && res.data.data) {
           notifications.value = res.data.data;
         } else {

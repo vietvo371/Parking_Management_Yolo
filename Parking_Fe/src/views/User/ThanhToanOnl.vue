@@ -381,11 +381,11 @@
                 class="w-full mt-6 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center"
                 @click="processPayment" :disabled="isProcessing || !isFormValid"
                 :class="{ 'opacity-50 cursor-not-allowed': isProcessing || !isFormValid }">
-                <span v-if="isProcessing">
+                <span class="flex items-center" v-if="isProcessing">
                   <Loader2 class="h-5 w-5 mr-2 animate-spin" />
                   Đang xử lý...
                 </span>
-                <span v-else>
+                <span class="flex items-center" v-else>
                   <CreditCard class="h-5 w-5 mr-2" />
                   Thanh toán ngay
                 </span>
@@ -431,12 +431,12 @@
 
             <div class="flex justify-between mb-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">Phương thức</span>
-              <span class="text-sm font-medium">{{ getPaymentMethodName(paymentInfo.method) }}</span>
+              <span class="text-sm font-medium">Chuyển khoản ngân hàng</span>
             </div>
 
             <div class="flex justify-between mb-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">Số tiền</span>
-              <span class="text-sm font-medium">{{ formatCurrency(paymentInfo.amount) }}</span>
+              <span class="text-sm font-medium">100.000đ</span>
             </div>
 
             <div v-if="selectedVehicle" class="flex justify-between">
@@ -644,7 +644,8 @@ export default {
     processPayment() {
       if (!this.isFormValid) return
       this.isProcessing = true
-      baseRequestUser.get('user/thanh-toan/index')
+      setTimeout(() => {
+        baseRequestUser.get('user/thanh-toan/index')
         .then(response => {
           if (response.data.status == true) {
             this.showSuccessModal = true
@@ -662,6 +663,8 @@ export default {
         .finally(() => {
           this.isProcessing = false
         })
+      }, 2000)
+      
     },
     generateTransactionId() {
       const prefix = 'TX'
@@ -670,25 +673,7 @@ export default {
       return `${prefix}${timestamp}${random}`
     },
     downloadReceipt() {
-      if (!this.obj_checkout || !this.obj_checkout.id) {
-        alert('Không có thông tin hóa đơn để tải xuống')
-        return
-      }
-
-      baseRequestUser.get(`user/download-receipt/${this.obj_checkout.id}`, { responseType: 'blob' })
-        .then(response => {
-          const url = window.URL.createObjectURL(new Blob([response.data]))
-          const link = document.createElement('a')
-          link.href = url
-          link.setAttribute('download', `hoa-don-${this.paymentInfo.transactionId}.pdf`)
-          document.body.appendChild(link)
-          link.click()
-          window.URL.revokeObjectURL(url)
-        })
-        .catch(error => {
-          console.error('Failed to download receipt:', error)
-          alert('Không thể tải hóa đơn. Vui lòng thử lại sau.')
-        })
+      this.$router.push('/user/profile')
     },
     closeSuccessModal() {
       this.showSuccessModal = false

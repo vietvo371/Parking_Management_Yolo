@@ -401,6 +401,15 @@
                           <Edit class="h-4 w-4" />
                         </a-button>
                       </a-tooltip>
+                      <a-tooltip title="Đổi mật khẩu">
+                        <a-button 
+                          type="primary"
+                          size="small"
+                          @click="showChangePassword(person)"
+                        >
+                          <Key class="h-4 w-4" />
+                        </a-button>
+                      </a-tooltip>
                       <a-tooltip title="Xóa">
                         <a-popconfirm
                           title="Xác nhận xóa"
@@ -600,6 +609,42 @@
           </a-form-item>
         </a-form>
       </a-modal>
+
+      <!-- Modal đổi mật khẩu -->
+      <a-modal 
+        v-model:open="showChangePasswordModal" 
+        title="Đổi mật khẩu"
+        @ok="handleChangePassword"
+        :confirmLoading="isSubmitting"
+        @cancel="closeChangePasswordModal"
+      >
+        <a-form
+          :model="passwordForm"
+          :rules="passwordRules"
+          ref="passwordFormRef"
+          layout="vertical"
+        >
+          <a-form-item 
+            label="Mật khẩu mới" 
+            name="password"
+          >
+            <a-input-password
+              v-model:value="passwordForm.password"
+              placeholder="Nhập mật khẩu mới"
+            />
+          </a-form-item>
+          
+          <a-form-item 
+            label="Xác nhận mật khẩu" 
+            name="password_confirmation"
+          >
+            <a-input-password
+              v-model:value="passwordForm.password_confirmation"
+              placeholder="Nhập lại mật khẩu mới"
+            />
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </div>
   </template>
   
@@ -611,7 +656,8 @@
     Trash2, 
     Shield, 
     X, 
-    Check 
+    Check,
+    Key
   } from 'lucide-vue-next'
   import { 
     Modal, 
@@ -621,7 +667,8 @@
     Tooltip, 
     Form, 
     Input, 
-    Checkbox 
+    Checkbox,
+    InputPassword
   } from 'ant-design-vue'
   import baseRequest from '../../core/baseRequest'
   import { useNotificationStore } from '../../stores/notication'
@@ -636,6 +683,7 @@
       Shield,
       X,
       Check,
+      Key,
       AModal: Modal,
       AButton: Button,
       ASelect: Select,
@@ -645,7 +693,8 @@
       AForm: Form,
       AFormItem: Form.Item,
       AInput: Input,
-      ACheckbox: Checkbox
+      ACheckbox: Checkbox,
+      AInputPassword: InputPassword
     },
     data() {
       return {
@@ -731,7 +780,33 @@
           id_chuc_vu: undefined,
           is_block: 0
         },
-        isSubmitting: false
+        isSubmitting: false,
+
+        // Form đổi mật khẩu
+        showChangePasswordModal: false,
+        selectedPersonnel: null,
+        passwordForm: {
+          password: '',
+          password_confirmation: ''
+        },
+        passwordRules: {
+          password: [
+            { required: true, message: 'Vui lòng nhập mật khẩu mới', trigger: 'blur' },
+            { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự', trigger: 'blur' }
+          ],
+          password_confirmation: [
+            { required: true, message: 'Vui lòng xác nhận mật khẩu', trigger: 'blur' },
+            {
+              validator: (rule, value) => {
+                if (value !== this.passwordForm.password) {
+                  return Promise.reject('Mật khẩu xác nhận không khớp');
+                }
+                return Promise.resolve();
+              },
+              trigger: 'blur'
+            }
+          ]
+        },
       }
     },
 
@@ -1047,11 +1122,11 @@
       },
 
       editPersonnel(person) {
-        if (person.is_master && !this.isCurrentUser(person.id)) {
-          const notificationStore = useNotificationStore();
-          notificationStore.showError('Bạn không thể cập nhật Tài Khoản Có Quyền Hạn Cao');
-          return;
-        }
+        // if (person.is_master && !this.isCurrentUser(person.id)) {
+        //   const notificationStore = useNotificationStore();
+        //   notificationStore.showError('Bạn không thể cập nhật Tài Khoản Có Quyền Hạn Cao');
+        //   return;
+        // }
 
         this.editingPersonnel = person;
         this.personnelForm = {
@@ -1179,6 +1254,69 @@
         if (this.deleteCallback) {
           this.deleteCallback();
         }
+      },
+
+      showChangePassword(person) {
+        this.selectedPersonnel = person;
+        this.passwordForm = {
+          password: '',
+          password_confirmation: ''
+        };
+        this.showChangePasswordModal = true;
+      },
+
+      closeChangePasswordModal() {
+        this.showChangePasswordModal = false;
+        this.selectedPersonnel = null;
+        this.passwordForm = {
+          password: '',
+          password_confirmation: ''
+        };
+        if (this.$refs.passwordFormRef) {
+          this.$refs.passwordFormRef.resetFields();
+        }
+      },
+
+      handleChangePassword() {
+        if (this.$refs.passwordFormRef) {
+          this.$refs.passwordFormRef.validate().then(() => {
+            this.changePassword();
+          }).catch(error => {
+            console.log('Validation failed:', error);
+          });
+        }
+      },
+
+      changePassword() {
+        const notificationStore = useNotificationStore();
+        this.isSubmitting = true;
+
+        const formData = {
+          id: this.selectedPersonnel.id,
+          password: this.passwordForm.password,
+          password_confirmation: this.passwordForm.password_confirmation
+        };
+
+        baseRequest.post("admin/doi-mat-khau", formData)
+          .then((response) => {
+            if (response.data.status) {
+              this.showChangePasswordModal = false;
+              notificationStore.showSuccess(response.data.message);
+            } else {
+              notificationStore.showError(response.data.message || 'Đổi mật khẩu thất bại');
+            }
+          })
+          .catch((error) => {
+            if (error.response?.data?.errors) {
+              const errors = Object.values(error.response.data.errors);
+              notificationStore.showError(errors[0]);
+            } else {
+              notificationStore.showError('Có lỗi xảy ra, vui lòng thử lại');
+            }
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
       },
     },
 
