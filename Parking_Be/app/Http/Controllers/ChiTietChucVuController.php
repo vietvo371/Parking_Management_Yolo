@@ -13,6 +13,14 @@ class ChiTietChucVuController extends Controller
 {
     public function getData()
     {
+         $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $nhan_vien = Admin::join('chuc_vus', 'admins.id_chuc_vu', 'chuc_vus.id')
             ->select('admins.*', 'chuc_vus.ten_chuc_vu')
             ->get();
@@ -32,6 +40,14 @@ class ChiTietChucVuController extends Controller
 
     public function store(Request $request)
     {
+         $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $idChucVu = $request->id_chuc_vu;
         $danhSachQuyenMoi = $request->danh_sach_quyen;
 
@@ -65,6 +81,14 @@ class ChiTietChucVuController extends Controller
 
     public function destroy(Request $request)
     {
+         $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = ChiTietChucVu::where('id_chuc_vu', $request->id_chuc_vu)
             ->where('id_chuc_nang', $request->id_chuc_nang)
             ->delete();

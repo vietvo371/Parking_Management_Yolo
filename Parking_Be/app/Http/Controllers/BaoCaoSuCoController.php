@@ -25,13 +25,14 @@ class BaoCaoSuCoController extends Controller
 
     public function themBaoCaoSuCo(Request $request)
     {
-        // $admin = $this->isAdmin();
-        // if (!$admin) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Bạn không có quyền thực hiện hành động này'
-        //     ]);
-        // }
+       $id_chuc_nang = 6;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $user = $this->isCuDan();
         if(!$user){
             return response()->json([
@@ -56,6 +57,14 @@ class BaoCaoSuCoController extends Controller
 
     public function capnhatBaoCaoSuCo(Request $request)
     {
+        $id_chuc_nang = 6;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = BaoCaoSuCo::find($request->id);
         if (!$data) {
             return response()->json([
@@ -72,6 +81,14 @@ class BaoCaoSuCoController extends Controller
 
     public function xoaBaoCaoSuCo(Request $request)
     {
+        $id_chuc_nang = 6;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = BaoCaoSuCo::find($request->id);
         if (!$data) {
             return response()->json([
@@ -90,6 +107,14 @@ class BaoCaoSuCoController extends Controller
 
     public function xuLyBaoCaoSuCo(Request $request)
     {
+        $id_chuc_nang = 6;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $admin = $this->isAdmin();
         if(!$admin){
             return response()->json([

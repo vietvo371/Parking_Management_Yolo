@@ -14,6 +14,22 @@ class RaVaoBaicontroller extends Controller
 
     public function ghiNhanXeVao(ThemKhachVangLaiRequest $request)
     {
+         $id_chuc_nang = 9;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
+         $id_chuc_nang = 9;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $user = $this->isAdmin();
         $vitri = ChiTietBaiXe::find($request->id_vi_tri_trong_bai);
         $data = BaoCaoKhachVangLai::create([
@@ -34,6 +50,14 @@ class RaVaoBaicontroller extends Controller
     }
     public function datTruoc(Request $request)
     {
+         $id_chuc_nang = 9;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = ChiTietBaiXe::find($request->id);
         if ($data->trang_thai == 1) {
             return response()->json([
@@ -51,6 +75,14 @@ class RaVaoBaicontroller extends Controller
     }
     public function ghiNhanXeRa(Request $request)
     {
+         $id_chuc_nang = 9;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         if ($request->is_khach_hang === 1) {
             return response()->json([
                 'status' => false,

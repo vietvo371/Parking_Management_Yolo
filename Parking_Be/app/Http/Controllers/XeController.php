@@ -102,6 +102,15 @@ class XeController extends Controller
 
     public function themXe(ThemXeRequest $request)
     {
+         $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
+
         Xe::create([
            'id_cu_dan'          => $request->id_cu_dan,
            'bien_so_xe'         => $request->bien_so_xe,
@@ -114,6 +123,15 @@ class XeController extends Controller
     }
     public function capnhatXe(CapNhapXeRequest $request)
     {
+         $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
+
         $xe = Xe::find($request->id);
         if ($xe) {
             $xe->update([
@@ -134,6 +152,14 @@ class XeController extends Controller
     }
     public function doiTrangThaiXe(Request $request)
     {
+         $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $xe = Xe::find($request->id);
         if ($xe) {
             $xe->update([
@@ -152,6 +178,14 @@ class XeController extends Controller
     }
     public function xoaXe(Request $request)
     {
+         $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $xe = Xe::find($request->id);
         if ($xe) {
             $xe->delete();
@@ -168,6 +202,14 @@ class XeController extends Controller
     }
     public function duyetXe(Request $request)
     {
+         $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $xe = Xe::find($request->id);
         if ($xe) {
             $xe->update([

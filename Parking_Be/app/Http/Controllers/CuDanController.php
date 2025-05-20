@@ -63,6 +63,14 @@ class CuDanController extends Controller
     }
     public function themCuDan(ThemCuDanRequest $request)
     {
+         $id_chuc_nang = 3;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         CuDan::create([
             'ho_va_ten' => $request->ho_va_ten,
             'email' => $request->email,
@@ -78,6 +86,14 @@ class CuDanController extends Controller
     }
     public function capnhatCuDan(capNhatCuDanRequest $request)
     {
+        $id_chuc_nang = 3;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $cudan = CuDan::find($request->id);
         if ($cudan) {
             $cudan->update([
@@ -100,6 +116,15 @@ class CuDanController extends Controller
     }
     public function doiTrangThaiCuDan(Request $request)
     {
+
+        $id_chuc_nang = 3;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $cudan = CuDan::find($request->id);
         if ($cudan) {
             $cudan->update([
@@ -118,6 +143,7 @@ class CuDanController extends Controller
     }
     public function xoaCuDan(Request $request)
     {
+
         $cudan = CuDan::find($request->id);
         if ($cudan) {
             $cudan->delete();
@@ -253,6 +279,14 @@ class CuDanController extends Controller
     public function duyetCuDan(Request $request)
     {
 
+        $id_chuc_nang = 6;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
 
         $cudan = CuDan::find($request->id);
         if (!$cudan) {

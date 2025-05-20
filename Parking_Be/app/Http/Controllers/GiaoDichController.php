@@ -22,6 +22,14 @@ class GiaoDichController extends Controller
     }
     public function themGiaoDich(Request $request)
     {
+         $id_chuc_nang = 5;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $magiaodich = 'GD' . date('Ymd') . str_pad(GiaoDich::count() + 1, 4, '0', STR_PAD_LEFT);
 
         $giaodich = GiaoDich::create([

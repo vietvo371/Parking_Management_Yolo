@@ -23,6 +23,14 @@ class CamGiamSoatController extends Controller
     }
     public function themCamGiamSoat(themCamGiamSoatRequest $request)
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $camGiamSoat = CamGiamSoat::create([
             'id_bai_xe' => $request->id_bai_xe,
             'id_vi_tri' => $request->id_vi_tri,
@@ -35,6 +43,14 @@ class CamGiamSoatController extends Controller
     }
     public function capnhatCamGiamSoat(capnhatCamGiamSoatRequest $request)
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $camGiamSoat = CamGiamSoat::find($request->id);
         if ($camGiamSoat) {
             $camGiamSoat->update([
@@ -56,6 +72,14 @@ class CamGiamSoatController extends Controller
     }
     public function xoaCamGiamSoat(Request $request)
     {
+         $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $camGiamSoat = CamGiamSoat::find($request->id);
         $camGiamSoat->delete();
         return response()->json([

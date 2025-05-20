@@ -27,6 +27,15 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function themBaoCaoKhachVangLai(ThemKhachVangLaiRequest $request)
     {
+
+        $id_chuc_nang = 4;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $user = $this->isAdmin();
         $data = BaoCaoKhachVangLai::create([
                     'id_admin'              => $user->id,
@@ -44,6 +53,14 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function capnhatBaoCaoKhachVangLai(Request $request)
     {
+         $id_chuc_nang = 4;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $user = $this->isAdmin();
         $data = BaoCaoKhachVangLai::find($request->id);
         $data->update([
@@ -66,6 +83,22 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function xoaBaoCaoKhachVangLai(Request $request)
     {
+         $id_chuc_nang = 4;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
+         $id_chuc_nang = 4;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $user = $this->isAdmin();
         if($user->is_master == 0){
             return response()->json([
@@ -90,6 +123,14 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function thanhToanBaoCaoKhachVangLai(Request $request)
     {
+         $id_chuc_nang = 4;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = BaoCaoKhachVangLai::find($request->id);
         $data->update([
             'is_thanh_toan' => 1,
