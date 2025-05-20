@@ -13,7 +13,7 @@ class ChiTietChucVuController extends Controller
 {
     public function getData()
     {
-         $id_chuc_nang = 12;
+        $id_chuc_nang = 12;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -81,7 +81,7 @@ class ChiTietChucVuController extends Controller
 
     public function destroy(Request $request)
     {
-         $id_chuc_nang = 12;
+        $id_chuc_nang = 12;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([

@@ -43,7 +43,9 @@ Route::group(['prefix'  =>  '/admin'], function () {
     Route::delete('/thong-tin-xoa/{id}', [AdminController::class, 'xoaAdmin']);
     Route::post('/thong-tin-tim', [AdminController::class, 'timAdmin']);
     Route::post('/doi-mat-khau', [AdminController::class, 'doiPass']);
-    Route::get('/lay-du-lieu-profile', [AdminController::class, 'getDataProfile']);
+    Route::get('/profile', [AdminController::class, 'getDataProfile']);
+    Route::post('/profile/cap-nhat', [AdminController::class, 'capnhatProfile']);
+    Route::post('/profile/doi-mat-khau', [AdminController::class, 'doiPassProfile']);
 
     Route::group(['prefix'  =>  '/chuc-vu'], function () {
         Route::get('/lay-du-lieu', [ChucVuController::class, 'getData']);

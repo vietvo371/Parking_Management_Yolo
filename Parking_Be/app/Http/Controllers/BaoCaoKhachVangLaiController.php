@@ -16,7 +16,7 @@ class BaoCaoKhachVangLaiController extends Controller
                                 ->join('bai_xes', 'bai_xes.id','chi_tiet_bai_xes.id_bai_xe')
                                 ->select('bao_cao_khach_vang_lais.*', 'admins.ho_va_ten as ten_admin', 'chi_tiet_bai_xes.thu_tu','chi_tiet_bai_xes.loai_xe', 'bai_xes.ten_bai','bai_xes.ten_bai')
                                 ->get();
-        $chiTietBaiXes = ChiTietBaiXe::where('trang_thai', 1)->get();
+        $chiTietBaiXes = ChiTietBaiXe::where('trang_thai', 0)->get();
         $baiXes = BaiXe::where('trang_thai', 1)->get();
         return response()->json([
             'data' => $data,
@@ -43,6 +43,10 @@ class BaoCaoKhachVangLaiController extends Controller
                     'so_dien_thoai'         => $request->so_dien_thoai,
                     'thoi_gian_vao'         => now()->setTimezone('Asia/Ho_Chi_Minh'),
                     'id_vi_tri_trong_bai'   => $request->id_vi_tri_trong_bai
+        ]);
+        $viTri = ChiTietBaiXe::find($request->id_vi_tri_trong_bai);
+        $viTri->update([
+            'trang_thai' => ChiTietBaiXe::TRANG_THAI_KHACH_VANG_LAI
         ]);
         return response()->json([
             'status' => true,
@@ -136,6 +140,10 @@ class BaoCaoKhachVangLaiController extends Controller
             'is_thanh_toan' => 1,
             'thoi_gian_ra' => \Carbon\Carbon::parse($request->thoi_gian_ra)->setTimezone('Asia/Ho_Chi_Minh'),
             'tien_thanh_toan' => $request->tien_thanh_toan
+        ]);
+        $viTri = ChiTietBaiXe::find($data->id_vi_tri_trong_bai);
+        $viTri->update([
+            'trang_thai' => ChiTietBaiXe::TRANG_THAI_TRONG
         ]);
         return response()->json([
             'status' => true,

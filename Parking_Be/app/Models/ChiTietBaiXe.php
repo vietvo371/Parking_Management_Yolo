@@ -19,4 +19,5 @@ class ChiTietBaiXe extends Model
     const TRANG_THAI_TRONG = 0;
     const TRANG_THAI_DA_DAT_TRUOC = 1;
     const TRANG_THAI_DA_CO_XE = 2;
+    const TRANG_THAI_KHACH_VANG_LAI = 3;
 }

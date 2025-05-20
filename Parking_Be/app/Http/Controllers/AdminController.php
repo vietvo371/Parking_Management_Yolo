@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\capNhatProfileRequest;
 use App\Http\Requests\DoiPassAdminReuqest;
+use App\Http\Requests\DoiPassNhanSuReuqest;
 use App\Http\Requests\themAdminRequest;
 use App\Http\Requests\UpdateAdminRequest;
 use App\Models\Admin;
@@ -116,6 +118,14 @@ class AdminController extends Controller
     }
     public function themAdmin(themAdminRequest $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         Admin::create([
             'email'         => $request->email,
             'ho_va_ten'     => $request->ho_va_ten,
@@ -130,8 +140,15 @@ class AdminController extends Controller
     }
     public function xoaAdmin($id)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $admin = Admin::find($id);
-
         if ($admin->is_master == 1) {
             return response()->json([
                 'status'  =>  false,
@@ -147,6 +164,14 @@ class AdminController extends Controller
     }
     public function capnhatAdmin(UpdateAdminRequest $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $dangLogin = $this->isAdmin();
 
         $admin = Admin::find($request->id);
@@ -172,6 +197,7 @@ class AdminController extends Controller
     }
     public function doiTrangThaiAdmin(Request $request)
     {
+
         $admin = Admin::find($request->id);
         if ($admin->is_master == 1) {
             return response()->json([
@@ -191,6 +217,32 @@ class AdminController extends Controller
             'message'    => 'Cập Nhật Trạng Thái thành công!! '
         ]);
     }
+    public function doiPass(DoiPassNhanSuReuqest $request)
+    {
+        $dangLogin = $this->isAdmin();
+        $admin = Admin::find($request->id);
+        if ($admin->is_master == 1 && $admin->id != $dangLogin->id) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không thể cập nhật Tài Khoản Có Quyền Hạn Cao'
+            ]);
+        }
+        if ($admin->id == $dangLogin->id) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không thể đổi mật khẩu cho tài khoản của mình ở đây'
+            ]);
+        }
+        Admin::where('id', $request->id)
+            ->update([
+                'password'   => bcrypt($request->password),
+            ]);
+        return response()->json([
+            'status'  =>  true,
+            'message' =>  'Đổi mật khẩu thành công'
+        ]);
+    }
+
     public function timAdmin(Request $request)
     {
         $key    = '%' . $request->key . '%';
@@ -207,19 +259,13 @@ class AdminController extends Controller
             'chuc_vu_admin'  =>  $chuc_vu_admin,
         ]);
     }
-    public function doiPass(DoiPassAdminReuqest $request)
+
+    public function doiPassProfile(DoiPassAdminReuqest $request)
     {
+
         $dangLogin = $this->isAdmin();
 
-        $admin = Admin::find($request->id);
-
-        if ($admin->is_master == 1 && $admin->id != $dangLogin->id) {
-            return response()->json([
-                'status'  =>  false,
-                'message' =>  'Bạn không thể cập nhật Tài Khoản Có Quyền Hạn Cao'
-            ]);
-        }
-        Admin::where('id', $request->id)
+        Admin::where('id', $dangLogin->id)
             ->update([
                 'password'   => bcrypt($request->password),
             ]);
@@ -228,14 +274,32 @@ class AdminController extends Controller
             'message' =>  'Đổi mật khẩu thành công'
         ]);
     }
+    public function capnhatProfile(capNhatProfileRequest $request)
+    {
+        $user = $this->isAdmin();
+        $user->update([
+            'ho_va_ten' => $request->ho_va_ten,
+            'so_dien_thoai' => $request->so_dien_thoai,
+            // 'id_can_ho' => $request->id_can_ho,
+        ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật thông tin cư dân thành công',
+            'data' => $user
+        ]);
+    }
     public function getDataProfile()
     {
         $user = $this->isAdmin();
+        $profile = Admin::join('chuc_vus', 'admins.id_chuc_vu', '=', 'chuc_vus.id')
+            ->select('admins.*', 'chuc_vus.ten_chuc_vu')
+            ->where('admins.id', $user->id)
+            ->first();
         if ($user) {
             return response()->json([
                 'status' => true,
                 'message' => 'Lấy dữ liệu thành công',
-                'data' => $user
+                'data' => $profile
             ]);
         }
         return response()->json([
