@@ -62,71 +62,87 @@
       </div>
   
       <!-- Parking Map -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-          <h3 class="text-lg font-medium">Sơ đồ bãi đỗ xe</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <div>
+            <h2 class="text-lg font-medium">Sơ đồ bãi đỗ xe</h2>
+            <p class="text-sm text-gray-500">Nhấp vào vị trí để xem chi tiết</p>
+          </div>
           <div class="flex items-center space-x-2">
             <select 
-              v-model="selectedFloor" 
+              v-model="selectedArea" 
               class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
             >
-              <option v-for="floor in floors" :key="floor.id" :value="floor.id">
-                {{ floor.name }}
+              <option value="all">Tất cả khu vực</option>
+              <option v-for="area in parkingAreas" :key="area" :value="area">
+                {{ area }}
               </option>
             </select>
-            <div class="flex items-center space-x-2">
-              <div class="flex items-center">
-                <div class="h-4 w-4 bg-green-500 rounded-sm mr-1"></div>
-                <span class="text-xs">Trống</span>
+            <select 
+              v-model="selectedVehicleType" 
+              class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md"
+            >
+              <option value="all">Tất cả loại xe</option>
+              <option value="car">Ô tô</option>
+              <option value="motorbike">Xe máy</option>
+            </select>
+          </div>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Parking Areas -->
+            <div v-for="area in parkingAreas" :key="area" 
+                 v-if="selectedArea === 'all' || selectedArea === area" 
+                 class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+              <h3 class="text-md font-medium mb-3">{{ area }} - Ô tô</h3>
+              <div class="grid grid-cols-5 gap-2">
+                <div 
+                  v-for="spot in parkingSpots[area]?.car || []" 
+                  :key="`${area}-car-${spot.id}`"
+                  class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
+                  :class="getSpotClass(spot)"
+                  @click="handleSpotClick(spot)"
+                >
+                  {{ spot.thu_tu }}
+                </div>
               </div>
-              <div class="flex items-center">
-                <div class="h-4 w-4 bg-red-500 rounded-sm mr-1"></div>
-                <span class="text-xs">Đã đỗ</span>
-              </div>
-              <div class="flex items-center">
-                <div class="h-4 w-4 bg-yellow-500 rounded-sm mr-1"></div>
-                <span class="text-xs">Đặt trước</span>
-              </div>
-              <div class="flex items-center">
-                <div class="h-4 w-4 bg-blue-500 rounded-sm mr-1"></div>
-                <span class="text-xs">Của tôi</span>
+              
+              <h3 class="text-md font-medium mb-3 mt-4">{{ area }} - Xe máy</h3>
+              <div class="grid grid-cols-8 gap-1">
+                <div 
+                  v-for="spot in parkingSpots[area]?.motorbike || []" 
+                  :key="`${area}-motorbike-${spot.id}`"
+                  class="aspect-square rounded-md border flex items-center justify-center text-xs cursor-pointer hover:border-blue-500"
+                  :class="getSpotClass(spot)"
+                  @click="handleSpotClick(spot)"
+                >
+                  {{ spot.thu_tu }}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div class="relative h-[500px] border border-gray-200 dark:border-gray-700 rounded-md overflow-auto">
-          <!-- Parking map would be rendered here in a real app -->
-          <!-- For demo purposes, we'll create a simple grid -->
-          <div class="p-4">
-            <div class="flex justify-center mb-6">
-              <div class="bg-gray-200 dark:bg-gray-700 p-2 rounded-md w-1/2 text-center">
-                Lối vào/ra
-              </div>
+          
+          <!-- Legend -->
+          <div class="mt-6 flex flex-wrap gap-4 justify-center">
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-gray-100 border border-gray-300 dark:bg-gray-800 dark:border-gray-700 rounded-sm mr-2"></div>
+              <span class="text-sm">Trống</span>
             </div>
-            
-            <div class="grid grid-cols-5 gap-2 mb-6">
-              <div v-for="spot in getFloorSpots()" :key="spot.id" 
-                class="aspect-[4/3] rounded-md flex items-center justify-center cursor-pointer relative"
-                :class="{
-                  'bg-green-500 hover:bg-green-600': spot.status === 'available',
-                  'bg-red-500': spot.status === 'occupied' && !spot.isOwner,
-                  'bg-yellow-500': spot.status === 'reserved' && !spot.isOwner,
-                  'bg-blue-500': spot.isOwner
-                }"
-                @click="handleSpotClick(spot)"
-              >
-                <span class="text-white font-medium">{{ spot.code }}</span>
-                <span v-if="spot.isOwner" class="absolute top-1 right-1 bg-white rounded-full p-0.5">
-                  <User class="h-3 w-3 text-blue-600" />
-                </span>
-              </div>
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-blue-100 border border-blue-300 dark:bg-blue-900 dark:border-blue-700 rounded-sm mr-2"></div>
+              <span class="text-sm">Đã đỗ (cư dân)</span>
             </div>
-            
-            <div class="flex justify-center">
-              <div class="bg-gray-200 dark:bg-gray-700 p-2 rounded-md w-1/2 text-center">
-                Thang máy & Cầu thang
-              </div>
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-orange-100 border border-orange-300 dark:bg-orange-900 dark:border-orange-700 rounded-sm mr-2"></div>
+              <span class="text-sm">Đã đỗ (khách)</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-red-100 border border-red-300 dark:bg-red-900 dark:border-red-700 rounded-sm mr-2"></div>
+              <span class="text-sm">Không khả dụng</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-purple-100 border border-purple-300 dark:bg-purple-900 dark:border-purple-700 rounded-sm mr-2"></div>
+              <span class="text-sm">Vị trí của tôi</span>
             </div>
           </div>
         </div>
@@ -557,126 +573,40 @@
         ],
         
         // Sample parking spots data
-        parkingSpots: [
-          {
-            id: 'spot-1',
-            code: 'A-C01',
-            floorId: 'floor-1',
-            vehicleType: 'car',
-            status: 'occupied',
-            isOwner: true,
-            licensePlate: '30A-12345',
-            entryTime: '24/04/2023 - 08:30',
-            expiryDate: '31/05/2023',
-            size: '2.5m x 5.5m',
-            history: [
-              {
-                licensePlate: '30A-12345',
-                entryTime: '20/04/2023 - 08:30',
-                exitTime: '20/04/2023 - 17:45',
-                duration: '9h 15m'
-              },
-              {
-                licensePlate: '30A-12345',
-                entryTime: '21/04/2023 - 08:15',
-                exitTime: '21/04/2023 - 18:00',
-                duration: '9h 45m'
-              }
+        parkingSpots: {
+          'Khu A': {
+            car: [
+              { id: 1, thu_tu: 'A01', status: 'available', isResident: false, isOwner: false },
+              { id: 2, thu_tu: 'A02', status: 'occupied', isResident: true, isOwner: false },
+              { id: 3, thu_tu: 'A03', status: 'occupied', isResident: false, isOwner: false },
+              { id: 4, thu_tu: 'A04', status: 'available', isResident: false, isOwner: true },
+              { id: 5, thu_tu: 'A05', status: 'occupied', isResident: true, isOwner: false }
+            ],
+            motorbike: [
+              { id: 6, thu_tu: 'AM01', status: 'available', isResident: false, isOwner: false },
+              { id: 7, thu_tu: 'AM02', status: 'occupied', isResident: true, isOwner: false },
+              { id: 8, thu_tu: 'AM03', status: 'occupied', isResident: false, isOwner: true },
+              { id: 9, thu_tu: 'AM04', status: 'available', isResident: false, isOwner: false },
+              { id: 10, thu_tu: 'AM05', status: 'occupied', isResident: true, isOwner: false }
             ]
           },
-          {
-            id: 'spot-2',
-            code: 'B-C05',
-            floorId: 'floor-1',
-            vehicleType: 'car',
-            status: 'available',
-            isOwner: true,
-            licensePlate: '',
-            expiryDate: '15/05/2023',
-            size: '2.5m x 5.5m',
-            history: []
-          },
-          {
-            id: 'spot-3',
-            code: 'A-C02',
-            floorId: 'floor-1',
-            vehicleType: 'car',
-            status: 'occupied',
-            isOwner: false,
-            licensePlate: '30B-12345',
-            size: '2.5m x 5.5m'
-          },
-          {
-            id: 'spot-4',
-            code: 'A-C03',
-            floorId: 'floor-1',
-            vehicleType: 'car',
-            status: 'reserved',
-            isOwner: false,
-            licensePlate: '',
-            size: '2.5m x 5.5m'
-          },
-          {
-            id: 'spot-5',
-            code: 'A-C04',
-            floorId: 'floor-1',
-            vehicleType: 'car',
-            status: 'available',
-            isOwner: false,
-            licensePlate: '',
-            size: '2.5m x 5.5m'
-          },
-          {
-            id: 'spot-6',
-            code: 'A-M01',
-            floorId: 'floor-1',
-            vehicleType: 'motorbike',
-            status: 'available',
-            isOwner: false,
-            licensePlate: '',
-            size: '1.2m x 2.5m'
-          },
-          {
-            id: 'spot-7',
-            code: 'A-M02',
-            floorId: 'floor-1',
-            vehicleType: 'motorbike',
-            status: 'occupied',
-            isOwner: false,
-            licensePlate: '29P1-12345',
-            size: '1.2m x 2.5m'
-          },
-          {
-            id: 'spot-8',
-            code: 'A-C05',
-            floorId: 'floor-2',
-            vehicleType: 'car',
-            status: 'available',
-            isOwner: false,
-            licensePlate: '',
-            size: '2.5m x 5.5m'
-          },
-          {
-            id: 'spot-9',
-            code: 'A-C06',
-            floorId: 'floor-2',
-            vehicleType: 'car',
-            status: 'available',
-            isOwner: false,
-            licensePlate: '',
-            size: '2.5m x 5.5m'
-          },
-          {
-            id: 'spot-10',
-            code: 'A-C07',
-            floorId: 'floor-2',
-            vehicleType: 'car',
-            status: 'available',
-            isOwner: false,
-            licensePlate: '',
-            size: '2.5m x 5.5m'
+          'Khu B': {
+            car: [
+              { id: 11, thu_tu: 'B01', status: 'available', isResident: false, isOwner: false },
+              { id: 12, thu_tu: 'B02', status: 'occupied', isResident: true, isOwner: false },
+              { id: 13, thu_tu: 'B03', status: 'occupied', isResident: false, isOwner: false },
+              { id: 14, thu_tu: 'B04', status: 'available', isResident: false, isOwner: false },
+              { id: 15, thu_tu: 'B05', status: 'occupied', isResident: true, isOwner: false }
+            ],
+            motorbike: [
+              { id: 16, thu_tu: 'BM01', status: 'available', isResident: false, isOwner: false },
+              { id: 17, thu_tu: 'BM02', status: 'occupied', isResident: true, isOwner: false },
+              { id: 18, thu_tu: 'BM03', status: 'occupied', isResident: false, isOwner: false },
+              { id: 19, thu_tu: 'BM04', status: 'available', isResident: false, isOwner: false },
+              { id: 20, thu_tu: 'BM05', status: 'occupied', isResident: true, isOwner: false }
+            ]
           }
-        ],
+        },
         
         // Reserve data
         reserveData: {
@@ -686,7 +616,8 @@
           date: '',
           startTime: '',
           endTime: '',
-          note: ''
+          note: '',
+          spotId: null
         },
         
         // Assign vehicle data
@@ -694,7 +625,8 @@
           spotId: '',
           spotCode: '',
           vehicleId: '',
-          isDefault: false
+          isDefault: false,
+          vehicleType: ''
         },
         
         // Renew spot data
@@ -705,70 +637,129 @@
           currentExpiryDate: '',
           period: '3',
           paymentMethod: 'bank'
-        }
+        },
+        selectedArea: 'all',
+        selectedVehicleType: 'all',
+        parkingAreas: ['Khu A', 'Khu B', 'Khu C']
       }
     },
     computed: {
       mySpots() {
-        return this.parkingSpots.filter(spot => spot.isOwner)
+        const spots = [];
+        Object.keys(this.parkingSpots).forEach(area => {
+          if (this.parkingSpots[area].car) {
+            spots.push(...this.parkingSpots[area].car.filter(spot => spot.isOwner));
+          }
+          if (this.parkingSpots[area].motorbike) {
+            spots.push(...this.parkingSpots[area].motorbike.filter(spot => spot.isOwner));
+          }
+        });
+        return spots;
       },
       filteredVehicles() {
-        return this.vehicles.filter(vehicle => vehicle.type === this.reserveData.vehicleType)
+        return this.vehicles.filter(vehicle => vehicle.type === this.reserveData.vehicleType);
       },
       filteredVehiclesForSpot() {
-        if (!this.assignData.spotId) return []
+        if (!this.assignData.spotId) return [];
         
-        const spot = this.parkingSpots.find(s => s.id === this.assignData.spotId)
-        if (!spot) return []
+        let spot = null;
+        Object.keys(this.parkingSpots).forEach(area => {
+          const carSpot = this.parkingSpots[area].car?.find(s => s.id === this.assignData.spotId);
+          const motoSpot = this.parkingSpots[area].motorbike?.find(s => s.id === this.assignData.spotId);
+          if (carSpot) spot = carSpot;
+          if (motoSpot) spot = motoSpot;
+        });
         
-        return this.vehicles.filter(vehicle => vehicle.type === spot.vehicleType)
+        if (!spot) return [];
+        return this.vehicles.filter(vehicle => vehicle.type === (spot.vehicleType === 'car' ? 'car' : 'motorbike'));
       }
     },
     methods: {
       getFloorSpots() {
-        return this.parkingSpots.filter(spot => spot.floorId === this.selectedFloor)
+        if (this.selectedArea === 'all') {
+          const spots = [];
+          Object.keys(this.parkingSpots).forEach(area => {
+            if (this.selectedVehicleType === 'all' || this.selectedVehicleType === 'car') {
+              spots.push(...(this.parkingSpots[area].car || []));
+            }
+            if (this.selectedVehicleType === 'all' || this.selectedVehicleType === 'motorbike') {
+              spots.push(...(this.parkingSpots[area].motorbike || []));
+            }
+          });
+          return spots;
+        } else {
+          const areaSpots = this.parkingSpots[this.selectedArea] || { car: [], motorbike: [] };
+          if (this.selectedVehicleType === 'all') {
+            return [...(areaSpots.car || []), ...(areaSpots.motorbike || [])];
+          } else {
+            return areaSpots[this.selectedVehicleType] || [];
+          }
+        }
       },
       getFloorName(floorId) {
         const floor = this.floors.find(f => f.id === floorId)
         return floor ? floor.name : floorId
       },
       getStatusText(status) {
+        if (!status) return 'N/A';
+        
         switch (status) {
           case 'available':
-            return 'Trống'
+            return 'Trống';
           case 'occupied':
-            return 'Đang đỗ'
+            return this.selectedSpot?.isResident ? 'Đang đỗ (Cư dân)' : 'Đang đỗ (Khách)';
           case 'reserved':
-            return 'Đặt trước'
+            return 'Đặt trước';
           default:
-            return status
+            return status;
         }
       },
       isExpiringSoon(expiryDate) {
-        const today = new Date()
-        const expiry = new Date(expiryDate.split('/').reverse().join('-'))
-        const diffTime = expiry - today
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-        
-        return diffDays <= 30 && diffDays > 0
+        if (!expiryDate) return false;
+        try {
+          const today = new Date();
+          const [day, month, year] = expiryDate.split('/').map(Number);
+          const expiry = new Date(year, month - 1, day);
+          const diffTime = expiry - today;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          return diffDays <= 30 && diffDays > 0;
+        } catch (error) {
+          console.error('Error parsing date:', error);
+          return false;
+        }
       },
       handleSpotClick(spot) {
+        if (!spot) return;
+        
         if (spot.isOwner) {
-          this.showSpotDetails(spot)
+          this.showSpotDetails(spot);
         } else if (spot.status === 'available') {
-          console.log('Reserve spot:', spot)
+          this.showReserveModal = true;
+          this.reserveData = {
+            ...this.reserveData,
+            spotId: spot.id,
+            vehicleType: spot.vehicleType
+          };
         }
       },
       showSpotDetails(spot) {
-        this.selectedSpot = spot
-        this.showSpotDetailsModal = true
+        if (!spot) return;
+        
+        this.selectedSpot = {
+          ...spot,
+          expiryDate: spot.expiryDate || null,
+          history: spot.history || []
+        };
+        this.showSpotDetailsModal = true;
       },
       showAssignVehicleModal(spot) {
         this.assignData = {
           spotId: spot.id,
           spotCode: spot.code,
           vehicleId: '',
-          isDefault: false
+          isDefault: false,
+          vehicleType: spot.vehicleType
         }
         
         this.showAssignModal = true
@@ -801,7 +792,8 @@
           date: '',
           startTime: '',
           endTime: '',
-          note: ''
+          note: '',
+          spotId: null
         }
         
         this.showReserveModal = false
@@ -822,7 +814,8 @@
           spotId: '',
           spotCode: '',
           vehicleId: '',
-          isDefault: false
+          isDefault: false,
+          vehicleType: ''
         }
         
         this.showAssignModal = false
@@ -883,6 +876,24 @@
       getSpotSize(spotId) {
         const spot = this.parkingSpots.find(s => s.id === spotId)
         return spot ? spot.size : '--'
+      },
+      getSpotClass(spot) {
+        if (!spot) return '';
+        
+        if (spot.status === 'available') {
+          return 'bg-gray-100 border-gray-300 text-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300';
+        } else if (spot.status === 'occupied') {
+          if (spot.isOwner) {
+            return 'bg-purple-100 border-purple-300 text-purple-800 dark:bg-purple-900 dark:border-purple-700 dark:text-purple-300';
+          } else if (spot.isResident) {
+            return 'bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-300';
+          } else {
+            return 'bg-orange-100 border-orange-300 text-orange-800 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-300';
+          }
+        } else if (spot.status === 'reserved') {
+          return 'bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-300';
+        }
+        return '';
       }
     }
   }

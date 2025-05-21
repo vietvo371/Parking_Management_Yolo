@@ -295,12 +295,20 @@
               <p class="font-medium">{{ selectedEntry.licensePlate }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-500">Loại xe</p>
-              <p class="font-medium">{{ selectedEntry.vehicleType === 'car' ? 'Ô tô' : 'Xe máy' }}</p>
+              <p class="text-sm text-gray-500">Họ và tên</p>
+              <p class="font-medium">{{ selectedEntry.resident }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Số điện thoại</p>
+              <p class="font-medium">{{ selectedEntry.phone }}</p>
             </div>
             <div>
               <p class="text-sm text-gray-500">Vị trí đỗ</p>
               <p class="font-medium">{{ selectedEntry.parkingSpot }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Camera</p>
+              <p class="font-medium">{{ selectedEntry.camera }}</p>
             </div>
             <div v-if="selectedEntry.type === 'out'">
               <p class="text-sm text-gray-500">Thời gian đỗ</p>
@@ -308,33 +316,6 @@
             </div>
           </div>
           
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-            <h4 class="font-medium mb-2">Hình ảnh</h4>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="aspect-video bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
-                <img :src="selectedEntry.images?.vehicle || '/placeholder.svg?height=200&width=300&text=Hình xe'" alt="Vehicle image" class="w-full h-full object-cover" />
-              </div>
-              <div class="aspect-video bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
-                <img :src="selectedEntry.images?.licensePlate || '/placeholder.svg?height=200&width=300&text=Biển số'" alt="License plate image" class="w-full h-full object-cover" />
-              </div>
-            </div>
-          </div>
-          
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-            <h4 class="font-medium mb-2">Vị trí trên bản đồ</h4>
-            <div class="h-64 bg-gray-100 dark:bg-gray-700 rounded-md">
-              <!-- Map would be rendered here in a real app -->
-              <div class="h-full flex items-center justify-center">
-                <MapPin class="h-8 w-8 text-blue-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 flex justify-end">
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-              Xem chi tiết vị trí
-            </button>
-          </div>
         </div>
       </a-modal>
     </div>
@@ -359,6 +340,7 @@
   } from 'lucide-vue-next'
   import { Modal, Button } from 'ant-design-vue'
   import Chart from 'chart.js/auto'
+  import baseRequestUser from '../../core/baseRequestUser'
 
   export default {
     name: 'EntryHistory',
@@ -410,32 +392,6 @@
         
         // Sample history data
         historyEntries: [
-          {
-            id: 'ENT-001',
-            time: '2024-02-20T10:25:00',
-            type: 'in',
-            licensePlate: '30A-12345',
-            vehicleType: 'car',
-            parkingSpot: 'A-C05',
-            duration: null,
-            images: {
-              vehicle: '/placeholder.svg?height=200&width=300&text=Hình xe',
-              licensePlate: '/placeholder.svg?height=200&width=300&text=Biển số'
-            }
-          },
-          {
-            id: 'ENT-002',
-            time: '2024-02-20T10:15:00',
-            type: 'out',
-            licensePlate: '30F-54321',
-            vehicleType: 'car',
-            parkingSpot: 'B-C12',
-            duration: '2h 30m',
-            images: {
-              vehicle: '/placeholder.svg?height=200&width=300&text=Hình xe',
-              licensePlate: '/placeholder.svg?height=200&width=300&text=Biển số'
-            }
-          }
         ]
       }
     },
@@ -498,8 +454,67 @@
     mounted() {
       this.updateStats()
       this.initCharts()
+      this.getHistory()
     },
     methods: {
+      getHistory() {
+        baseRequestUser.get('user/lay-du-lieu-lich-su-ra-vao-bai').then((res) => {
+          // Transform the data to match our component's structure
+          const transformedData = res.data.data.map(entry => {
+            const baseEntry = {
+              id: entry.id,
+              licensePlate: entry.bien_so_xe,
+              resident: entry.ho_va_ten,
+              phone: entry.so_dien_thoai,
+              vehicleType: 'car', // Assuming all are cars for now
+              parkingSpot: `Vị trí ${entry.loai_xe} - ${entry.thu_tu}`,
+              camera: `Camera ${entry.id_camera_quet}`,
+              residentVehicleId: entry.id_xe_cu_dan
+            };
+
+            // Create separate entries for entry and exit times
+            const entries = [];
+            
+            if (entry.thoi_gian_vao) {
+              entries.push({
+                ...baseEntry,
+                id: `${entry.id}_in`,
+                type: 'in',
+                time: entry.thoi_gian_vao,
+                duration: null
+              });
+            }
+
+            if (entry.thoi_gian_ra) {
+              const entryTime = new Date(entry.thoi_gian_vao);
+              const exitTime = new Date(entry.thoi_gian_ra);
+              const duration = this.calculateDuration(entryTime, exitTime);
+
+              entries.push({
+                ...baseEntry,
+                id: `${entry.id}_out`,
+                type: 'out',
+                time: entry.thoi_gian_ra,
+                duration: duration
+              });
+            }
+
+            return entries;
+          }).flat(); // Flatten the array of arrays
+
+          this.historyEntries = transformedData;
+          this.updateStats();
+        });
+      },
+      calculateDuration(startTime, endTime) {
+        if (!startTime || !endTime) return null;
+        
+        const diff = endTime - startTime;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        return `${hours}h ${minutes}m`;
+      },
       // View entry details
       viewEntryDetails(entry) {
         this.selectedEntry = { ...entry }
@@ -536,21 +551,23 @@
       },
       
       updateStats() {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         
-        this.historyStats.total = this.historyEntries.length
+        this.historyStats.total = this.historyEntries.length;
         this.historyStats.todayIn = this.historyEntries.filter(entry => 
           entry.type === 'in' && new Date(entry.time) >= today
-        ).length
+        ).length;
         this.historyStats.todayOut = this.historyEntries.filter(entry => 
           entry.type === 'out' && new Date(entry.time) >= today
-        ).length
+        ).length;
         this.historyStats.currentParked = this.historyEntries.filter(entry => 
           entry.type === 'in' && !this.historyEntries.some(e => 
-            e.type === 'out' && e.licensePlate === entry.licensePlate && new Date(e.time) > new Date(entry.time)
+            e.type === 'out' && 
+            e.licensePlate === entry.licensePlate && 
+            new Date(e.time) > new Date(entry.time)
           )
-        ).length
+        ).length;
       },
       
       // Initialize charts
