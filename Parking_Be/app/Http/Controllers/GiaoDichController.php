@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CuDan;
 use App\Models\GiaoDich;
+use App\Models\Xe;
 use Illuminate\Http\Request;
 
 class GiaoDichController extends Controller
@@ -26,6 +28,29 @@ class GiaoDichController extends Controller
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
             'data' => $giaodichs,
+        ]);
+    }
+    public function getDataXe()
+    {
+        $id_chuc_nang = 5;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
+        $xe = Xe::join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
+            ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
+            ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
+            ->select('xes.*', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha')
+            ->orderBy('xes.created_at', 'desc')
+            ->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $xe,
+
         ]);
     }
     public function themGiaoDich(Request $request)

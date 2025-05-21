@@ -6,6 +6,7 @@ use App\Http\Requests\CapNhapXeRequest;
 use App\Http\Requests\CapNhatXeRequest;
 use App\Http\Requests\DangKyXeRequest;
 use App\Http\Requests\ThemXeRequest;
+use App\Models\CuDan;
 use App\Models\Xe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,45 @@ class XeController extends Controller
                 'message' =>  'Bạn không có quyền chức năng này'
             ]);
         }
+        $cudan = CuDan::join('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
+        ->leftJoin('xes', function ($join) {
+            $join->on('xes.id_cu_dan', '=', 'cu_dans.id');
+        })
+        ->select(
+            'cu_dans.id',
+            'cu_dans.ho_va_ten',
+            'cu_dans.email',
+            'cu_dans.password',
+            'cu_dans.so_dien_thoai',
+            'cu_dans.so_cccd',
+            'cu_dans.id_can_ho',
+            'cu_dans.so_du',
+            'cu_dans.phe_duyet',
+            'cu_dans.trang_thai',
+            'can_hos.ten_toa_nha',
+            'can_hos.tang',
+            'can_hos.so_can_ho',
+            'cu_dans.created_at',
+            DB::raw('MIN(xes.bien_so_xe) as bien_so_xe'),
+        )
+        ->groupBy(
+            'cu_dans.id',
+            'cu_dans.ho_va_ten',
+            'cu_dans.email',
+            'cu_dans.password',
+            'cu_dans.so_dien_thoai',
+            'cu_dans.so_cccd',
+            'cu_dans.id_can_ho',
+            'cu_dans.so_du',
+            'cu_dans.phe_duyet',
+            'cu_dans.trang_thai',
+            'can_hos.ten_toa_nha',
+            'can_hos.tang',
+            'can_hos.so_can_ho',
+            'cu_dans.created_at'
+        )
+        ->orderBy('cu_dans.created_at', 'desc')
+        ->get();
         $xe = Xe::join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
             ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
             ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
@@ -31,7 +71,9 @@ class XeController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
-            'data' => $xe
+            'data' => $xe,
+            'cudan' => $cudan
+
         ]);
     }
     public function getDataClient()

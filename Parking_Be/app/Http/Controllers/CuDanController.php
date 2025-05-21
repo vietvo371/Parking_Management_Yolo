@@ -6,8 +6,13 @@ use App\Http\Requests\capNhatCuDanRequest;
 use App\Http\Requests\capNhatProfileRequest;
 use App\Http\Requests\DoiPassAdminReuqest;
 use App\Http\Requests\ThemCuDanRequest;
+use App\Jobs\DuyetQueue;
+use App\Jobs\MailQueue;
+use App\Models\Admin;
+use App\Models\AdminThongBao;
 use App\Models\CuDan;
 use App\Models\Xe;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -243,7 +248,7 @@ class CuDanController extends Controller
         //         'status'    => false
         //     ]);
         // }
-        CuDan::create([
+       $cudan = CuDan::create([
             'ho_va_ten' => $request->ho_va_ten,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -251,6 +256,18 @@ class CuDanController extends Controller
             'so_cccd' => $request->so_cccd,
             'id_can_ho' => $request->id_can_ho,
         ]);
+        $admin = Admin::where('id', 1)
+                        ->orWhere('id', 3)
+                        ->get();
+        foreach ($admin as $item) {
+           AdminThongBao::create([
+                'id_admin' => $item->id,
+                // 'id_cu_dan' => $cudan->id,
+                'noi_dung_thong_bao' =>  'THÔNG BÁO, Tài khoản' . $cudan->ho_va_ten . ' vừa đăng ký tài khoản thành công. Vui lòng vào quản lý cư dân để duyệt tài khoản',
+                'ngay_tao' => Carbon::now(),
+                'trang_thai' => 1,
+            ]);
+        }
         return response()->json([
             'message'   => 'Tạo tài khoản thành công!!',
             'status'    =>  true
@@ -311,6 +328,16 @@ class CuDanController extends Controller
         $cudan->update([
             'phe_duyet' => 1
         ]);
+        $admin =$this->isAdmin();
+        $item =  AdminThongBao::create([
+            'id_admin' => $admin->id,
+            'id_cu_dan' => $cudan->id,
+            'noi_dung_thong_bao' =>  'THÔNG BÁO, Tài khoản' . $cudan->ho_va_ten . ' vừa được duyệt tài khoản',
+            'ngay_tao' => Carbon::now(),
+            'trang_thai' => 1,
+        ]);
+        DuyetQueue::dispatch($item);
+
 
         return response()->json([
             'status' => true,

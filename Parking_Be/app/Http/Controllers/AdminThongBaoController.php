@@ -103,6 +103,28 @@ class AdminThongBaoController extends Controller
             'data' => $thongbaos
         ]);
     }
+    public function getDataThongBaoAdmin()
+    {
+        $admin = $this->isAdmin();
+        if(!$admin){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không có quyền thực hiện hành động này'
+            ]);
+        }
+        $thongbaos = AdminThongBao::join('admins', 'admin_thong_baos.id_admin', '=', 'admins.id')
+            ->where('admin_thong_baos.id_admin', $admin->id)
+            ->select('admin_thong_baos.*', 'admins.ho_va_ten as ten_admin')
+            ->orderBy('ngay_tao', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $thongbaos
+        ]);
+    }
+
 
 
 }

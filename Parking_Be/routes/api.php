@@ -36,6 +36,9 @@ Route::post('/admin/logout', [AdminController::class, 'logout']);
 
 Route::group(['prefix'  =>  '/admin'], function () {
 
+    //Thông báo Admin
+    Route::get('/lay-du-lieu-thong-bao', [AdminThongBaoController::class, 'getDataThongBaoAdmin']);
+
     // xong id = 12
     Route::get('/lay-du-lieu', [AdminController::class, 'getData']);
     Route::post('/them-tai-khoan', [AdminController::class, 'themAdmin']);
@@ -122,9 +125,11 @@ Route::group(['prefix'  =>  '/admin'], function () {
     // xong id = 5
     Route::group(['prefix'  =>  '/giao-dich'], function () {
         Route::get('/lay-du-lieu', [GiaoDichController::class, 'getData']);
+        Route::get('/lay-du-lieu-xe', [GiaoDichController::class, 'getDataXe']);
         Route::post('/them-du-lieu', [GiaoDichController::class, 'themGiaoDich']);
 
-        
+
+
         Route::post('/thong-tin-cap-nhat', [GiaoDichController::class, 'capnhatGiaoDich']);
         Route::delete('/thong-tin-xoa/{id}', [GiaoDichController::class, 'xoaGiaoDich']);
     });
