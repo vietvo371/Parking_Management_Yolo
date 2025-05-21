@@ -90,6 +90,7 @@ class XeController extends Controller
                 'loai_xes.ten_loai_xe',
                 'can_hos.so_can_ho',
                 'can_hos.ten_toa_nha',
+                'loai_xes.tien_thu_giu_xe',
                 DB::raw('MAX(giao_diches.ngay_het_han) as ngay_het_han')
             )
             ->groupBy(
@@ -104,7 +105,8 @@ class XeController extends Controller
                 'xes.trang_thai_duyet',
                 'xes.is_con_han',
                 'xes.created_at',
-                'xes.updated_at'
+                'xes.updated_at',
+                'loai_xes.tien_thu_giu_xe'
             )
             ->orderBy('xes.created_at', 'desc')
             ->get();

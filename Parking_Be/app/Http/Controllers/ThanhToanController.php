@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GiaoDich;
+use App\Models\LoaiXe;
 use App\Models\Transaction;
 use App\Models\Xe;
 use Carbon\Carbon;
@@ -73,7 +74,12 @@ class ThanhToanController extends Controller
                     'pos'          => $value['pos'],
                 ]
             );
-
+            if ($ma_hoa_don == null) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'thanh toán thất bại'
+                ], 400);
+            }
             // Kiểm tra nếu giao dịch đã tồn tại
             if (!$transaction->wasRecentlyCreated) {
                 Log::info('Giao dịch đã tồn tại, không xử lý lại.', [
@@ -158,8 +164,16 @@ class ThanhToanController extends Controller
                 'message' => 'Bạn đã có gói đang hoạt động. Vui lòng chờ đến khi hết hạn để đăng ký gói mới.'
             ]);
         }
-
-        $hoaDon = $this->createHoaDon($request->id_xe, $request->gia_tien);
+        $xe = Xe::find($request->id_xe);
+        if (!$xe) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy thông tin xe.'
+            ]);
+        }
+        $loai_xe = LoaiXe::find($xe->id_loai_xe);
+        $gia_tien = $loai_xe->tien_thu_giu_xe;
+        $hoaDon = $this->createHoaDon($request->id_xe, $gia_tien);
         $link = $this->generatePaymentLink($hoaDon);
 
         return response()->json([

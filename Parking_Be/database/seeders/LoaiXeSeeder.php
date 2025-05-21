@@ -19,17 +19,17 @@ class LoaiXeSeeder extends Seeder
             [
                 'ten_loai_xe' => 'Xe ô tô',
                 'trang_thai' => 1,
-                'tien_thu_giu_xe' => 500000,
+                'tien_thu_giu_xe' => 50000,
             ],
             [
                 'ten_loai_xe' => 'Xe máy',
                 'trang_thai' => 1,
-                'tien_thu_giu_xe' => 200000,
+                'tien_thu_giu_xe' => 20000,
             ],
             [
                 'ten_loai_xe' => 'Xe Khác',
                 'trang_thai' => 1,
-                'tien_thu_giu_xe' => 100000,
+                'tien_thu_giu_xe' => 10000,
             ],
         ];
 
