@@ -20,7 +20,6 @@ use App\Http\Controllers\RaVaoBaicontroller;
 use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\ViTriDatController;
 use App\Http\Controllers\XeController;
-use Database\Seeders\BaoCaoKhachVangLaiSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +35,8 @@ Route::get('/admin/check-token', [AdminController::class, 'checkToken']);
 Route::post('/admin/logout', [AdminController::class, 'logout']);
 
 Route::group(['prefix'  =>  '/admin'], function () {
+
+    // xong id = 12
     Route::get('/lay-du-lieu', [AdminController::class, 'getData']);
     Route::post('/them-tai-khoan', [AdminController::class, 'themAdmin']);
     Route::post('/thong-tin-cap-nhat', [AdminController::class, 'capnhatAdmin']);
@@ -43,10 +44,13 @@ Route::group(['prefix'  =>  '/admin'], function () {
     Route::delete('/thong-tin-xoa/{id}', [AdminController::class, 'xoaAdmin']);
     Route::post('/thong-tin-tim', [AdminController::class, 'timAdmin']);
     Route::post('/doi-mat-khau', [AdminController::class, 'doiPass']);
+
+
     Route::get('/profile', [AdminController::class, 'getDataProfile']);
     Route::post('/profile/cap-nhat', [AdminController::class, 'capnhatProfile']);
     Route::post('/profile/doi-mat-khau', [AdminController::class, 'doiPassProfile']);
 
+    // xong id=12
     Route::group(['prefix'  =>  '/chuc-vu'], function () {
         Route::get('/lay-du-lieu', [ChucVuController::class, 'getData']);
         Route::post('/them-du-lieu', [ChucVuController::class, 'themChucVu']);
@@ -56,6 +60,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/thong-tin-tim', [ChucVuController::class, 'timChucVu']);
     });
 
+    // xong id=12
     Route::group(['prefix'  =>  '/phan-quyen'], function () {
         Route::get('/get-data', [ChiTietChucVuController::class, 'getData']);
         Route::post('/phan-quyen-chuc-vu/create', [ChiTietChucVuController::class, 'store']);
@@ -63,6 +68,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::get('/chuc-nang/data', [ChucNangController::class, 'getData']);
     });
 
+    //xong id=3
     Route::group(['prefix'  =>  '/cu-dan'], function () {
         Route::get('/lay-du-lieu', [CuDanController::class, 'getData']);
         Route::post('/them-du-lieu', [CuDanController::class, 'themCuDan']);
@@ -73,14 +79,14 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/duyet', [CuDanController::class, 'duyetCuDan']);
 
     });
-
+    //xong id=3
     Route::group(['prefix'  =>  '/can-ho'], function () {
         Route::get('/lay-du-lieu', [CanHoController::class, 'getData']);
         Route::post('/them-du-lieu', [CanHoController::class, 'themCanHo']);
         Route::post('/thong-tin-cap-nhat', [CanHoController::class, 'capnhatCanHo']);
         Route::delete('/thong-tin-xoa/{id}', [CanHoController::class, 'xoaCanHo']);
     });
-
+    //xong id=2
     Route::group(['prefix'  =>  '/xe'], function () {
         Route::get('/lay-du-lieu', [XeController::class, 'getData']);
         Route::post('/them-du-lieu', [XeController::class, 'themXe']);
@@ -89,7 +95,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::delete('/thong-tin-xoa/{id}', [XeController::class, 'xoaXe']);
         Route::post('/duyet', [XeController::class, 'duyetXe']);
     });
-
+    //xong id=2
     Route::group(['prefix'  =>  '/loai-xe'], function () {
         Route::get('/lay-du-lieu', [LoaiXeController::class, 'getData']);
         Route::post('/them-du-lieu', [LoaiXeController::class, 'themLoaiXe']);
@@ -97,7 +103,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/doi-trang-thai', [LoaiXeController::class, 'doiTrangThaiLoaiXe']);
         Route::delete('/thong-tin-xoa/{id}', [LoaiXeController::class, 'xoaLoaiXe']);
     });
-
+    //xong id=9
     Route::group(['prefix'  =>  '/ra-vao-bai'], function () {
         Route::get('/lay-du-lieu', [RaVaoBaicontroller::class, 'getData']);
         Route::post('/them-du-lieu', [RaVaoBaicontroller::class, 'themLichSuRaVao']);
@@ -105,7 +111,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/ghi-nhan-xe-ra', [RaVaoBaicontroller::class, 'ghiNhanXeRa']);
         Route::post('/dat-truoc', [RaVaoBaicontroller::class, 'datTruoc']);
     });
-
+    // xong id=11
     Route::group(['prefix'  =>  '/lich-su-ra-vao-bai'], function () {
         Route::get('/lay-du-lieu', [LichSuRaVaoBaiXeController::class, 'getData']);
     });
@@ -113,34 +119,38 @@ Route::group(['prefix'  =>  '/admin'], function () {
     Route::group(['prefix'  =>  '/thong-bao'], function () {
         Route::get('/lay-du-lieu', [AdminThongBaoController::class, 'getData']);
     });
-
+    // xong id = 5
     Route::group(['prefix'  =>  '/giao-dich'], function () {
         Route::get('/lay-du-lieu', [GiaoDichController::class, 'getData']);
         Route::post('/them-du-lieu', [GiaoDichController::class, 'themGiaoDich']);
+
+        
         Route::post('/thong-tin-cap-nhat', [GiaoDichController::class, 'capnhatGiaoDich']);
         Route::delete('/thong-tin-xoa/{id}', [GiaoDichController::class, 'xoaGiaoDich']);
     });
 
+    //xong id=8
     Route::group(['prefix'  =>  '/bai-xe'], function () {
         Route::get('/lay-du-lieu', [BaiXeController::class, 'getData']);
         Route::post('/them-du-lieu', [BaiXeController::class, 'themBaiXe']);
         Route::post('/thong-tin-cap-nhat', [BaiXeController::class, 'capnhatBaiXe']);
         Route::delete('/thong-tin-xoa/{id}', [BaiXeController::class, 'xoaBaiXe']);
     });
-
+    //xong id=8 vị trí đặt trong camera
     Route::group(['prefix'  =>  '/vi-tri-dat'], function () {
         Route::get('/lay-du-lieu', [ViTriDatController::class, 'getData']);
         Route::post('/them-du-lieu', [ViTriDatController::class, 'themViTriDat']);
         Route::post('/thong-tin-cap-nhat', [ViTriDatController::class, 'capnhatViTriDat']);
         Route::delete('/thong-tin-xoa/{id}', [ViTriDatController::class, 'xoaViTriDat']);
     });
+    //xong id=8
     Route::group(['prefix'  =>  '/cam-giam-soat'], function () {
         Route::get('/lay-du-lieu', [CamGiamSoatController::class, 'getData']);
         Route::post('/them-du-lieu', [CamGiamSoatController::class, 'themCamGiamSoat']);
         Route::post('/thong-tin-cap-nhat', [CamGiamSoatController::class, 'capnhatCamGiamSoat']);
         Route::delete('/thong-tin-xoa/{id}', [CamGiamSoatController::class, 'xoaCamGiamSoat']);
     });
-
+    // xong id = 10
     Route::group(['prefix'  =>  '/bao-cao-khach-vang-lai'], function () {
         Route::get('/lay-du-lieu', [BaoCaoKhachVangLaiController::class, 'getData']);
         Route::post('/them-du-lieu', [BaoCaoKhachVangLaiController::class, 'themBaoCaoKhachVangLai']);
@@ -150,7 +160,7 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/xoa-du-lieu', [BaoCaoKhachVangLaiController::class, 'xoaBaoCaoKhachVangLai']);
 
     });
-
+    // xong id=6
     Route::group(['prefix'  =>  '/bao-cao-su-co'], function () {
         Route::get('/lay-du-lieu', [BaoCaoSuCoController::class, 'getData']);
         Route::post('/them-du-lieu', [BaoCaoSuCoController::class, 'themBaoCaoSuCo']);
@@ -158,12 +168,13 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::delete('/thong-tin-xoa/{id}', [BaoCaoSuCoController::class, 'xoaBaoCaoSuCo']);
         Route::post('/xu-ly-bao-cao', [BaoCaoSuCoController::class, 'xuLyBaoCaoSuCo']);
     });
+    // xong id=7
     Route::group(['prefix'  =>  '/thong-bao'], function () {
         Route::get('/lay-du-lieu', [AdminThongBaoController::class, 'getData']);
         Route::post('/them-du-lieu', [AdminThongBaoController::class, 'themThongBao']);
         Route::delete('/thong-tin-xoa/{id}', [AdminThongBaoController::class, 'xoaThongBao']);
     });
-
+    // xong id=9
     Route::group(['prefix'  =>  '/chi-tiet-bai-xe'], function () {
         Route::get('/lay-du-lieu', [ChiTietBaiXeController::class, 'getData']);
     });

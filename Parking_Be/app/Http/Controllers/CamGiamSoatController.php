@@ -11,6 +11,14 @@ class CamGiamSoatController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = CamGiamSoat::join('bai_xes', 'bai_xes.id', 'cam_giam_soats.id_bai_xe')
             ->join('vi_tri_dats', 'vi_tri_dats.id', 'cam_giam_soats.id_vi_tri')
             ->select('cam_giam_soats.*', 'bai_xes.ten_bai', 'vi_tri_dats.vi_tri_dat')
@@ -72,7 +80,7 @@ class CamGiamSoatController extends Controller
     }
     public function xoaCamGiamSoat(Request $request)
     {
-         $id_chuc_nang = 8;
+        $id_chuc_nang = 8;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([

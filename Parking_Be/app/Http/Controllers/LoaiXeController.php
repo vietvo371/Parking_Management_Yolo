@@ -11,6 +11,14 @@ class LoaiXeController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $loaiXe = LoaiXe::all();
         return response()->json([
             'status' => true,
@@ -20,6 +28,14 @@ class LoaiXeController extends Controller
     }
     public function themLoaiXe(ThemLoaiXeRequest $request)
     {
+        $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $loaiXe = LoaiXe::create([
             'ten_loai_xe' => $request->ten_loai_xe,
             'tien_thu_giu_xe' => $request->tien_thu_giu_xe,
@@ -32,6 +48,14 @@ class LoaiXeController extends Controller
     }
     public function capnhatLoaiXe(CapNhatLoaiXeRequest $request)
     {
+        $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $loaiXe = LoaiXe::find($request->id);
         $loaiXe->update([
             'ten_loai_xe' => $request->ten_loai_xe,
@@ -46,6 +70,14 @@ class LoaiXeController extends Controller
 
     public function doiTrangThaiLoaiXe(Request $request)
     {
+        $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $loaiXe = LoaiXe::find($request->id);
         $loaiXe->trang_thai = $request->trang_thai;
         $loaiXe->save();
@@ -57,6 +89,14 @@ class LoaiXeController extends Controller
     }
     public function xoaLoaiXe(Request $request)
     {
+        $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $loaiXe = LoaiXe::find($request->id);
         if ($loaiXe) {
             $loaiXe->delete();

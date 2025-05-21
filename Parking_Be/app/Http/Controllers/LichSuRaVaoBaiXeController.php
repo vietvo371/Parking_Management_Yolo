@@ -12,7 +12,14 @@ class LichSuRaVaoBaiXeController extends Controller
 {
     public function getData(Request $request)
     {
-
+        $id_chuc_nang = 11;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $lichSuRaVao = LichSuRaVaoBaiXe::join('xes', 'xes.id', '=', 'lich_su_ra_vao_bai_xes.id_xe_cu_dan')
             ->join('cu_dans', 'cu_dans.id', '=', 'xes.id_cu_dan')
             ->select(

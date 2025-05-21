@@ -10,6 +10,14 @@ class ChucVuController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $chucvu = ChucVu::all();
         return response()->json([
             'status' => true,
@@ -19,6 +27,14 @@ class ChucVuController extends Controller
     }
     public function themChucVu(TaoChucVuRequest $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         ChucVu::create([
             'ten_chuc_vu'   => $request->ten_chuc_vu,
             'slug_chuc_vu'  => $request->slug_chuc_vu,
@@ -31,6 +47,14 @@ class ChucVuController extends Controller
     }
     public function timChucVu(Request $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $key    = '%' . $request->key . '%';
         $dataAdmin   = ChucVu::select('chuc_vus.*')
             ->where('ten_chuc_vu', 'like', $key)
@@ -43,6 +67,14 @@ class ChucVuController extends Controller
     }
     public function capnhatChucVu(Request $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $chucvu = ChucVu::find($request->id);
         if ($chucvu) {
             $chucvu->update([
@@ -62,6 +94,14 @@ class ChucVuController extends Controller
     }
     public function doiTrangThaiChucVu(Request $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $chucvu = ChucVu::find($request->id);
         if ($chucvu) {
             $chucvu->update([
@@ -80,6 +120,14 @@ class ChucVuController extends Controller
     }
     public function xoaChucVu(Request $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $chucvu = ChucVu::find($request->id);
         if ($chucvu) {
             $chucvu->delete();

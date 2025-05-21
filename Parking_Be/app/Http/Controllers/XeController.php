@@ -14,12 +14,20 @@ class XeController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 2;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $xe = Xe::join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
-        ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
-        ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
-        ->select('xes.*', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha')
-        ->orderBy('xes.created_at', 'desc')
-        ->get();
+            ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
+            ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
+            ->select('xes.*', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha')
+            ->orderBy('xes.created_at', 'desc')
+            ->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu thành công',
@@ -30,16 +38,34 @@ class XeController extends Controller
     {
         $user = $this->isCuDan();
         $xe = Xe::join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
-        ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
-        ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
-        ->leftJoin('giao_diches', 'xes.id', '=', 'giao_diches.id_xe')
-        ->where('xes.id_cu_dan', $user->id)
-        ->select('xes.*', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha',
-            DB::raw('MAX(giao_diches.ngay_het_han) as ngay_het_han'))
-        ->groupBy('xes.id', 'cu_dans.ho_va_ten', 'loai_xes.ten_loai_xe', 'can_hos.so_can_ho', 'can_hos.ten_toa_nha',
-            'xes.id_cu_dan', 'xes.bien_so_xe', 'xes.id_loai_xe', 'xes.trang_thai_duyet', 'xes.is_con_han', 'xes.created_at', 'xes.updated_at')
-        ->orderBy('xes.created_at', 'desc')
-        ->get();
+            ->join('loai_xes', 'xes.id_loai_xe', '=', 'loai_xes.id')
+            ->join('can_hos', 'cu_dans.id_can_ho', '=', 'can_hos.id')
+            ->leftJoin('giao_diches', 'xes.id', '=', 'giao_diches.id_xe')
+            ->where('xes.id_cu_dan', $user->id)
+            ->select(
+                'xes.*',
+                'cu_dans.ho_va_ten',
+                'loai_xes.ten_loai_xe',
+                'can_hos.so_can_ho',
+                'can_hos.ten_toa_nha',
+                DB::raw('MAX(giao_diches.ngay_het_han) as ngay_het_han')
+            )
+            ->groupBy(
+                'xes.id',
+                'cu_dans.ho_va_ten',
+                'loai_xes.ten_loai_xe',
+                'can_hos.so_can_ho',
+                'can_hos.ten_toa_nha',
+                'xes.id_cu_dan',
+                'xes.bien_so_xe',
+                'xes.id_loai_xe',
+                'xes.trang_thai_duyet',
+                'xes.is_con_han',
+                'xes.created_at',
+                'xes.updated_at'
+            )
+            ->orderBy('xes.created_at', 'desc')
+            ->get();
 
         return response()->json([
             'status' => true,
@@ -102,7 +128,7 @@ class XeController extends Controller
 
     public function themXe(ThemXeRequest $request)
     {
-         $id_chuc_nang = 2;
+        $id_chuc_nang = 2;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -112,9 +138,9 @@ class XeController extends Controller
         }
 
         Xe::create([
-           'id_cu_dan'          => $request->id_cu_dan,
-           'bien_so_xe'         => $request->bien_so_xe,
-           'id_loai_xe'         => $request->id_loai_xe,
+            'id_cu_dan'          => $request->id_cu_dan,
+            'bien_so_xe'         => $request->bien_so_xe,
+            'id_loai_xe'         => $request->id_loai_xe,
         ]);
         return response()->json([
             'status'   => true,
@@ -123,7 +149,7 @@ class XeController extends Controller
     }
     public function capnhatXe(CapNhapXeRequest $request)
     {
-         $id_chuc_nang = 2;
+        $id_chuc_nang = 2;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -152,7 +178,7 @@ class XeController extends Controller
     }
     public function doiTrangThaiXe(Request $request)
     {
-         $id_chuc_nang = 2;
+        $id_chuc_nang = 2;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -178,7 +204,7 @@ class XeController extends Controller
     }
     public function xoaXe(Request $request)
     {
-         $id_chuc_nang = 2;
+        $id_chuc_nang = 2;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -202,7 +228,7 @@ class XeController extends Controller
     }
     public function duyetXe(Request $request)
     {
-         $id_chuc_nang = 2;
+        $id_chuc_nang = 2;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -226,5 +252,4 @@ class XeController extends Controller
             ]);
         }
     }
-
 }

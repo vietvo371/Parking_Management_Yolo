@@ -9,6 +9,14 @@ class GiaoDichController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 5;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $giaodichs = GiaoDich::join('xes', 'giao_diches.id_xe', '=', 'xes.id')
             ->join('cu_dans', 'xes.id_cu_dan', '=', 'cu_dans.id')
             ->select('giao_diches.*', 'xes.bien_so_xe', 'cu_dans.ho_va_ten as ten_cu_dan', 'cu_dans.so_du')
@@ -22,7 +30,7 @@ class GiaoDichController extends Controller
     }
     public function themGiaoDich(Request $request)
     {
-         $id_chuc_nang = 5;
+        $id_chuc_nang = 5;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([

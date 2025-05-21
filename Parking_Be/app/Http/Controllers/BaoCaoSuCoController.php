@@ -11,7 +11,15 @@ class BaoCaoSuCoController extends Controller
 {
     public function getData(Request $request)
     {
-        $baoCaoSuCo = BaoCaoSuCo::join('cu_dans', 'bao_cao_su_cos.id_cu_dan_bao_cao','cu_dans.id')
+        $id_chuc_nang = 6;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
+        $baoCaoSuCo = BaoCaoSuCo::join('cu_dans', 'bao_cao_su_cos.id_cu_dan_bao_cao', 'cu_dans.id')
             ->leftJoin('admins', 'bao_cao_su_cos.id_admin_xu_ly', 'admins.id')
             ->select('bao_cao_su_cos.*', 'cu_dans.ho_va_ten as ten_cu_dan', 'admins.ho_va_ten as ten_admin_xu_ly')
             ->get();
@@ -25,7 +33,7 @@ class BaoCaoSuCoController extends Controller
 
     public function themBaoCaoSuCo(Request $request)
     {
-       $id_chuc_nang = 6;
+        $id_chuc_nang = 6;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -34,7 +42,7 @@ class BaoCaoSuCoController extends Controller
             ]);
         }
         $user = $this->isCuDan();
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'status' => false,
                 'message' => 'Bạn không phải là cư dân'
@@ -116,7 +124,7 @@ class BaoCaoSuCoController extends Controller
             ]);
         }
         $admin = $this->isAdmin();
-        if(!$admin){
+        if (!$admin) {
             return response()->json([
                 'status' => false,
                 'message' => 'Bạn không có quyền thực hiện hành động này'
@@ -157,7 +165,7 @@ class BaoCaoSuCoController extends Controller
     public function themBaoCaoSuCoClient(ThemBaoCaoClientRequest $request)
     {
         $user = $this->isCuDan();
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'status' => false,
                 'message' => 'Bạn không có quyền thực hiện hành động này'
@@ -186,7 +194,7 @@ class BaoCaoSuCoController extends Controller
                 'message' => 'Báo cáo sự cố không tồn tại'
             ]);
         }
-        if($data->trang_thai_xu_ly == 1){
+        if ($data->trang_thai_xu_ly == 1) {
             return response()->json([
                 'status' => false,
                 'message' => 'Báo cáo sự cố đã được xử lý không thể cập nhật'

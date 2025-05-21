@@ -12,6 +12,14 @@ class BaiXeController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $baiXe = BaiXe::where('trang_thai', 1)->get();
         return response()->json([
             'data' => $baiXe,
@@ -19,6 +27,14 @@ class BaiXeController extends Controller
     }
     public function themBaiXe(themBaiXeRequest $request)
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $baiXe = BaiXe::create([
             'ten_bai' => $request->ten_bai,
             'suc_chua_o_to' => $request->suc_chua_o_to,
@@ -49,6 +65,14 @@ class BaiXeController extends Controller
     }
     public function capnhatBaiXe(capnhatBaiXeRequest $request)
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $baiXe = BaiXe::find($request->id);
         if ($baiXe) {
             $baiXe->update([
@@ -97,6 +121,14 @@ class BaiXeController extends Controller
     }
     public function doiTrangThaiBaiXe(Request $request)
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $baiXe = BaiXe::find($request->id);
         if ($baiXe) {
             $baiXe->update([
@@ -121,6 +153,14 @@ class BaiXeController extends Controller
     }
     public function xoaBaiXe($id)
     {
+        $id_chuc_nang = 8;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         // Xóa chi tiết bãi xe trước
         ChiTietBaiXe::where('id_bai_xe', $id)->delete();
 
