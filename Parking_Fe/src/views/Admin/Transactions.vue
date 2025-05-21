@@ -2,12 +2,12 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold tracking-tight">Quản lý giao dịch</h1>
-      <div class="flex items-center space-x-2">
+      <!-- <div class="flex items-center space-x-2">
         <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center" @click="showAddModal = true">
           <Plus class="mr-2 h-4 w-4" />
           Thêm giao dịch
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Thống kê -->

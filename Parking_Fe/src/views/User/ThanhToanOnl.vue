@@ -13,8 +13,7 @@
         </div>
         <div class="ml-3">
           <p class="text-sm text-blue-700 dark:text-blue-300">
-            Chỉ những xe đã hết hạn mới có thể được chọn để thanh toán. Vui lòng chọn một xe đã hết hạn. Phí gửi xe là
-            {{ formatCurrency(monthlyFee) }}/tháng.
+            Chỉ những xe đã hết hạn mới có thể được chọn để thanh toán. Vui lòng chọn một xe đã hết hạn. Phí gửi xe sẽ được hiển thị theo từng loại xe.
           </p>
         </div>
       </div>
@@ -170,7 +169,7 @@
 
                   <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Phí hàng tháng</p>
-                    <p class="font-medium text-blue-600">{{ formatCurrency(monthlyFee) }}</p>
+                    <p class="font-medium text-blue-600">{{ formatCurrency(vehicle.tien_thu_giu_xe) }}</p>
                   </div>
                 </div>
               </div>
@@ -436,7 +435,7 @@
 
             <div class="flex justify-between mb-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">Số tiền</span>
-              <span class="text-sm font-medium">100.000đ</span>
+              <span class="text-sm font-medium">{{ formatCurrency(monthlyFee) }}</span>
             </div>
 
             <div v-if="selectedVehicle" class="flex justify-between">
@@ -539,7 +538,7 @@ export default {
       isProcessing: false,
       showSuccessModal: false,
       paymentInfo: { transactionId: '', paymentDate: null, method: '', amount: 0 },
-      monthlyFee: 100000, // Phí gửi xe hàng tháng: 100.000đ
+      monthlyFee: 0, // Will be calculated based on vehicle type
       vietQRUrl: '', // URL mã QR từ API
       isLoadingQR: false, // Trạng thái đang tải mã QR,
       obj_checkout: {}
@@ -576,6 +575,7 @@ export default {
     getXe() {
       baseRequestUser.get('user/lay-du-lieu-xe').then((res) => {
         this.userVehicles = res.data.data
+        this.monthlyFee = res.data.data.tien_thu_giu_xe
       })
     },
     async fetchData() {
@@ -588,6 +588,8 @@ export default {
     calculateTotal() {
       if (this.selectedVehicle) {
         this.discount = 0
+        // Set monthly fee based on vehicle's tien_thu_giu_xe
+        this.monthlyFee = this.selectedVehicle.tien_thu_giu_xe
       }
 
       // Nếu đang chọn phương thức chuyển khoản, cập nhật mã QR
