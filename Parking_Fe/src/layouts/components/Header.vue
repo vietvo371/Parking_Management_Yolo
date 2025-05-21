@@ -48,7 +48,7 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    {{ notification.time }}
+                    {{ convertDate(notification.created_at) }}
                   </div>
                 </div>
               </div>
@@ -92,7 +92,6 @@ export default {
     const isDark = ref(false);
     const showNotifications = ref(false);
     const notifications = ref([]);
-   
     const toggleTheme = () => {
       isDark.value = !isDark.value;
       document.documentElement.classList.toggle("dark", isDark.value);
@@ -109,7 +108,15 @@ export default {
         showNotifications.value = false;
       }
     };
-
+    const convertDate = (date) => {
+      return new Date(date).toLocaleDateString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    };
     const getThongBao = async () => {
       try {
         const res = await baseRequest.get("admin/lay-du-lieu-thong-bao");
@@ -147,6 +154,7 @@ export default {
       notifications,
       toggleTheme,
       toggleNotifications,
+      convertDate,
     };
   },
 };
