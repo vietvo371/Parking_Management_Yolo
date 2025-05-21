@@ -221,5 +221,9 @@ Route::group(['prefix'  =>  '/user'], function () {
     //Thông báo
     Route::get('/lay-du-lieu-thong-bao', [AdminThongBaoController::class, 'getDataThongBaoClient']);
 
+    //Lịch sử ra vào bãi
+    Route::get('/lay-du-lieu-lich-su-ra-vao-bai', [LichSuRaVaoBaiXeController::class, 'getDataLichSuRaVaoBaiClient']);
+
+
 });
 

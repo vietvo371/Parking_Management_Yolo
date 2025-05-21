@@ -30,4 +30,29 @@ class LichSuRaVaoBaiXeController extends Controller
             'data' => $lichSuRaVao
         ]);
     }
+
+    public function getDataLichSuRaVaoBaiClient(Request $request)
+    {
+        $user = $this->isCuDan();
+
+        $lichSuRaVao = LichSuRaVaoBaiXe::join('xes', 'xes.id', '=', 'lich_su_ra_vao_bai_xes.id_xe_cu_dan')
+            ->join('cu_dans', 'cu_dans.id', '=', 'xes.id_cu_dan')
+            ->join('chi_tiet_bai_xes', 'chi_tiet_bai_xes.id', '=', 'lich_su_ra_vao_bai_xes.id_vi_tri_trong_bai')
+            ->where('xes.id_cu_dan', 1)
+            ->select(
+                'lich_su_ra_vao_bai_xes.*',
+                'xes.bien_so_xe',
+                'cu_dans.ho_va_ten',
+                'cu_dans.so_dien_thoai',
+                'chi_tiet_bai_xes.thu_tu',
+                'chi_tiet_bai_xes.loai_xe',
+            )
+            ->orderBy('lich_su_ra_vao_bai_xes.created_at', 'desc')
+            ->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Lịch sử ra vào bãi xe',
+            'data' => $lichSuRaVao
+        ]);
+    }
 }
