@@ -19,7 +19,7 @@ class ThanhToanController extends Controller
             "PASSWORD"   => "Hakn04082003",
             "DAY_BEGIN" => Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y'),
             "DAY_END"   => Carbon::now('Asia/Ho_Chi_Minh')->format('d/m/Y'),
-            "NUMBER_MB"  => "0708585120"
+            "NUMBER_MB"  => "7722222222229"
         ];
 
         try {
@@ -37,6 +37,8 @@ class ThanhToanController extends Controller
 
                 $ma_hoa_don = $this->convertToId($value['description']);
                 $hoaDon = GiaoDich::where('ma_giao_dich', $ma_hoa_don)->first();
+
+                // dd($hoaDon);
 
                 // Kiểm tra hóa đơn hợp lệ
                 if (!$hoaDon || $hoaDon->trang_thai_giao_dich == 1) {
@@ -129,7 +131,10 @@ class ThanhToanController extends Controller
     }
     public function convertToId($description)
     {
-        preg_match('/(Hd[a-zA-Z0-9]+)-/i', $description, $matches);
+        // Match HD followed by alphanumeric characters, handling both formats:
+        // 1. HD directly followed by alphanumeric
+        // 2. HD within a longer string (like .802265.HD09d8a7.)
+        preg_match('/(HD[0-9a-zA-Z]+)/i', $description, $matches);
         return $matches[1] ?? null;
     }
     public function getQrPayMent(Request $request)
