@@ -10,19 +10,9 @@ use Illuminate\Http\Request;
 
 class RaVaoBaicontroller extends Controller
 {
-
-
     public function ghiNhanXeVao(ThemKhachVangLaiRequest $request)
     {
-         $id_chuc_nang = 9;
-        $check = $this->checkQuyen($id_chuc_nang);
-        if ($check == false) {
-            return response()->json([
-                'status'  =>  false,
-                'message' =>  'Bạn không có quyền chức năng này'
-            ]);
-        }
-         $id_chuc_nang = 9;
+        $id_chuc_nang = 9;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -50,7 +40,7 @@ class RaVaoBaicontroller extends Controller
     }
     public function datTruoc(Request $request)
     {
-         $id_chuc_nang = 9;
+        $id_chuc_nang = 9;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -75,7 +65,7 @@ class RaVaoBaicontroller extends Controller
     }
     public function ghiNhanXeRa(Request $request)
     {
-         $id_chuc_nang = 9;
+        $id_chuc_nang = 9;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([

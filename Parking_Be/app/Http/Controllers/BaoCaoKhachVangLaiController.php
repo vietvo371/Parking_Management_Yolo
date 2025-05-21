@@ -11,6 +11,14 @@ class BaoCaoKhachVangLaiController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 4;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = BaoCaoKhachVangLai::join('admins', 'admins.id','bao_cao_khach_vang_lais.id_admin')
                                 ->join('chi_tiet_bai_xes', 'chi_tiet_bai_xes.id','bao_cao_khach_vang_lais.id_vi_tri_trong_bai')
                                 ->join('bai_xes', 'bai_xes.id','chi_tiet_bai_xes.id_bai_xe')
@@ -27,7 +35,6 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function themBaoCaoKhachVangLai(ThemKhachVangLaiRequest $request)
     {
-
         $id_chuc_nang = 4;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
@@ -57,7 +64,7 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function capnhatBaoCaoKhachVangLai(Request $request)
     {
-         $id_chuc_nang = 4;
+        $id_chuc_nang = 4;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -87,15 +94,7 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function xoaBaoCaoKhachVangLai(Request $request)
     {
-         $id_chuc_nang = 4;
-        $check = $this->checkQuyen($id_chuc_nang);
-        if ($check == false) {
-            return response()->json([
-                'status'  =>  false,
-                'message' =>  'Bạn không có quyền chức năng này'
-            ]);
-        }
-         $id_chuc_nang = 4;
+        $id_chuc_nang = 4;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -127,7 +126,7 @@ class BaoCaoKhachVangLaiController extends Controller
 
     public function thanhToanBaoCaoKhachVangLai(Request $request)
     {
-         $id_chuc_nang = 4;
+        $id_chuc_nang = 4;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([

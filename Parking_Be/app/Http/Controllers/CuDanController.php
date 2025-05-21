@@ -16,8 +16,16 @@ class CuDanController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 3;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $cudan = CuDan::join('can_hos', 'can_hos.id', '=', 'cu_dans.id_can_ho')
-            ->leftJoin('xes', function($join) {
+            ->leftJoin('xes', function ($join) {
                 $join->on('xes.id_cu_dan', '=', 'cu_dans.id');
             })
             ->select(
@@ -63,7 +71,7 @@ class CuDanController extends Controller
     }
     public function themCuDan(ThemCuDanRequest $request)
     {
-         $id_chuc_nang = 3;
+        $id_chuc_nang = 3;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -116,7 +124,6 @@ class CuDanController extends Controller
     }
     public function doiTrangThaiCuDan(Request $request)
     {
-
         $id_chuc_nang = 3;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
@@ -143,7 +150,14 @@ class CuDanController extends Controller
     }
     public function xoaCuDan(Request $request)
     {
-
+        $id_chuc_nang = 3;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $cudan = CuDan::find($request->id);
         if ($cudan) {
             $cudan->delete();
@@ -278,8 +292,7 @@ class CuDanController extends Controller
     }
     public function duyetCuDan(Request $request)
     {
-
-        $id_chuc_nang = 6;
+        $id_chuc_nang = 3;
         $check = $this->checkQuyen($id_chuc_nang);
         if ($check == false) {
             return response()->json([
@@ -287,7 +300,6 @@ class CuDanController extends Controller
                 'message' =>  'Bạn không có quyền chức năng này'
             ]);
         }
-
         $cudan = CuDan::find($request->id);
         if (!$cudan) {
             return response()->json([
@@ -313,14 +325,14 @@ class CuDanController extends Controller
             ->leftJoin('loai_xes', 'loai_xes.id', '=', 'xes.id_loai_xe')
             ->leftJoin('giao_diches', 'giao_diches.id_xe', '=', 'xes.id')
             ->where('cu_dans.id', $user->id)
-            ->select('cu_dans.*', 'can_hos.ten_toa_nha','can_hos.so_can_ho', 'xes.bien_so_xe', 'loai_xes.ten_loai_xe', 'giao_diches.ngay_het_han')
+            ->select('cu_dans.*', 'can_hos.ten_toa_nha', 'can_hos.so_can_ho', 'xes.bien_so_xe', 'loai_xes.ten_loai_xe', 'giao_diches.ngay_het_han')
             ->orderBy('giao_diches.ngay_het_han', 'desc')
             ->first();
         // $lich_su_thanh_toan = DB::table('giao_diches')->where('id_xe', $user->id)->orderBy('created_at', 'desc')->get();
         $xe = Xe::join('giao_diches', 'giao_diches.id_xe', '=', 'xes.id')
             ->where('xes.id_cu_dan', $user->id)
             ->whereNotNull('giao_diches.ngay_het_han')
-            ->select('xes.bien_so_xe', 'giao_diches.ngay_het_han','giao_diches.ma_giao_dich')
+            ->select('xes.bien_so_xe', 'giao_diches.ngay_het_han', 'giao_diches.ma_giao_dich')
             ->orderBy('xes.created_at', 'desc')
             ->get();
         $lich_su_login = DB::table('personal_access_tokens')->where('name', "cu_dan_token")->select('id', 'created_at', 'updated_at')->get();

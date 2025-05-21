@@ -100,6 +100,14 @@ class AdminController extends Controller
     }
     public function getData()
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $data = Admin::join('chuc_vus', 'admins.id_chuc_vu', '=', 'chuc_vus.id')
             ->select('admins.*', 'chuc_vus.ten_chuc_vu')
             ->where('admins.is_block', 0)
@@ -197,7 +205,14 @@ class AdminController extends Controller
     }
     public function doiTrangThaiAdmin(Request $request)
     {
-
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $admin = Admin::find($request->id);
         if ($admin->is_master == 1) {
             return response()->json([
@@ -219,6 +234,14 @@ class AdminController extends Controller
     }
     public function doiPass(DoiPassNhanSuReuqest $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $dangLogin = $this->isAdmin();
         $admin = Admin::find($request->id);
         if ($admin->is_master == 1 && $admin->id != $dangLogin->id) {
@@ -245,6 +268,14 @@ class AdminController extends Controller
 
     public function timAdmin(Request $request)
     {
+        $id_chuc_nang = 12;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $key    = '%' . $request->key . '%';
         $chuc_vu_admin   = ChucVu::select('chuc_vus.*')
             ->get(); // get là ra 1  sách

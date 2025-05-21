@@ -12,6 +12,14 @@ class AdminThongBaoController extends Controller
 {
     public function getData()
     {
+        $id_chuc_nang = 7;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $today = Carbon::today();
         $nextWeek = Carbon::today()->addDays(7);
 
@@ -43,6 +51,14 @@ class AdminThongBaoController extends Controller
     }
     public function themThongBao(Request $request)
     {
+        $id_chuc_nang = 7;
+        $check = $this->checkQuyen($id_chuc_nang);
+        if ($check == false) {
+            return response()->json([
+                'status'  =>  false,
+                'message' =>  'Bạn không có quyền chức năng này'
+            ]);
+        }
         $user = $this->isAdmin();
         if(!$user){
             return response()->json([
