@@ -178,7 +178,7 @@ export default {
   mounted() {
     this.getXe();
     this.getLoaiXe();
-    this.getCuDan();
+    // this.getCuDan();
   },
   methods: {
     filterOption() {
@@ -213,6 +213,10 @@ export default {
       baseRequest.get("admin/xe/lay-du-lieu")
         .then((res) => {
           this.vehicles = res.data.data;
+          this.danh_sach_cudan = res.data.cudan;
+          this.list_cu_dan = res.data.cudan;
+
+
         })
         .catch((err) => {
           console.log(err);
@@ -227,16 +231,16 @@ export default {
           console.log(err);
         });
     },
-    getCuDan() {
-      baseRequest.get("admin/cu-dan/lay-du-lieu")
-        .then((res) => {
-          this.list_cu_dan = res.data.data;
-          this.danh_sach_cudan = res.data.data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
+    // getCuDan() {
+    //   baseRequest.get("admin/cu-dan/lay-du-lieu")
+    //     .then((res) => {
+    //       this.list_cu_dan = res.data.data;
+    //       this.danh_sach_cudan = res.data.data;
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // },
     capNhatXe() {
       const notificationStore = useNotificationStore();
       baseRequest.post("admin/xe/thong-tin-cap-nhat", this.update_xe)

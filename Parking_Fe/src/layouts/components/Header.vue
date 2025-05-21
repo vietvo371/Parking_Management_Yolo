@@ -42,7 +42,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="whitespace-pre-line text-sm text-gray-900 dark:text-gray-100 leading-relaxed">
-                    {{ notification.message }}
+                    {{ notification.noi_dung_thong_bao }}
                   </div>
                   <div class="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

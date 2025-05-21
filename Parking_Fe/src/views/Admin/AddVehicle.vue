@@ -312,7 +312,7 @@ export default {
   },
   mounted() {
     this.getLoaiXe();
-    this.getDanhSachCudan();
+    // this.getDanhSachCudan();
     this.getDanhSachXe();
   },
   computed: {
@@ -405,13 +405,15 @@ export default {
     getDanhSachXe() {
       baseRequest.get("admin/xe/lay-du-lieu").then((res) => {
         this.danh_sach_xe = res.data.data;
+        this.danh_sach_cudan = res.data.cudan;
+
       });
     },
-    getDanhSachCudan() {
-      baseRequest.get("admin/cu-dan/lay-du-lieu").then((res) => {
-        this.danh_sach_cudan = res.data.data;
-      });
-    },
+    // getDanhSachCudan() {
+    //   baseRequest.get("admin/cu-dan/lay-du-lieu").then((res) => {
+    //     this.danh_sach_cudan = res.data.data;
+    //   });
+    // },
     themXe() {
       const notificationStore = useNotificationStore();
       baseRequest.post("admin/xe/them-du-lieu", this.create_xe)

@@ -535,7 +535,7 @@ export default {
   },
   methods: {
     getXe() {
-      baseRequest.get("admin/xe/lay-du-lieu")
+      baseRequest.get("admin/giao-dich/lay-du-lieu-xe")
         .then((res) => {
           this.xeCuDan = res.data.data;
         })
