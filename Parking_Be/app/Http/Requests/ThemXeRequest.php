@@ -23,7 +23,7 @@ class ThemXeRequest extends FormRequest
     {
         return [
             'id_cu_dan'          => 'required|integer',
-            'bien_so_xe'         => 'required|string|max:255',
+            'bien_so_xe'         => 'required|string|max:255|unique:xes,bien_so_xe|regex:/^[0-9]{2}-[A-Z][0-9][ ][0-9]{3}\.[0-9]{2}$/',
             'id_loai_xe'         => 'required|integer',
         ];
     }
@@ -36,7 +36,8 @@ class ThemXeRequest extends FormRequest
             'bien_so_xe.string'        => 'Biển số là ký tự nhỏ hơn 225.',
             'id_loai_xe.required'        => 'loại xe là bắt buộc.',
             'id_loai_xe.integer'        => 'loại xe là integer.',
-
+            'bien_so_xe.regex'        => 'Biển số xe không hợp lệ.',
+            'bien_so_xe.unique'        => 'Biển số xe đã tồn tại.',
         ];
     }
 }

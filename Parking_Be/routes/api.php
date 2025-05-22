@@ -14,6 +14,7 @@ use App\Http\Controllers\ChucVuController;
 use App\Http\Controllers\CuDanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GiaoDichController;
+use App\Http\Controllers\LicensePlateController;
 use App\Http\Controllers\LichSuRaVaoBaiXeController;
 use App\Http\Controllers\LoaiXeController;
 use App\Http\Controllers\RaVaoBaicontroller;
@@ -154,6 +155,9 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::post('/them-du-lieu', [CamGiamSoatController::class, 'themCamGiamSoat']);
         Route::post('/thong-tin-cap-nhat', [CamGiamSoatController::class, 'capnhatCamGiamSoat']);
         Route::delete('/thong-tin-xoa/{id}', [CamGiamSoatController::class, 'xoaCamGiamSoat']);
+
+        Route::post('/scan-bien-so', [LicensePlateController::class, 'scanLicensePlate']);
+        Route::post('/cho-phep-vao-bai', [LicensePlateController::class, 'allowEntry']);
     });
     // xong id = 10
     Route::group(['prefix'  =>  '/bao-cao-khach-vang-lai'], function () {
@@ -242,4 +246,10 @@ Route::group(['prefix'  =>  '/user'], function () {
 
 
 });
+
+
+
+
+
+
 

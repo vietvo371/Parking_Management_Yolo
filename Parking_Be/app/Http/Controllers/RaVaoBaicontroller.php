@@ -6,11 +6,12 @@ use App\Http\Requests\ThemKhachVangLaiRequest;
 use App\Models\BaoCaoKhachVangLai;
 use App\Models\ChiTietBaiXe;
 use App\Models\LichSuRaVaoBaiXe;
+use App\Models\Xe;
 use Illuminate\Http\Request;
 
 class RaVaoBaicontroller extends Controller
 {
-    public function ghiNhanXeVao(ThemKhachVangLaiRequest $request)
+    public function ghiNhanXeVao(Request $request)
     {
         $id_chuc_nang = 9;
         $check = $this->checkQuyen($id_chuc_nang);
@@ -21,16 +22,18 @@ class RaVaoBaicontroller extends Controller
             ]);
         }
         $user = $this->isAdmin();
+
         $vitri = ChiTietBaiXe::find($request->id_vi_tri_trong_bai);
-        $data = BaoCaoKhachVangLai::create([
-            'id_admin'              => $user->id,
-            'ho_va_ten'             => $request->ho_va_ten,
-            'so_dien_thoai'         => $request->so_dien_thoai,
-            'thoi_gian_vao'         => now()->setTimezone('Asia/Ho_Chi_Minh'),
-            'id_vi_tri_trong_bai'   => $vitri->id
+        $xe = Xe::where('bien_so_xe', $request->bien_so_xe)->first();
+        $data = LichSuRaVaoBaiXe::create([
+            'id_xe_cu_dan' => $xe->id,
+            'id_camera_quet' => 1,
+            'thoi_gian_vao' => now()->setTimezone('Asia/Ho_Chi_Minh'),
+            'thoi_gian_ra' => null,
+            'id_vi_tri_trong_bai' => $vitri->id
         ]);
         $vitri->trang_thai = ChiTietBaiXe::TRANG_THAI_DA_CO_XE;
-        $vitri->is_khach_hang = 1;
+        $vitri->is_cu_dan = 1;
         $vitri->save();
         return response()->json([
             'status' => true,

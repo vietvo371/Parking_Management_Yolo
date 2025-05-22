@@ -19,14 +19,14 @@ class XeSeeder extends Seeder
 
             [
                 'id_cu_dan' => 1,
-                'bien_so_xe' => '30A-00001',
+                'bien_so_xe' => '30A-123.45',
                 'id_loai_xe' => 1,
                 'trang_thai_duyet' => 1,
                 'is_con_han' => true,
             ],
             [
                 'id_cu_dan' => 2,
-                'bien_so_xe' => '30A-00002',
+                'bien_so_xe' => '29P1-12345',
                 'id_loai_xe' => 2,
                 'trang_thai_duyet' => 0,
                 'is_con_han' => false,
@@ -719,8 +719,23 @@ class XeSeeder extends Seeder
         'trang_thai_duyet' => 1,
         'is_con_han' => true,
     ],
+    [
+        'id_cu_dan' => 1,
+        'bien_so_xe' => '51F-068.48',
+        'id_loai_xe' => 1,
+        'trang_thai_duyet' => 1,
+        'is_con_han' => true,
+    ],
+    [
+        'id_cu_dan' => 2,
+        'bien_so_xe' => '77-F1 305.77',
+        'id_loai_xe' => 2,
+        'trang_thai_duyet' => 1,
+        'is_con_han' => true,
+    ],
 
-        ];
+
+    ];
 
         DB::table('xes')->insert($data);
     }

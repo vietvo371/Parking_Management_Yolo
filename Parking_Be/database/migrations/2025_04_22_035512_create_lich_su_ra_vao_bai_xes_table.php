@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('id_xe_cu_dan');
             $table->integer('id_camera_quet');
             $table->dateTime('thoi_gian_vao');
-            $table->dateTime('thoi_gian_ra');
+            $table->dateTime('thoi_gian_ra')->nullable();
             $table->integer('id_vi_tri_trong_bai');
             $table->timestamps();
         });
