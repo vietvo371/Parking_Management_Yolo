@@ -18,6 +18,7 @@ use App\Http\Controllers\LicensePlateController;
 use App\Http\Controllers\LichSuRaVaoBaiXeController;
 use App\Http\Controllers\LoaiXeController;
 use App\Http\Controllers\RaVaoBaicontroller;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\ViTriDatController;
 use App\Http\Controllers\XeController;
@@ -36,6 +37,8 @@ Route::get('/admin/check-token', [AdminController::class, 'checkToken']);
 Route::post('/admin/logout', [AdminController::class, 'logout']);
 
 Route::group(['prefix'  =>  '/admin'], function () {
+    //Báo cáo
+    Route::get('/thong-ke', [StatisticsController::class, 'getOverallStatistics']);
 
     //Thông báo Admin
     Route::get('/lay-du-lieu-thong-bao', [AdminThongBaoController::class, 'getDataThongBaoAdmin']);
@@ -188,24 +191,8 @@ Route::group(['prefix'  =>  '/admin'], function () {
         Route::get('/lay-du-lieu', [ChiTietBaiXeController::class, 'getData']);
     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Statistics route
+    Route::get('/statistics/overall', [StatisticsController::class, 'getOverallStatistics']);
 
 });
 
@@ -244,8 +231,11 @@ Route::group(['prefix'  =>  '/user'], function () {
     //Lịch sử ra vào bãi
     Route::get('/lay-du-lieu-lich-su-ra-vao-bai', [LichSuRaVaoBaiXeController::class, 'getDataLichSuRaVaoBaiClient']);
 
+    //Thống kê
+
 
 });
+
 
 
 

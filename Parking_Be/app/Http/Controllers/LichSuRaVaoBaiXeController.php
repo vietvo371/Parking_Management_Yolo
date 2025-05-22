@@ -45,7 +45,7 @@ class LichSuRaVaoBaiXeController extends Controller
         $lichSuRaVao = LichSuRaVaoBaiXe::join('xes', 'xes.id', '=', 'lich_su_ra_vao_bai_xes.id_xe_cu_dan')
             ->join('cu_dans', 'cu_dans.id', '=', 'xes.id_cu_dan')
             ->join('chi_tiet_bai_xes', 'chi_tiet_bai_xes.id', '=', 'lich_su_ra_vao_bai_xes.id_vi_tri_trong_bai')
-            ->where('xes.id_cu_dan', 1)
+            ->where('xes.id_cu_dan', $user->id)
             ->select(
                 'lich_su_ra_vao_bai_xes.*',
                 'xes.bien_so_xe',

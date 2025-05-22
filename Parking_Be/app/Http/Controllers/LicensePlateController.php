@@ -65,25 +65,29 @@ class LicensePlateController extends Controller
                                 ->where('xes.is_con_han', 1)
                                 ->select('xes.*','cu_dans.ho_va_ten as ten_cu_dan','can_hos.ten_toa_nha as ten_toa_nha','can_hos.so_can_ho as so_can_ho')
                                 ->first();
-             return response()->json([
+            $check_vao_bai = false;
+            if($existingEntry){
+                    $check_vao_bai = ChiTietBaiXe::join('lich_su_ra_vao_bai_xes','lich_su_ra_vao_bai_xes.id_vi_tri_trong_bai','chi_tiet_bai_xes.id')
+                                                ->where('lich_su_ra_vao_bai_xes.id_xe_cu_dan',$existingEntry->id)
+                                                ->where('chi_tiet_bai_xes.trang_thai', ChiTietBaiXe::TRANG_THAI_DA_CO_XE)
+                                                ->where('lich_su_ra_vao_bai_xes.thoi_gian_ra',null)
+                                                ->first();
+            }
+
+            return response()->json([
                 'status'      => true,
                 'message'     => 'Không phát hiện được biển số trong ảnh',
-                'is_con_han'  => false,
-                'is_vao_bai'   => false,
+                'is_con_han'  => $existingEntry ? $existingEntry->is_con_han : false,
+                'is_vao_bai'   => $check_vao_bai ? true : false,
 
                 // 'plate_number' => $licensePlate,
-                'plate_number' => array_map(function($text) {
+                'plate_number' => $licensePlate ? $licensePlate : array_map(function($text) {
                     return $text['DetectedText'];
                 }, array_filter($detectedTexts, function($text) {
                     return $text['Type'] === 'LINE';
                 }))
 
             ]);
-            $check_vao_bai = ChiTietBaiXe::join('lich_su_ra_vao_bai_xes','lich_su_ra_vao_bai_xes.id_vi_tri_trong_bai','chi_tiet_bai_xes.id')
-                                        ->where('lich_su_ra_vao_bai_xes.id_xe_cu_dan',$existingEntry->id)
-                                        ->where('chi_tiet_bai_xes.trang_thai', ChiTietBaiXe::TRANG_THAI_DA_CO_XE)
-                                        ->where('lich_su_ra_vao_bai_xes.thoi_gian_ra',null)
-                                        ->first();
 
             if ($licensePlate) {
                 return response()->json([

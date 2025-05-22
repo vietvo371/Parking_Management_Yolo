@@ -89,7 +89,7 @@ class ThanhToanController extends Controller
             }
 
             // Cộng dồn số tiền đã thanh toán
-            $hoaDon->so_tien_giao_dich += $value['creditAmount'];
+            // $hoaDon->so_tien_giao_dich += $value['creditAmount'];
             $hoaDon->ngay_het_han = Carbon::now('Asia/Ho_Chi_Minh')->addMonths(1);
             $hoaDon->save();
 
@@ -101,32 +101,32 @@ class ThanhToanController extends Controller
             //     'so_tien_da_thanh_toan' => $hoaDon->so_tien_da_thanh_toan,
             //     'email'                 => $xe->email,
             // ];
+            $hoaDon->update(['trang_thai_giao_dich' => 1]);
+            $xe->update([
+                'is_con_han' => 1
+            ]);
+            $xe->save();
+            // // Kiểm tra trạng thái thanh toán
+            // if ($hoaDon->so_tien_giao_dich >= 100000) {
+            //     // Đã thanh toán đủ
 
-            // Kiểm tra trạng thái thanh toán
-            if ($hoaDon->so_tien_giao_dich >= 100000) {
-                // Đã thanh toán đủ
-                $hoaDon->update(['trang_thai_giao_dich' => 1]);
-                $xe->update([
-                    'is_con_han' => 1
-                ]);
-                $xe->save();
-                $data['so_tien_du'] = $hoaDon->so_tien_giao_dich - 100000; // Tiền thừa (nếu có)
-                // MailThanhToanQueue::dispatch($data);
-            } else {
-                // Chưa thanh toán đủ
-                // $soTienThieu = $hoaDon->tong_tien - $hoaDon->so_tien_da_thanh_toan;
-                // $data['so_tien_can_thanh_toan'] = $hoaDon->tong_tien;
-                // $data['tien_thieu'] = $soTienThieu;
-                // $data['qr_url'] = 'https://img.vietqr.io/image/mb-0708585120-compact2.jpg?amount='
-                //     . $soTienThieu
-                //     . '&addInfo=' . $hoaDon->ma_hoa_don
-                //     . '&accountName=VO_VAN_VIET';
-                // MailThanhToanLoiQueue::dispatch($data);
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Chưa thanh toán đủ'
-                ], 400);
-            }
+            //     $data['so_tien_du'] = $hoaDon->so_tien_giao_dich - 100000; // Tiền thừa (nếu có)
+            //     // MailThanhToanQueue::dispatch($data);
+            // } else {
+            //     // Chưa thanh toán đủ
+            //     // $soTienThieu = $hoaDon->tong_tien - $hoaDon->so_tien_da_thanh_toan;
+            //     // $data['so_tien_can_thanh_toan'] = $hoaDon->tong_tien;
+            //     // $data['tien_thieu'] = $soTienThieu;
+            //     // $data['qr_url'] = 'https://img.vietqr.io/image/mb-0708585120-compact2.jpg?amount='
+            //     //     . $soTienThieu
+            //     //     . '&addInfo=' . $hoaDon->ma_hoa_don
+            //     //     . '&accountName=VO_VAN_VIET';
+            //     // MailThanhToanLoiQueue::dispatch($data);
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Chưa thanh toán đủ'
+            //     ], 400);
+            // }
         } catch (\Exception $e) {
             // Ghi log nếu không thể tạo giao dịch
             Log::error('Lỗi khi tạo giao dịch: ' . $e->getMessage(), [

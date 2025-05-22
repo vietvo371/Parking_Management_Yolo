@@ -95,6 +95,7 @@ class RaVaoBaicontroller extends Controller
         }
         $data = ChiTietBaiXe::find($request->id_vi_tri_trong_bai);
         $data->trang_thai = ChiTietBaiXe::TRANG_THAI_TRONG;
+        $data->is_cu_dan = 1;
         $data->save();
 
 
