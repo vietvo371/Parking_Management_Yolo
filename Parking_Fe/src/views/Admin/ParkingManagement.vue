@@ -217,173 +217,260 @@
         </div>
       </a-modal>
   
+      <!-- Scan License Plate Modal for Check In -->
+      <a-modal 
+        v-model:open="showScanModal" 
+        title="Quét biển số xe vào" 
+        centered 
+        width="800px"
+        @cancel="closeScanModal"
+      >
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Upload area -->
+            <div class="space-y-4">
+              <div 
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                @click="triggerFileInput"
+                :class="{'border-blue-500': isDragging}"
+                @dragover.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="handleFileDrop"
+              >
+                <input
+                  type="file"
+                  ref="fileInput"
+                  class="hidden"
+                  accept="image/*"
+                  @change="handleFileSelection"
+                />
+                <div v-if="!previewImage" class="space-y-2">
+                  <Upload class="h-12 w-12 mx-auto text-gray-400" />
+                  <p class="text-sm text-gray-500">Kéo thả ảnh hoặc click để chọn ảnh</p>
+                  <p class="text-xs text-gray-400">Hỗ trợ: JPG, PNG, JPEG</p>
+                </div>
+                <div v-else class="relative">
+                  <img 
+                    :src="previewImage" 
+                    alt="Preview" 
+                    class="max-h-64 mx-auto object-contain rounded"
+                  />
+                  <button 
+                    @click.stop="clearImage" 
+                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  >
+                    <X class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div class="flex space-x-2">
+                <button 
+                  @click="scanLicensePlate" 
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex-1 flex items-center justify-center"
+                  :disabled="!previewImage || isScanning"
+                >
+                  <span v-if="isScanning">Đang quét...</span>
+                  <span v-else>Quét biển số</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Results area -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 space-y-4">
+              <h3 class="text-lg font-medium mb-2">Kết quả</h3>
+              
+              <div v-if="scanResult" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Biển số đã quét</label>
+                  <div class="flex items-center space-x-2">
+                    <input 
+                      type="text" 
+                      v-model="detectedPlate" 
+                      class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md flex-1"
+                      :readonly="!scanError"
+                    />
+                    <span class="text-xs font-medium" :class="scanError ? 'text-red-500' : 'text-green-500'">
+                      {{ scanError ? '(Không chính xác)' : '(Đã xác nhận)' }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div v-if="scanError">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nhập lại biển số</label>
+                  <input 
+                    type="text" 
+                    v-model="manualPlate" 
+                    placeholder="Ví dụ: 30A-12345" 
+                    class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md w-full"
+                  />
+                </div>
+                
+                <div class="pt-2">
+                  <button 
+                    @click="submitLicensePlate" 
+                    class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    :disabled="isSubmitting || (scanError && !manualPlate)"
+                  >
+                    {{ isSubmitting ? 'Đang gửi...' : 'Cho phép vào bãi' }}
+                  </button>
+                </div>
+              </div>
+              
+              <div v-else-if="isScanning" class="flex items-center justify-center h-40">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+              
+              <div v-else class="text-center text-gray-500 py-10">
+                Tải lên ảnh và nhấn quét để xác định biển số xe
+              </div>
+            </div>
+          </div>
+
+          <div v-if="selectedSpot" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <h4 class="font-medium mb-2">Thông tin vị trí</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Khu vực:</p>
+                <p class="font-medium">{{ selectedSpot.area }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Vị trí:</p>
+                <p class="font-medium">{{ selectedSpot.thu_tu }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a-modal>
+  
       <!-- Check Out Modal -->
       <a-modal 
         v-model:open="showCheckOutModal" 
-        title="Xác nhận ghi nhận xe ra" 
+        title="Xác nhận xe ra" 
         centered 
-        width="400px"
-        @ok="handleCheckOutSubmit"
+        width="800px"
+        @cancel="closeCheckOutModal"
       >
-        <template #footer>
-          <a-button key="back" @click="showCheckOutModal = false">Hủy</a-button>
-          <a-button key="submit" type="primary" :loading="isSubmitting" @click="handleCheckOutSubmit">
-            {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận' }}
-          </a-button>
-        </template>
-        <div class="text-center">
-          <p class="text-lg">Bạn có chắc chắn muốn ghi nhận xe ra khỏi vị trí này?</p>
-          <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <p><strong>Vị trí:</strong> {{ selectedSpot?.area }} - {{ selectedSpot?.thu_tu }}</p>
-            <p><strong>Biển số:</strong> {{ selectedSpot?.license_plate || 'N/A' }}</p>
-          </div>
-        </div>
-      </a-modal>
-  
-      <!-- Reserve Modal -->
-      <a-modal 
-        v-model:open="showReserveModal" 
-        title="Đặt trước vị trí" 
-        centered 
-        width="500px"
-        @ok="handleReserveSubmit"
-      >
-        <template #footer>
-          <a-button key="back" @click="showReserveModal = false">Hủy</a-button>
-          <a-button key="submit" type="primary" :loading="isSubmitting" @click="handleReserveSubmit">
-            {{ isSubmitting ? 'Đang xử lý...' : 'Xác nhận' }}
-          </a-button>
-        </template>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên người đặt *</label>
-            <input 
-              type="text" 
-              v-model="reserveForm.name"
-              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-              placeholder="Nhập tên người đặt"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thời gian đặt *</label>
-            <input 
-              type="datetime-local" 
-              v-model="reserveForm.time"
-              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-            />
-          </div>
-        </div>
-      </a-modal>
-  
-      <!-- Recent Entries and Exits -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-          <div>
-            <h2 class="text-lg font-medium">Lịch sử ra vào gần đây</h2>
-            <p class="text-sm text-gray-500">Các lượt xe ra vào mới nhất</p>
-          </div>
-          <router-link to="/history" class="text-sm text-blue-600 hover:underline">
-            Xem tất cả
-          </router-link>
-        </div>
-        <div class="p-4 overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Thời gian</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Loại</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Biển số xe</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vị trí</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Thời gian đỗ</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phí</th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-              <tr v-for="entry in filteredRecentEntries" :key="entry.id" class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {{ entry.id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ entry.time }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                    :class="{
-                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': entry.type === 'in',
-                      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': entry.type === 'out'
-                    }">
-                    {{ entry.type === 'in' ? 'Vào' : 'Ra' }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {{ entry.licensePlate }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  {{ entry.spot }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  {{ entry.duration || '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  {{ entry.fee ? formatCurrency(entry.fee) : '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex justify-end space-x-2">
-                    <button class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400" @click="openHistoryDetailModal(entry)">
-                      <Eye class="h-4 w-4" />
-                    </button>
-                    <button class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
-                      <Printer class="h-4 w-4" />
-                    </button>
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Upload area -->
+            <div class="space-y-4">
+              <div 
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                @click="triggerFileInputCheckout"
+                :class="{'border-blue-500': isDraggingCheckout}"
+                @dragover.prevent="isDraggingCheckout = true"
+                @dragleave.prevent="isDraggingCheckout = false"
+                @drop.prevent="handleFileDropCheckout"
+              >
+                <input
+                  type="file"
+                  ref="fileInputCheckout"
+                  class="hidden"
+                  accept="image/*"
+                  @change="handleFileSelectionCheckout"
+                />
+                <div v-if="!previewImageCheckout" class="space-y-2">
+                  <Upload class="h-12 w-12 mx-auto text-gray-400" />
+                  <p class="text-sm text-gray-500">Kéo thả ảnh hoặc click để chọn ảnh</p>
+                  <p class="text-xs text-gray-400">Hỗ trợ: JPG, PNG, JPEG</p>
+                </div>
+                <div v-else class="relative">
+                  <img 
+                    :src="previewImageCheckout" 
+                    alt="Preview" 
+                    class="max-h-64 mx-auto object-contain rounded"
+                  />
+                  <button 
+                    @click.stop="clearImageCheckout" 
+                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  >
+                    <X class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div class="flex space-x-2">
+                <button 
+                  @click="scanLicensePlateCheckout" 
+                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex-1 flex items-center justify-center"
+                  :disabled="!previewImageCheckout || isScanningCheckout"
+                >
+                  <span v-if="isScanningCheckout">Đang quét...</span>
+                  <span v-else>Quét biển số</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Results area -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 space-y-4">
+              <h3 class="text-lg font-medium mb-2">Kết quả</h3>
+              
+              <div v-if="scanResultCheckout" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Biển số đã quét</label>
+                  <div class="flex items-center space-x-2">
+                    <input 
+                      type="text" 
+                      v-model="detectedPlateCheckout" 
+                      class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md flex-1"
+                      :readonly="!scanErrorCheckout"
+                    />
+                    <span class="text-xs font-medium" :class="scanErrorCheckout ? 'text-red-500' : 'text-green-500'">
+                      {{ scanErrorCheckout ? '(Không chính xác)' : '(Đã xác nhận)' }}
+                    </span>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-  
-      <!-- History Detail Modal -->
-      <a-modal 
-        v-model:open="showHistoryDetailModal" 
-        title="Chi tiết lượt ra/vào" 
-        centered 
-        width="500px"
-        @cancel="closeHistoryDetailModal"
-      >
-        <div v-if="selectedHistoryEntry" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-sm text-gray-500">Biển số xe</p>
-              <p class="font-medium">{{ selectedHistoryEntry.licensePlate }}</p>
+                </div>
+                
+                <div v-if="scanErrorCheckout">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nhập lại biển số</label>
+                  <input 
+                    type="text" 
+                    v-model="manualPlateCheckout" 
+                    placeholder="Ví dụ: 30A-12345" 
+                    class="h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md w-full"
+                  />
+                </div>
+                
+                <div class="pt-2">
+                  <button 
+                    @click="submitCheckoutLicensePlate" 
+                    class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    :disabled="isSubmitting || (scanErrorCheckout && !manualPlateCheckout)"
+                  >
+                    {{ isSubmitting ? 'Đang gửi...' : 'Cho phép ra bãi' }}
+                  </button>
+                </div>
+              </div>
+              
+              <div v-else-if="isScanningCheckout" class="flex items-center justify-center h-40">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+              
+              <div v-else class="text-center text-gray-500 py-10">
+                Tải lên ảnh và nhấn quét để xác định biển số xe
+              </div>
             </div>
-            <div>
-              <p class="text-sm text-gray-500">Loại</p>
-              <p class="font-medium">{{ selectedHistoryEntry.type === 'in' ? 'Vào' : 'Ra' }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Vị trí</p>
-              <p class="font-medium">{{ selectedHistoryEntry.spot }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Thời gian</p>
-              <p class="font-medium">{{ selectedHistoryEntry.time }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Thời gian đỗ</p>
-              <p class="font-medium">{{ selectedHistoryEntry.duration || '-' }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Phí</p>
-              <p class="font-medium">{{ selectedHistoryEntry.fee ? formatCurrency(selectedHistoryEntry.fee) : '-' }}</p>
+          </div>
+
+          <div v-if="selectedSpot" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <h4 class="font-medium mb-2">Thông tin vị trí</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Khu vực:</p>
+                <p class="font-medium">{{ selectedSpot.area }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Vị trí:</p>
+                <p class="font-medium">{{ selectedSpot.thu_tu }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Biển số xe hiện tại:</p>
+                <p class="font-medium">{{ selectedSpot.bien_so_xe || 'N/A' }}</p>
+              </div>
             </div>
           </div>
         </div>
-        <template #footer>
-          <a-button @click="closeHistoryDetailModal">Đóng</a-button>
-        </template>
       </a-modal>
     </div>
   </template>
@@ -391,13 +478,11 @@
   <script>
   import { 
     Search, 
-    RefreshCcw, 
-    LogIn, 
-    LogOut, 
-    Car, 
-    X, 
-    Eye, 
-    Printer 
+    RefreshCcw,
+    Eye,
+    Printer,
+    Upload,
+    X
   } from 'lucide-vue-next'
   import { Modal, Button } from 'ant-design-vue'
   import baseRequest from '../../core/baseRequest'
@@ -407,12 +492,10 @@
     components: {
       Search,
       RefreshCcw,
-      LogIn,
-      LogOut,
-      Car,
-      X,
       Eye,
       Printer,
+      Upload,
+      X,
       [Modal.name]: Modal,
       [Button.name]: Button
     },
@@ -427,6 +510,7 @@
         showCheckOutModal: false,
         showReserveModal: false,
         showHistoryDetailModal: false,
+        showScanModal: false,
         isSubmitting: false,
         checkInForm: {
           owner: '',
@@ -451,12 +535,13 @@
           occupancyRate: 75,
           occupancyChange: 5
         },
+        is_vao_bai: false,
         recentActivities: [
-          { title: 'Xe vào: 30A-12345', time: '10:25', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
-          { title: 'Xe ra: 30F-54321', time: '10:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
-          { title: 'Xe vào: 29P2-12345', time: '09:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
-          { title: 'Xe ra: 30K1-65432', time: '09:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
-          { title: 'Xe vào: 30A-56789', time: '08:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' }
+          // { title: 'Xe vào: 30A-12345', time: '10:25', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+          // { title: 'Xe ra: 30F-54321', time: '10:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+          // { title: 'Xe vào: 29P2-12345', time: '09:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+          // { title: 'Xe ra: 30K1-65432', time: '09:15', icon: LogOut, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+          // { title: 'Xe vào: 30A-56789', time: '08:45', icon: LogIn, iconBg: 'bg-green-100', iconColor: 'text-green-600' }
         ],
         parkingSpots: {},
         recentEntries: [
@@ -470,7 +555,22 @@
           { id: 'ENT-008', time: '08:15', type: 'in', licensePlate: '29Y2-54321', spot: 'A-M15', duration: null, fee: null }
         ],
         parkingAreas: [],
-        chitietBaiXe: []
+        chitietBaiXe: [],
+        previewImage: null,
+        isDragging: false,
+        isScanning: false,
+        scanResult: null,
+        scanError: false,
+        detectedPlate: '',
+        manualPlate: '',
+        // New data properties for checkout scanning
+        previewImageCheckout: null,
+        isDraggingCheckout: false,
+        isScanningCheckout: false,
+        scanResultCheckout: null,
+        scanErrorCheckout: false,
+        detectedPlateCheckout: '',
+        manualPlateCheckout: '',
       }
     },
     mounted() {
@@ -547,7 +647,7 @@
           'so_dien_thoai': this.checkInForm.phone,
           'id_vi_tri_trong_bai': this.checkInForm.id_trong_bai
         }
-        baseRequest.post("admin/ra-vao-bai/ghi-nhan-xe-vao", payload)
+        baseRequest.post("admin/ra-vao-bai/them-du-lieu", payload)
           .then((res) => {
             if (res.data.status) {
               this.checkInForm = {
@@ -599,8 +699,14 @@
         }
       },
       selectSpot(spot) {
-        this.selectedSpot = { ...spot }
-        this.showSpotDetailModal = true
+        if (spot.status === 'available') {
+          this.selectedSpot = { ...spot }
+          this.showScanModal = true
+          this.clearImage()
+        } else {
+          this.selectedSpot = { ...spot }
+          this.showSpotDetailModal = true
+        }
       },
       openCheckInModal() {
         this.checkInForm = {
@@ -635,6 +741,7 @@
         const notificationStore = useNotificationStore()
         try {
           var payload = {
+            'bien_so_xe': this.detectedPlate || this.manualPlate,
             'ho_va_ten': this.checkInForm.owner,
             'so_dien_thoai': this.checkInForm.phone,
             'id_vi_tri_trong_bai': this.checkInForm.id_trong_bai
@@ -728,7 +835,263 @@
             ...spot
           });
         });
-      }
+      },
+      triggerFileInput() {
+        this.$refs.fileInput.click()
+      },
+      
+      handleFileSelection(event) {
+        const file = event.target.files[0]
+        if (file) {
+          this.processSelectedFile(file)
+        }
+      },
+      
+      handleFileDrop(event) {
+        this.isDragging = false
+        const file = event.dataTransfer.files[0]
+        if (file && file.type.startsWith('image/')) {
+          this.processSelectedFile(file)
+        }
+      },
+      
+      processSelectedFile(file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.previewImage = e.target.result
+          this.scanResult = null
+          this.detectedPlate = ''
+          this.manualPlate = ''
+          this.scanError = false
+        }
+        reader.readAsDataURL(file)
+      },
+      
+      clearImage() {
+        this.previewImage = null
+        this.scanResult = null
+        this.detectedPlate = ''
+        this.manualPlate = ''
+        this.scanError = false
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null
+        }
+      },
+
+      closeScanModal() {
+        this.showScanModal = false
+        this.clearImage()
+        this.selectedSpot = null
+      },
+      
+      scanLicensePlate() {
+        if (!this.previewImage) return
+        
+        this.isScanning = true
+        const notificationStore = useNotificationStore()
+        
+        // Create form data with the image
+        const formData = new FormData()
+        // Convert base64 to blob
+        const blob = this.dataURLtoBlob(this.previewImage)
+        formData.append('image', blob, 'license_plate.jpg')
+        
+        // Send to backend for scanning
+        baseRequest.post("admin/cam-giam-soat/scan-bien-so", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+          .then((response) => {
+            this.isScanning = false
+            if (response.data.status) {
+              this.scanResult = response.data
+              this.detectedPlate = response.data.plate_number || ''
+              this.scanError = !response.data.is_con_han
+              if (!response.data.is_con_han) {
+                notificationStore.showWarning('Biển số không được nhận diện chính xác, vui lòng nhập lại')
+              }
+            } else {
+              this.scanError = true
+              notificationStore.showError(response.data.message || 'Không thể quét biển số')
+            }
+          })
+          .catch((error) => {
+            this.isScanning = false
+            console.error('Scan error:', error)
+            notificationStore.showError('Đã xảy ra lỗi khi quét biển số')
+            this.scanResult = { error: true }
+            this.scanError = true
+          })
+      },
+      
+      dataURLtoBlob(dataURL) {
+        const arr = dataURL.split(',')
+        const mime = arr[0].match(/:(.*?);/)[1]
+        const bstr = atob(arr[1])
+        let n = bstr.length
+        const u8arr = new Uint8Array(n)
+        
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n)
+        }
+        
+        return new Blob([u8arr], { type: mime })
+      },
+      
+      submitLicensePlate() {
+        const notificationStore = useNotificationStore()
+        this.isSubmitting = true
+        
+        const plateNumber = this.scanError ? this.manualPlate : this.detectedPlate
+        
+        // Send the plate number and spot ID to backend
+        baseRequest.post("admin/ra-vao-bai/ghi-nhan-xe-vao", {
+          id_vi_tri_trong_bai: this.selectedSpot.id,
+          bien_so_xe: plateNumber
+        })
+          .then((response) => {
+            if (response.data.status) {
+              notificationStore.showSuccess('Xe đã được ghi nhận vào bãi')
+              this.closeScanModal()
+              this.getChitietBaiXe() // Refresh parking data
+            } else {
+              notificationStore.showError(response.data.message || 'Không thể ghi nhận xe vào bãi')
+            }
+            this.isSubmitting = false
+          })
+          .catch((error) => {
+            console.error('Submission error:', error)
+            notificationStore.showError('Đã xảy ra lỗi khi gửi yêu cầu')
+            this.isSubmitting = false
+          })
+      },
+
+      // New methods for checkout license plate scanning
+      triggerFileInputCheckout() {
+        this.$refs.fileInputCheckout.click()
+      },
+      
+      handleFileSelectionCheckout(event) {
+        const file = event.target.files[0]
+        if (file) {
+          this.processSelectedFileCheckout(file)
+        }
+      },
+      
+      handleFileDropCheckout(event) {
+        this.isDraggingCheckout = false
+        const file = event.dataTransfer.files[0]
+        if (file && file.type.startsWith('image/')) {
+          this.processSelectedFileCheckout(file)
+        }
+      },
+      
+      processSelectedFileCheckout(file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.previewImageCheckout = e.target.result
+          this.scanResultCheckout = null
+          this.detectedPlateCheckout = ''
+          this.manualPlateCheckout = ''
+          this.scanErrorCheckout = false
+        }
+        reader.readAsDataURL(file)
+      },
+      
+      clearImageCheckout() {
+        this.previewImageCheckout = null
+        this.scanResultCheckout = null
+        this.detectedPlateCheckout = ''
+        this.manualPlateCheckout = ''
+        this.scanErrorCheckout = false
+        if (this.$refs.fileInputCheckout) {
+          this.$refs.fileInputCheckout.value = null
+        }
+      },
+
+      closeCheckOutModal() {
+        this.showCheckOutModal = false
+        this.clearImageCheckout()
+        this.selectedSpot = null
+      },
+      
+      scanLicensePlateCheckout() {
+        if (!this.previewImageCheckout) return
+        
+        this.isScanningCheckout = true
+        const notificationStore = useNotificationStore()
+        
+        // Create form data with the image
+        const formData = new FormData()
+        // Convert base64 to blob
+        const blob = this.dataURLtoBlob(this.previewImageCheckout)
+        formData.append('image', blob, 'license_plate_checkout.jpg')
+        
+        // Send to backend for scanning
+        baseRequest.post("admin/cam-giam-soat/scan-bien-so", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+          .then((response) => {
+            this.isScanningCheckout = false
+            if (response.data.status) {
+              this.scanResultCheckout = response.data
+              this.detectedPlateCheckout = response.data.plate_number || ''
+              this.scanErrorCheckout = !response.data.is_con_han || !response.data.is_vao_bai
+              
+              // Check if the car is actually in the parking lot
+              if (!response.data.is_vao_bai) {
+                notificationStore.showError('Xe này chưa được ghi nhận vào bãi')
+                return
+              }
+              
+              if (!response.data.is_con_han) {
+                notificationStore.showWarning('Biển số không được nhận diện chính xác, vui lòng nhập lại')
+              }
+            } else {
+              this.scanErrorCheckout = true
+              notificationStore.showError(response.data.message || 'Không thể quét biển số')
+            }
+          })
+          .catch((error) => {
+            this.isScanningCheckout = false
+            console.error('Scan error:', error)
+            notificationStore.showError('Đã xảy ra lỗi khi quét biển số')
+            this.scanResultCheckout = { error: true }
+            this.scanErrorCheckout = true
+          })
+      },
+      
+      submitCheckoutLicensePlate() {
+        const notificationStore = useNotificationStore()
+        this.isSubmitting = true
+        
+        const plateNumber = this.scanErrorCheckout ? this.manualPlateCheckout : this.detectedPlateCheckout
+        
+        // Send the plate number and spot ID to backend
+        baseRequest.post("admin/ra-vao-bai/ghi-nhan-xe-ra", {
+          id_vi_tri_trong_bai: this.selectedSpot.id,
+          bien_so_xe: plateNumber
+        })
+          .then((response) => {
+            if (response.data.status) {
+              notificationStore.showSuccess('Xe đã được ghi nhận ra bãi')
+              this.closeCheckOutModal()
+              this.showSpotDetailModal = false
+              this.getChitietBaiXe() // Refresh parking data
+            } else {
+              notificationStore.showError(response.data.message || 'Không thể ghi nhận xe ra bãi')
+            }
+            this.isSubmitting = false
+          })
+          .catch((error) => {
+            console.error('Submission error:', error)
+            notificationStore.showError('Đã xảy ra lỗi khi gửi yêu cầu')
+            this.isSubmitting = false
+          })
+      },
     }
   }
   </script>

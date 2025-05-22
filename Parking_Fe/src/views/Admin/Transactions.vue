@@ -560,20 +560,21 @@ export default {
     updateStats() {
       const today = new Date().toISOString().split('T')[0]
       
-      // Calculate total transactions
-      this.stats.total = this.transactions.length
+      // Calculate total transactions (only completed transactions)
+      const completedTransactions = this.transactions.filter(t => t.trang_thai_giao_dich == 1)
+      this.stats.total = completedTransactions.length
       
       // Calculate successful transactions (trang_thai_giao_dich == 1)
-      this.stats.successful = this.transactions.filter(t => t.trang_thai_giao_dich == 1).length
+      this.stats.successful = completedTransactions.length
       
       // Calculate processing transactions (trang_thai_giao_dich == 2)
       this.stats.processing = this.transactions.filter(t => t.trang_thai_giao_dich == 2).length
       
       // Calculate today's revenue from successful transactions
-      this.stats.todayRevenue = this.transactions
+      this.stats.todayRevenue = completedTransactions
         .filter(t => {
           const transactionDate = new Date(t.created_at).toISOString().split('T')[0]
-          return transactionDate === today && t.trang_thai_giao_dich == 1
+          return transactionDate === today
         })
         .reduce((sum, t) => sum + t.so_tien_giao_dich, 0)
     },

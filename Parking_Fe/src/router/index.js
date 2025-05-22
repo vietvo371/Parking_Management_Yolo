@@ -163,6 +163,10 @@ const routes = [
     path: "/user/register",
     component: () => import("../views/User/Register.vue"),
   },
+  {
+    path: "/test",
+    component: () => import("../views/AI/test.vue"),
+  },
 ];
 
 const router = createRouter({

@@ -555,12 +555,13 @@ export default {
       const today = new Date()
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
 
-      // Calculate total transactions and amount
-      this.transactionStats.total = this.transactions.length
-      this.transactionStats.totalAmount = this.transactions.reduce((sum, t) => sum + t.amount, 0)
+      // Calculate total transactions and amount (only completed transactions)
+      const completedTransactions = this.transactions.filter(t => t.status === 'completed')
+      this.transactionStats.total = completedTransactions.length
+      this.transactionStats.totalAmount = completedTransactions.reduce((sum, t) => sum + t.amount, 0)
 
-      // Calculate this month's transactions and amount
-      const thisMonthTransactions = this.transactions.filter(t => {
+      // Calculate this month's transactions and amount (only completed transactions)
+      const thisMonthTransactions = completedTransactions.filter(t => {
         const transactionDate = new Date(t.date)
         return transactionDate >= firstDayOfMonth && transactionDate <= today
       })

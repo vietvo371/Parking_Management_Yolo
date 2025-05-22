@@ -398,7 +398,7 @@
       <p>Bạn có chắc chắn muốn xóa thông tin khách vãng lai này không?</p>
     </a-modal>
 
-    <!-- Modal checkout -->
+    <!-- Modal checkout - Thêm lựa chọn loại xe -->
     <a-modal v-model:open="showCheckoutModal" title="Thanh toán" @ok="confirmCheckout">
       <template #footer>
         <a-button key="back" @click="showCheckoutModal = false">Hủy</a-button>
@@ -431,6 +431,16 @@
             <p class="text-sm text-gray-500">Vị trí đỗ xe</p>
             <p class="font-medium">{{ getSpotName(selectedGuest.id_vi_tri_trong_bai) }}</p>
           </div>
+          
+          <!-- Thêm lựa chọn loại xe -->
+          <div>
+            <p class="text-sm text-gray-500 mb-1">Loại xe</p>
+            <a-radio-group v-model:value="vehicleType" class="w-full">
+              <a-radio value="xe_may">Xe máy (5.000đ/giờ)</a-radio>
+              <a-radio value="o_to">Ô tô (15.000đ/giờ)</a-radio>
+            </a-radio-group>
+          </div>
+          
           <div class="border-t pt-4">
             <p class="text-sm text-gray-500">Tổng tiền thanh toán</p>
             <p class="text-xl font-bold text-blue-600">{{ formatCurrency(calculatePayment(selectedGuest)) }}</p>
@@ -478,6 +488,7 @@ export default {
     [Button.name]: Button,
     [Select.name]: Select,
     [Popconfirm.name]: Popconfirm
+    
   },
   data() {
     return {
@@ -524,7 +535,9 @@ export default {
         is_thanh_toan: false,
         id_admin: 1
       },
-      isSubmitting: false
+      isSubmitting: false,
+      // Loại xe cho tính phí thanh toán
+      vehicleType: 'xe_may' // Mặc định là xe máy
     }
   },
   computed: {
@@ -899,8 +912,10 @@ export default {
       const exitTime = new Date()
       const diffHrs = Math.ceil((exitTime - entryTime) / (1000 * 60 * 60))
       
-      // Giả sử phí là 5000đ/giờ
-      return diffHrs * 5000
+      // Sử dụng loại xe được chọn trong modal để tính phí
+      const hourlyRate = this.vehicleType === 'o_to' ? 15000 : 5000
+      
+      return diffHrs * hourlyRate
     }
   }
 }
