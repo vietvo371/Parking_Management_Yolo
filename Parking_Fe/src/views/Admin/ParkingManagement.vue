@@ -147,19 +147,19 @@
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <p class="text-sm text-gray-500">Biển số xe</p>
-                  <p class="font-medium">{{ selectedSpot.license_plate || 'N/A' }}</p>
+                  <p class="font-medium">{{ selectedSpot.bien_so_xe || 'N/A' }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-gray-500">Loại</p>
-                  <p class="font-medium">{{ selectedSpot.vehicle?.model || 'N/A' }}</p>
+                  <p class="font-medium">{{ selectedSpot.loai_xe || 'N/A' }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-gray-500">Chủ xe</p>
-                  <p class="font-medium">{{ selectedSpot.vehicle?.owner || 'N/A' }}</p>
+                  <p class="font-medium">{{ selectedSpot.ho_va_ten || 'N/A' }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-gray-500">Thời gian vào</p>
-                  <p class="font-medium">{{ selectedSpot.vehicle?.entryTime || 'N/A' }}</p>
+                  <p class="font-medium">{{ formatDateTime(selectedSpot.thoi_gian_vao) || 'N/A' }}</p>
                 </div>
               </div>
             </div>
@@ -668,6 +668,9 @@
             notificationStore.showError(errors[0]);
             this.isSubmitting = false
           });
+      },
+      formatDateTime(date) {
+        return new Date(date).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
       },
       formatCurrency(value) {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)

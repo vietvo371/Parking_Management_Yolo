@@ -242,22 +242,7 @@
         </div>
       </div>
 
-      <!-- Statistics -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-          <h3 class="text-lg font-medium mb-4">Thống kê theo thời gian</h3>
-          <div class="h-64">
-            <canvas ref="timeChart"></canvas>
-          </div>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-          <h3 class="text-lg font-medium mb-4">Thống kê theo xe</h3>
-          <div class="h-64">
-            <canvas ref="vehicleChart"></canvas>
-          </div>
-        </div>
-      </div>
+      
 
       <!-- Entry Detail Modal -->
       <a-modal v-model:open="showDetailModal" title="Chi tiết lượt ra vào" width="800px">
@@ -466,7 +451,7 @@
               licensePlate: entry.bien_so_xe,
               resident: entry.ho_va_ten,
               phone: entry.so_dien_thoai,
-              vehicleType: 'car', // Assuming all are cars for now
+              vehicleType: entry.loai_xe !=='Khác' ? 'car' : 'motorcycle',
               parkingSpot: `Vị trí ${entry.loai_xe} - ${entry.thu_tu}`,
               camera: `Camera ${entry.id_camera_quet}`,
               residentVehicleId: entry.id_xe_cu_dan

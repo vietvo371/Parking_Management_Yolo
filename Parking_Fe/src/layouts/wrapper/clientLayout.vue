@@ -263,7 +263,7 @@
       const userInfo = ref(authStore.getUser());
       const navigationItems = [
         // { name: 'Trang chủ', path: '/user', icon: Home },
-        { name: 'Chỗ để xe', path: '/user/quan-ly-cho-xe', icon: Car },
+        // { name: 'Chỗ để xe', path: '/user/quan-ly-cho-xe', icon: Car },
         { name: 'Quản lý xe', path: '/user/quan-ly-xe', icon: Car },
         { name: 'Báo cáo', path: '/user/bao-cao', icon: FileText },
         { name: 'Lịch sử', path: '/user/lich-su', icon: Clock },
