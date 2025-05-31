@@ -1,8 +1,7 @@
-# Hệ Thống Xem Phim Đa Nền Tảng Trả Phí và Ứng Dụng AI Đề Xuất Nội Dung
+# Hệ Thống Bãi Giữ Xe Tích Hợp AI Quét Biển Số Xe
 
-<p>Dự án được phát triển và duy trì bởi nhóm sinh viên Đại học Duy Tân, nhằm xây dựng một nền tảng xem phim hiện đại với công nghệ AI đề xuất nội dung.</p>
+<p>Dự án được phát triển và duy trì bởi nhóm sinh viên Đại học Duy Tân, nhằm xây dựng một hệ thống quản lý bãi xe thông minh với công nghệ AI nhận diện biển số xe tự động.</p>
 
-![Banner](Assets/img/slide.jpg)
 
 <div>
   <img src="https://img.shields.io/badge/branches-5-blue?style=for-the-badge" alt="Branches" />
@@ -13,7 +12,7 @@
   <img src="https://img.shields.io/badge/forks-1-orange?style=for-the-badge" alt="Forks" />
 </div>
 
-# 🎬 Hệ Thống Xem Phim Đa Nền Tảng Trả Phí và Ứng Dụng AI Đề Xuất Nội Dung
+# 🚗 Hệ Thống Bãi Giữ Xe Tích Hợp AI Quét Biển Số Xe
 
 <div align="center">  
   <p align="center">
@@ -28,35 +27,30 @@
   <div align="center">
     <table>
     <tr>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
-        <br/>
-        <span style="font-size: 24px;">🐘</span>
-      </td>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel"/>
-        <br/>
-        <span style="font-size: 24px;">🔺</span>
-      </td>
-      <td align="center" width="16.6%">
+      <td align="center" width="20%">
         <img src="https://img.shields.io/badge/-VueJS-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="VueJS"/>
         <br/>
         <span style="font-size: 24px;">⚡</span>
       </td>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-React_Native-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React Native"/>
+      <td align="center" width="20%">
+        <img src="https://img.shields.io/badge/-Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
         <br/>
-        <span style="font-size: 24px;">📱</span>
+        <span style="font-size: 24px;">🎨</span>
       </td>
-      <td align="center" width="16.6%">
+      <td align="center" width="20%">
+        <img src="https://img.shields.io/badge/-Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel"/>
+        <br/>
+        <span style="font-size: 24px;">🔺</span>
+      </td>
+      <td align="center" width="20%">
         <img src="https://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
         <br/>
         <span style="font-size: 24px;">🐍</span>
       </td>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-COZE-5C2D91?style=for-the-badge&logo=ai&logoColor=white" alt="COZE AI"/>
+      <td align="center" width="20%">
+        <img src="https://img.shields.io/badge/-AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS"/>
         <br/>
-        <span style="font-size: 24px;">🧠</span>
+        <span style="font-size: 24px;">☁️</span>
       </td>
     </tr>
   </table>
@@ -67,8 +61,8 @@
   <div align="center">
     <kbd>
       <p align="center" style="padding: 10px; background-color: #f8f9fa; border-radius: 5px; width: 80%; margin: 0 auto;">
-        <i>Nền tảng xem phim đa nền tảng hiện đại với hệ thống thanh toán trả phí, 
-        tích hợp AI đề xuất nội dung thông minh dựa trên sở thích người dùng.</i>
+        <i>Hệ thống quản lý bãi xe thông minh với công nghệ AI nhận diện biển số xe tự động,
+        tích hợp AWS để xử lý hình ảnh và quản lý dữ liệu hiệu quả.</i>
       </p>
     </kbd>
   </div>
@@ -77,7 +71,7 @@
   
   <div align="center">
     <a href="#-tính-năng-nổi-bật">🚀 Tính Năng</a> •
-    <a href="https://wopai.deloydz.com">🖼️ Demo</a> •
+    <a href="#-hình-ảnh-demo">🖼️ Demo</a> •
     <a href="#-các-chức-năng-chính">🧩 Chức Năng</a> •
     <a href="#-triển-khai">🚧 Triển Khai</a> •
     <a href="#-contributors">👨‍💻 Đóng Góp</a>
@@ -88,17 +82,17 @@
 
 ## ✨ Giới Thiệu
 
-**Hệ Thống Xem Phim Đa Nền Tảng Trả Phí và Ứng Dụng AI Đề Xuất Nội Dung** là một nền tảng toàn diện được thiết kế để hiện đại hóa trải nghiệm xem phim trực tuyến. Dự án này kết hợp các công nghệ tiên tiến như AI, xử lý dữ liệu thời gian thực và giao diện người dùng trực quan để mang lại trải nghiệm xem phim cá nhân hóa và thông minh.
+**Hệ Thống Bãi Giữ Xe Tích Hợp AI Quét Biển Số Xe** là một giải pháp quản lý bãi xe thông minh được thiết kế để tự động hóa hoàn toàn quy trình ra vào bãi xe. Dự án này kết hợp các công nghệ tiên tiến như AI nhận diện hình ảnh, cloud computing và giao diện người dùng hiện đại để mang lại trải nghiệm quản lý bãi xe hiệu quả và thông minh.
 
 <table>
   <tr>
     <td width="50%">
       <h3 align="center">🌟 Tầm Nhìn</h3>
-      <p align="center">Cá nhân hóa trải nghiệm xem phim thông qua công nghệ AI và trải nghiệm người dùng xuất sắc</p>
+      <p align="center">Tự động hóa hoàn toàn quy trình quản lý bãi xe thông qua công nghệ AI và IoT</p>
     </td>
     <td width="50%">
       <h3 align="center">🎯 Mục Tiêu</h3>
-      <p align="center">Cung cấp nền tảng xem phim đa nền tảng với hệ thống đề xuất thông minh và giao diện thân thiện</p>
+      <p align="center">Cung cấp giải pháp quản lý bãi xe thông minh, tiết kiệm thời gian và nâng cao hiệu quả</p>
     </td>
   </tr>
 </table>
@@ -108,35 +102,30 @@
 <div align="center">
   <table>
     <tr>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
-        <br/>
-        <span style="font-size: 24px;">🐘</span>
-      </td>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel"/>
-        <br/>
-        <span style="font-size: 24px;">🔺</span>
-      </td>
-      <td align="center" width="16.6%">
+      <td align="center" width="20%">
         <img src="https://img.shields.io/badge/-VueJS-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="VueJS"/>
         <br/>
         <span style="font-size: 24px;">⚡</span>
       </td>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-React_Native-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React Native"/>
+      <td align="center" width="20%">
+        <img src="https://img.shields.io/badge/-Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
         <br/>
-        <span style="font-size: 24px;">📱</span>
+        <span style="font-size: 24px;">🎨</span>
       </td>
-      <td align="center" width="16.6%">
+      <td align="center" width="20%">
+        <img src="https://img.shields.io/badge/-Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel"/>
+        <br/>
+        <span style="font-size: 24px;">🔺</span>
+      </td>
+      <td align="center" width="20%">
         <img src="https://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
         <br/>
         <span style="font-size: 24px;">🐍</span>
       </td>
-      <td align="center" width="16.6%">
-        <img src="https://img.shields.io/badge/-COZE-5C2D91?style=for-the-badge&logo=ai&logoColor=white" alt="COZE AI"/>
+      <td align="center" width="20%">
+        <img src="https://img.shields.io/badge/-AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS"/>
         <br/>
-        <span style="font-size: 24px;">🧠</span>
+        <span style="font-size: 24px;">☁️</span>
       </td>
     </tr>
   </table>
@@ -147,32 +136,32 @@
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3>🔹 Đa Nền Tảng</h3>
-      <p>Hệ thống được thiết kế để hoạt động trên nhiều nền tảng khác nhau, bao gồm web và thiết bị di động.</p>
+      <h3>⚡ VueJS Frontend</h3>
+      <p>Giao diện người dùng hiện đại và responsive được xây dựng bằng VueJS, mang đến trải nghiệm người dùng mượt mà.</p>
     </td>
+    <td width="50%" valign="top">
+      <h3>🎨 Tailwind CSS</h3>
+      <p>Thiết kế giao diện đẹp mắt và responsive với Tailwind CSS, tối ưu cho mọi thiết bị.</p>
+    </td>
+  </tr>
+  <tr>
     <td width="50%" valign="top">
       <h3>🔺 Laravel Backend</h3>
-      <p>API backend được xây dựng với Laravel, cung cấp các endpoint RESTful an toàn và hiệu quả.</p>
+      <p>API backend mạnh mẽ được xây dựng với Laravel, cung cấp các endpoint RESTful an toàn và hiệu quả.</p>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🐍 AI Processing</h3>
+      <p>Hệ thống AI được phát triển bằng Python để nhận diện biển số xe với độ chính xác cao.</p>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3>⚡ VueJS Frontend</h3>
-      <p>Giao diện người dùng web được xây dựng bằng VueJS, mang đến trải nghiệm mượt mà và hiện đại.</p>
+      <h3>☁️ AWS Integration</h3>
+      <p>Tích hợp AWS để xử lý hình ảnh, lưu trữ dữ liệu và đảm bảo hiệu suất hệ thống.</p>
     </td>
     <td width="50%" valign="top">
-      <h3>📱 Ứng Dụng Di Động</h3>
-      <p>Ứng dụng di động được phát triển với React Native, cho phép xem phim trên nhiều thiết bị.</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🐍 Xử Lý AI</h3>
-      <p>Hệ thống sử dụng Python để xử lý dữ liệu và triển khai các thuật toán đề xuất nội dung.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🧠 Đề Xuất Thông Minh</h3>
-      <p>COZE AI được tích hợp để phân tích hành vi người dùng và đề xuất nội dung phù hợp.</p>
+      <h3>🤖 Tự Động Hóa</h3>
+      <p>Quy trình ra vào bãi xe hoàn toàn tự động, giảm thiểu sự can thiệp của con người.</p>
     </td>
   </tr>
 </table>
@@ -182,20 +171,20 @@
 <div align="center">
   <table>
     <tr>
-      <td align="center"><strong>Trang chủ với đề xuất thông minh</strong></td>
-      <td align="center"><strong>Chi tiết phim</strong></td>
+      <td align="center"><strong>Dashboard quản lý</strong></td>
+      <td align="center"><strong>Nhận diện biển số xe</strong></td>
     </tr>
     <tr>
-      <td><img src="Assets/img/homepage.jpeg" alt="Trang chủ" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
-      <td><img src="Assets/img/detail.png" alt="Chi tiết phim" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
+      <td><img src="Assets/img/homepage.jpeg" alt="Dashboard" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
+      <td><img src="Assets/img/detail.png" alt="License Plate Recognition" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
     </tr>
     <tr>
-      <td align="center"><strong>Trang quản trị</strong></td>
-      <td align="center"><strong>Ứng dụng di động</strong></td>
+      <td align="center"><strong>Quản lý xe ra vào</strong></td>
+      <td align="center"><strong>Báo cáo thống kê</strong></td>
     </tr>
     <tr>
-      <td><img src="Assets/img/dashbord.png" alt="Admin Dashboard" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
-      <td><img src="Assets/img/mobile.png" alt="Mobile App" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
+      <td><img src="Assets/img/dashbord.png" alt="Vehicle Management" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
+      <td><img src="Assets/img/mobile.png" alt="Statistics Report" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/></td>
     </tr>
   </table>
 </div>
@@ -207,23 +196,23 @@
     <tr>
       <td align="center" width="25%">
         <div style="font-size: 36px;">🔄</div>
-        <h3>Tối ưu streaming</h3>
-        <p>Cải thiện chất lượng phát video trên nhiều thiết bị</p>
+        <h3>Tối ưu AI</h3>
+        <p>Cải thiện độ chính xác nhận diện biển số xe</p>
       </td>
       <td align="center" width="25%">
         <div style="font-size: 36px;">🚀</div>
-        <h3>Nâng cao AI đề xuất</h3>
-        <p>Cải thiện độ chính xác của thuật toán đề xuất nội dung</p>
+        <h3>Tăng hiệu suất</h3>
+        <p>Tối ưu hóa thời gian xử lý và phản hồi hệ thống</p>
       </td>
       <td align="center" width="25%">
         <div style="font-size: 36px;">🐛</div>
-        <h3>Sửa lỗi thanh toán</h3>
-        <p>Khắc phục các vấn đề trong quy trình thanh toán</p>
+        <h3>Sửa lỗi camera</h3>
+        <p>Khắc phục các vấn đề kết nối và xử lý hình ảnh</p>
       </td>
       <td align="center" width="25%">
         <div style="font-size: 36px;">📦</div>
         <h3>Cải thiện UX/UI</h3>
-        <p>Nâng cao trải nghiệm người dùng trên mọi nền tảng</p>
+        <p>Nâng cao trải nghiệm người dùng và giao diện</p>
       </td>
     </tr>
   </table>
@@ -235,41 +224,40 @@
   <tr>
     <td width="50%" valign="top">
       <ul>
-        <li>✅ <b>Tìm kiếm phim thông qua AI</b> - Tìm kiếm thông minh dựa trên ngôn ngữ tự nhiên</li>
-        <li>✅ <b>Xem phim trực tuyến</b> - Trải nghiệm xem phim mượt mà</li>
-        <li>✅ <b>Đăng nhập/Đăng ký</b> - Hệ thống xác thực người dùng</li>
-        <li>✅ <b>Lọc nội dung</b> - Theo thể loại, năm, quốc gia</li>
-        <li>✅ <b>Bình luận và đánh giá</b> - Tương tác với nội dung phim</li>
-        <li>✅ <b>Quản lý tài khoản</b> - Cập nhật thông tin cá nhân</li>
-        <li>✅ <b>Quản lý gói đăng ký</b> - Lựa chọn và thanh toán gói phù hợp</li>
-        <li>✅ <b>Yêu thích phim</b> - Lưu phim yêu thích để xem sau</li>
+        <li>✅ <b>Nhận diện biển số xe tự động</b> - AI xử lý hình ảnh với độ chính xác cao</li>
+        <li>✅ <b>Quản lý ra vào bãi xe</b> - Tự động ghi nhận thời gian ra/vào</li>
+        <li>✅ <b>Tính phí tự động</b> - Hệ thống tính phí dựa trên thời gian gửi xe</li>
+        <li>✅ <b>Quản lý khách hàng</b> - Thông tin xe và chủ xe</li>
+        <li>✅ <b>Thanh toán điện tử</b> - Hỗ trợ nhiều hình thức thanh toán</li>
+        <li>✅ <b>Báo cáo thống kê</b> - Doanh thu, lượt xe ra/vào theo thời gian</li>
+        <li>✅ <b>Quản lý bãi xe</b> - Theo dõi số lượng xe hiện tại</li>
+        <li>✅ <b>Cảnh báo an ninh</b> - Phát hiện xe lạ hoặc bất thường</li>
       </ul>
     </td>
     <td width="50%" valign="top">
       <ul>
-        <li>✅ <b>Quản lý phim</b> - Thêm, sửa, xóa phim</li>
-        <li>✅ <b>Quản lý tập phim</b> - Thêm, sửa, xóa tập phim</li>
-        <li>✅ <b>Quản lý thể loại</b> - Thêm, sửa, xóa thể loại</li>
-        <li>✅ <b>Quản lý blog</b> - Thêm, sửa, xóa blog và chuyên mục</li>
-        <li>✅ <b>Quản lý diễn viên/đạo diễn</b> - Thêm, sửa, xóa thông tin</li>
-        <li>✅ <b>Quản lý khách hàng</b> - Theo dõi và quản lý người dùng</li>
-        <li>✅ <b>Quản lý thanh toán</b> - Xử lý giao dịch tài chính</li>
-        <li>✅ <b>Thống kê</b> - Phân tích lượt xem, đánh giá phim</li>
+        <li>✅ <b>Dashboard quản trị</b> - Tổng quan hệ thống theo thời gian thực</li>
+        <li>✅ <b>Quản lý camera</b> - Cấu hình và giám sát camera</li>
+        <li>✅ <b>Quản lý nhân viên</b> - Phân quyền và quản lý tài khoản</li>
+        <li>✅ <b>Lịch sử giao dịch</b> - Tra cứu và xuất báo cáo</li>
+        <li>✅ <b>Cấu hình giá</b> - Thiết lập giá theo loại xe và thời gian</li>
+        <li>✅ <b>Backup dữ liệu</b> - Sao lưu tự động lên AWS</li>
+        <li>✅ <b>API tích hợp</b> - Kết nối với hệ thống khác</li>
+        <li>✅ <b>Thông báo real-time</b> - Cập nhật trạng thái tức thời</li>
       </ul>
     </td>
   </tr>
 </table>
 
-
-
 ## 🚧 Triển Khai
 
 <div align="center">
-  <h3>Yêu cầu:</h3>
+  <h3>Yêu cầu hệ thống:</h3>
   <p>
-    <img src="https://img.shields.io/badge/-PHP_>=_7.4-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP" />
+    <img src="https://img.shields.io/badge/-PHP_>=_8.0-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP" />
     <img src="https://img.shields.io/badge/-MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
-    <img src="https://img.shields.io/badge/-Composer-885630?style=for-the-badge&logo=composer&logoColor=white" alt="Composer" />
+    <img src="https://img.shields.io/badge/-Python_>=_3.8-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+    <img src="https://img.shields.io/badge/-Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
   </p>
 </div>
 
@@ -277,109 +265,58 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/dtu-team/movie-streaming-platform.git
+git clone https://github.com/dtu-team/parking-management-system.git
 
 # Di chuyển vào thư mục dự án
-cd movie-streaming-platform
+cd parking-management-system
 
-# Cài đặt dependencies
+# Cài đặt dependencies Laravel
 composer install
+
+# Cài đặt dependencies Frontend
 npm install
 
 # Thiết lập môi trường
 cp .env.example .env
 php artisan key:generate
 
-# Cấu hình cơ sở dữ liệu trong file .env
+# Cấu hình cơ sở dữ liệu và AWS trong file .env
 
 # Chạy migration và seeder
 php artisan migrate --seed
+
+# Cài đặt Python dependencies cho AI
+pip install -r requirements.txt
+
+# Build frontend
+npm run build
 
 # Khởi chạy server
 php artisan serve
 ```
 
-## 👨‍💻 Contributors
+### Cấu hình AWS:
+
+```bash
+# Cấu hình AWS credentials
+aws configure
+
+# Hoặc thêm vào file .env
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_DEFAULT_REGION=ap-southeast-1
+AWS_BUCKET=your_s3_bucket
+```
+
+## 📧 Liên Hệ
+
+- Email: vietvo371@gmail.com
+- Website: [https://parking.dtu.edu.vn](https://parking.dtu.edu.vn)
+- Facebook: [DTU Parking System](https://facebook.com/dtu.parking.system)
+
+---
 
 <div align="center">
-  <table>
-    <tr>
-      <td align="center" width="20%">
-        <a href="https://github.com/vovanviet">
-          <img src="Assets/proflile/viet.jpg" width="100px" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" alt="Võ Văn Việt"/>
-          <br />
-          <b>Võ Văn Việt</b>
-        </a>
-        <br />
-        <sub>@vietvo371</sub>
-        <br />
-        <a href="https://github.com/dtu-team/movie-streaming-platform/commits?author=vovanviet">
-          <img src="https://img.shields.io/badge/commits-12-blue?style=flat-square" alt="commits" />
-        </a>
-        <br />
-        <small>Scrum Master</small>
-      </td>
-      <td align="center" width="20%">
-        <a href="https://github.com/tranduccuong241222">
-          <img src="Assets/proflile/quy.jpg" width="100px" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" alt="Bạch Đình Quý"/>
-          <br />
-          <b>Bạch Đình Quý</b>
-        </a>
-        <br />
-        <sub>@tranduccuong241222</sub>
-        <br />
-        <a href="https://github.com/dtu-team/movie-streaming-platform/commits?author=tranduccuong241222">
-          <img src="https://img.shields.io/badge/commits-9-blue?style=flat-square" alt="commits" />
-        </a>
-        <br />
-        <small>Product Owner</small>
-      </td>
-      <td align="center" width="20%">
-        <a href="https://github.com/tranduccuong241222">
-          <img src="Assets/proflile/cuong.jpg" width="100px" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" alt="Trần Đức Cường"/>
-          <br />
-          <b>Trần Đức Cường</b>
-        </a>
-        <br />
-        <sub>@tranduccuong241222</sub>
-        <br />
-        <a href="https://github.com/dtu-team/movie-streaming-platform/commits?author=tranduccuong241222">
-          <img src="https://img.shields.io/badge/commits-8-blue?style=flat-square" alt="commits" />
-        </a>
-        <br />
-        <small>Developer</small>
-      </td>
-      <td align="center" width="20%">
-        <a href="https://github.com/vantrong1603">
-          <img src="Assets/proflile/trong.png" width="100px" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" alt="Huỳnh Văn Trọng"/>
-          <br />
-          <b>Huỳnh Văn Trọng</b>
-        </a>
-        <br />
-        <sub>@vantrong1603</sub>
-        <br />
-        <a href="https://github.com/dtu-team/movie-streaming-platform/commits?author=vantrong1603">
-          <img src="https://img.shields.io/badge/commits-7-blue?style=flat-square" alt="commits" />
-        </a>
-        <br />
-        <small>Developer</small>
-      </td>
-      <td align="center" width="20%">
-        <a href="https://github.com/tranduccuong241222">
-          <img src="Assets/proflile/nhu.jpg" width="100px" style="border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" alt="Nguyễn Thị Quỳnh Như"/>
-          <br />
-          <b>Nguyễn Thị Quỳnh Như</b>
-        </a>
-        <br />
-        <sub>@tranduccuong241222</sub>
-        <br />
-        <a href="https://github.com/dtu-team/movie-streaming-platform/commits?author=tranduccuong241222">
-          <img src="https://img.shields.io/badge/commits-10-blue?style=flat-square" alt="commits" />
-        </a>
-        <br />
-        <small>Developer</small>
-      </td>
-    </tr>
-  </table>
+  <p>Made with ❤️ by DTU Team</p>
 </div>
 
